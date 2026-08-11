@@ -1,0 +1,798 @@
+---
+title: "Rarefaction curves"
+author: "Grace Lewin"
+date: "2025-10-22"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+packages
+```{r}
+library(tidyverse)
+library(vegan)
+library(here)
+library(patchwork)
+```
+
+
+Import data
+```{r}
+gaviota_pres_abs <- read_csv(here("data", "gaviota_pres_abs_host.csv"))
+```
+
+split up by host
+```{r}
+coyote <- gaviota_pres_abs |> 
+  filter(host == "coyote")
+
+bobcat <- gaviota_pres_abs |> 
+  filter(host == "bobcat")
+
+boar <- gaviota_pres_abs |> 
+  filter(host == "wild boar")
+```
+
+
+convert to a matrix for vegan
+```{r}
+coyote_diet_mat <- coyote |> select(-sample_id, -host) %>% as.data.frame()
+
+bobcat_diet_mat <- bobcat|> select(-sample_id, -host) %>% as.data.frame()
+
+boar_diet_mat <- boar |> select(-sample_id, -host) %>% as.data.frame()
+```
+
+
+# Make Incidence Based Rarefaction Curves
+
+how diet richness (species accumulation) increases as more scats are sampled (not within-sample accumulation)
+
+compute sample-based rarefaction
+```{r}
+# for coyotes
+coyote_accum <- specaccum(coyote_diet_mat, method = "random")
+
+#bobcat
+bobcat_accum <- specaccum(bobcat_diet_mat, method = "random")
+
+#wild boar
+boar_accum <- specaccum(boar_diet_mat, method = "random")
+
+
+# Plot coyote (at both sites)
+coyote_plot <- plot(coyote_accum, 
+     ci.type = "polygon", 
+     ci.col = "lightgreen", 
+     col = "darkgreen", 
+     lwd = 2, 
+     ylab = "Cumulative diet richness",
+     xlab = "Number of scats sampled")
+
+#plot bobcat
+bobcat_plot <- plot(bobcat_accum, 
+     ci.type = "polygon", 
+     ci.col = "lightblue", 
+     col = "blue", 
+     lwd = 2, 
+     ylab = "Cumulative diet richness",
+     xlab = "Number of scats sampled")
+
+#plot boar
+boar_plot <- plot(boar_accum, 
+     ci.type = "polygon", 
+     ci.col = "pink", 
+     col = "red", 
+     lwd = 2, 
+     ylab = "Cumulative diet richness",
+     xlab = "Number of scats sampled")
+
+```
+Convert to dataframe to plot ggplot object
+
+```{r}
+
+# Make a function to convert to dataframe for ggplot
+accum_to_df <- function(accum_obj) {
+  data.frame(
+    sites = accum_obj$sites,
+    richness = accum_obj$richness,
+    sd = accum_obj$sd
+  )
+}
+
+
+coyote_accum_df <- accum_to_df(coyote_accum)
+bobcat_accum_df <- accum_to_df(bobcat_accum)
+boar_accum_df <- accum_to_df(boar_accum)
+
+
+coyote_plot <- ggplot(coyote_accum_df, aes(x = sites, y = richness)) +
+  geom_line(color = "blue") +
+  geom_ribbon(aes(ymin = richness - sd, ymax = richness + sd),
+              fill = "lightblue", alpha = 0.4) +
+  labs(x = "Number of scat samples", y = "", title = "Coyote") +
+  theme_bw()
+
+
+bobcat_plot <- ggplot(bobcat_accum_df, aes(x = sites, y = richness)) +
+  geom_line(color = "blue") +
+  geom_ribbon(aes(ymin = richness - sd, ymax = richness + sd),
+              fill = "lightblue", alpha = 0.4) +
+  labs(x = "Number of scat samples", y = "Diet richness", title = "Bobcat") +
+  theme_bw()
+
+boar_plot <- ggplot(boar_accum_df, aes(x = sites, y = richness)) +
+  geom_line(color = "blue") +
+  geom_ribbon(aes(ymin = richness - sd, ymax = richness + sd),
+              fill = "lightblue", alpha = 0.4) +
+  labs(x = "Number of scat samples", y = "", title = "Wild Boar") +
+  theme_bw()
+
+
+# Combine them
+species_richness_plots <- coyote_plot / bobcat_plot / boar_plot
+species_richness_plots
+
+```
+
+
+Estimate Unobserved Diet Items (Using Chao2 for Incidence-Based data)
+```{r}
+#coyote
+coyote_pool_est <- specpool(coyote_diet_mat)
+coyote_pool_est
+
+#calculate unobserved component
+coyote_unobserved <- coyote_pool_est$chao - coyote_pool_est$Species
+coyote_unobserved
+
+#bobcat
+bobcat_pool_est <- specpool(bobcat_diet_mat)
+bobcat_pool_est
+
+#calculate unobserved component
+bobcat_unobserved <- bobcat_pool_est$chao - bobcat_pool_est$Species
+bobcat_unobserved
+
+#boar
+boar_pool_est <- specpool(boar_diet_mat)
+boar_pool_est
+
+#calculate unobserved component
+boar_unobserved <- boar_pool_est$chao - boar_pool_est$Species
+boar_unobserved
+
+```
+
+# Sample Coverage (Using Good's Coverage for Incidence)
+
+Good's Coverage:
+Compute Good’s coverage (Ĉ):
+
+[
+\hat{C} = 1 - \frac{f_1}{N}
+]
+
+where
+
+( f_1 ) = number of diet items found in exactly one scat (singletons)
+
+( N ) = total number of incidences across all diet items
+
+For incidence data, coverage can still be approximated using the frequency of unique occurrences across samples
+```{r}
+# how many scats each diet item occurred in
+
+# coyote
+coyote_item_freq <- colSums(coyote_diet_mat)
+coyote_item_freq
+
+# bobcat
+bobcat_item_freq <- colSums(bobcat_diet_mat)
+bobcat_item_freq
+
+# boar
+boar_item_freq <- colSums(boar_diet_mat)
+boar_item_freq
+
+#coverage function
+coverage <- function(x) {
+  f1 <- sum(x == 1)
+  N <- sum(x)
+  C <- 1 - (f1 / N)
+  return(C)
+}
+
+#compute coverage
+
+#coyote
+coyote_coverage <- coverage(coyote_item_freq)
+
+#bobcat
+bobcat_coverage <- coverage(bobcat_item_freq)
+
+#boar
+boar_coverage <- coverage(boar_item_freq)
+
+```
+
+# Combine Results
+
+```{r}
+#coyote
+coyote_results <- tibble(
+  Observed_richness = coyote_pool_est$Species,
+  Chao2_estimate = coyote_pool_est$chao,
+  SE_Chao2 = coyote_pool_est$chao.se,
+  Coverage = coyote_coverage
+)
+
+coyote_results
+
+#bobcat
+bobcat_results <- tibble(
+  Observed_richness = bobcat_pool_est$Species,
+  Chao2_estimate = bobcat_pool_est$chao,
+  SE_Chao2 = bobcat_pool_est$chao.se,
+  Coverage = bobcat_coverage
+)
+
+bobcat_results
+
+#boar
+boar_results <- tibble(
+  Observed_richness = boar_pool_est$Species,
+  Chao2_estimate = boar_pool_est$chao,
+  SE_Chao2 = boar_pool_est$chao.se,
+  Coverage = boar_coverage
+)
+
+boar_results
+```
+
+```{r}
+# Combine Chao2 + Coverage results into a dataframe for annotation
+summary_df <- tibble(
+  host = c("Coyote", "Bobcat", "Wild Boar"),
+  observed_richness = c(coyote_results$Observed_richness,
+                        bobcat_results$Observed_richness,
+                        boar_results$Observed_richness),
+  chao2 = c(coyote_results$Chao2_estimate, 
+            bobcat_results$Chao2_estimate, 
+            boar_results$Chao2_estimate),
+  se = c(coyote_results$SE_Chao2, 
+         bobcat_results$SE_Chao2, 
+         boar_results$SE_Chao2),
+  coverage = c(coyote_results$Coverage, 
+               bobcat_results$Coverage, 
+               boar_results$Coverage)
+)
+
+summary_df <- summary_df %>%
+  mutate(
+    chao2_lower = chao2 - 1.96 * se,
+    chao2_upper = chao2 + 1.96 * se,
+    chao2_CI_label = sprintf("95%% CI: %.1f–%.1f", chao2_lower, chao2_upper)
+  )
+
+# Round for clean display
+# summary_df <- summary_df %>%
+#   mutate(
+#     chao2_label = sprintf("Chao2 = %.1f ± %.1f", chao2, se),
+#     coverage_label = sprintf("Coverage = %.1f%%", coverage * 100)
+#   )
+
+
+
+summary_df
+
+```
+
+extrapolate for species needed for chao2
+```{r}
+# Function to estimate samples needed to reach Chao2
+samples_needed_to_chao <- function(accum_obj, chao_target) {
+  # Current max richness
+  max_richness <- max(accum_obj$richness)
+  
+  if(chao_target > max_richness) {
+    # Linear extrapolation using last two points
+    x0 <- accum_obj$sites[length(accum_obj$sites)-1]
+    x1 <- accum_obj$sites[length(accum_obj$sites)]
+    y0 <- accum_obj$richness[length(accum_obj$sites)-1]
+    y1 <- accum_obj$richness[length(accum_obj$sites)]
+    
+    samples_needed <- x1 + (chao_target - y1) * (x1 - x0) / (y1 - y0)
+  } else {
+    # Find first sample where richness >= Chao2
+    samples_needed <- accum_obj$sites[which(accum_obj$richness >= chao_target)[1]]
+  }
+  
+  return(samples_needed)
+}
+
+# Apply to all three predators
+coyote_samples_needed <- samples_needed_to_chao(coyote_accum, summary_df$chao2[1])
+bobcat_samples_needed <- samples_needed_to_chao(bobcat_accum, summary_df$chao2[2])
+boar_samples_needed   <- samples_needed_to_chao(boar_accum, summary_df$chao2[3])
+
+# Print results
+samples_needed <- tibble(
+  host = c("Coyote", "Bobcat", "Wild Boar"),
+  samples_needed = c(coyote_samples_needed,
+                               bobcat_samples_needed,
+                               boar_samples_needed)
+)
+```
+
+
+
+```{r}
+#function with samples needed
+add_chao_coverage <- function(p, observed_richness, chao_est, se, coverage) {
+  # Calculate 95% CI
+  lower_CI <- chao_est - 1.96 * se
+  upper_CI <- chao_est + 1.96 * se
+  
+  # Get x range from the plot
+  x_range <- ggplot_build(p)$layout$panel_params[[1]]$x.range
+  
+  p +
+    # Observed richness (blue dashed line)
+    geom_hline(yintercept = observed_richness, linetype = "dashed", color = "blue") +
+    
+    # Observed richness label
+    annotate("text", x = Inf, y = observed_richness + 1,
+             label = sprintf("Observed = %.1f", observed_richness),
+             hjust = 1.1, vjust = 0, size = 3.3, color = "blue") +
+    
+    # Chao2 95% CI shaded region
+    annotate("rect",
+             xmin = x_range[1], xmax = x_range[2],
+             ymin = lower_CI, ymax = upper_CI,
+             fill = "red", alpha = 0.15) +
+    
+    # Expected richness (red dashed line)
+    geom_hline(yintercept = chao_est, linetype = "dashed", color = "red") +
+    
+    # Expected richness label
+    annotate("text", x = Inf, y = upper_CI + 1,
+             label = sprintf("Expected = %.1f (95%% CI: %.1f–%.1f)",
+                             chao_est, lower_CI, upper_CI),
+             hjust = 1.1, vjust = 0, size = 3.3, color = "red") +
+    
+    # Coverage text (black, at bottom)
+    annotate("text", x = Inf, y = 1,
+             label = sprintf("Coverage = %.1f%%", coverage * 100),
+             hjust = 1.1, vjust = 0, size = 3.3, color = "black")
+}
+
+
+summary_full <- summary_df %>%
+  left_join(samples_needed, by = "host")
+
+coyote_plot_annot <- add_chao_coverage(
+  p = coyote_plot,
+  observed_richness = summary_full$observed_richness[summary_full$host == "Coyote"],
+  chao_est = summary_full$chao2[summary_full$host == "Coyote"],
+  se = summary_full$se[summary_full$host == "Coyote"],
+  coverage = summary_full$coverage[summary_full$host == "Coyote"]
+)
+
+bobcat_plot_annot <- add_chao_coverage(
+  p = bobcat_plot,
+  observed_richness = summary_full$observed_richness[summary_full$host == "Bobcat"],
+  chao_est = summary_full$chao2[summary_full$host == "Bobcat"],
+  se = summary_full$se[summary_full$host == "Bobcat"],
+  coverage = summary_full$coverage[summary_full$host == "Bobcat"]
+)
+
+boar_plot_annot <- add_chao_coverage(
+  p = boar_plot,
+  observed_richness = summary_full$observed_richness[summary_full$host == "Wild Boar"],
+  chao_est = summary_full$chao2[summary_full$host == "Wild Boar"],
+  se = summary_full$se[summary_full$host == "Wild Boar"],
+  coverage = summary_full$coverage[summary_full$host == "Wild Boar"]
+)
+
+```
+
+```{r}
+# Example check
+ggplot() +
+  geom_line(aes(x = coyote_accum$sites, y = coyote_accum$richness)) +
+  geom_point(aes(x = coyote_accum$sites, y = coyote_accum$richness)) +
+  geom_vline(xintercept = 508, linetype = "dotted", color = "red") +
+  geom_hline(yintercept = 124.1, linetype = "dashed", color = "red") +
+  labs(x = "Samples", y = "Prey richness", 
+       title = "Extrapolated Chao2 Target for Coyote") +
+  theme_minimal()
+```
+
+
+
+```{r}
+# Function to add Chao2 + coverage info to plots
+add_chao_coverage <- function(p, observed_richness, chao_est, se, coverage) {
+  # Calculate 95% confidence interval
+  lower_CI <- chao_est - 1.96 * se
+  upper_CI <- chao_est + 1.96 * se
+  
+  # Get x range from the plot
+  x_range <- ggplot_build(p)$layout$panel_params[[1]]$x.range
+  
+  p +
+    # Observed richness line (blue, dashed)
+    geom_hline(yintercept = observed_richness, linetype = "dashed", color = "blue") +
+    annotate("text", x = Inf, y = observed_richness + 1,
+             label = sprintf("Observed = %.1f", observed_richness),
+             hjust = 1.1, vjust = 0, size = 3.3, color = "blue") +
+    
+    # Expected richness (Chao2) line (red, dashed)
+    geom_hline(yintercept = chao_est, linetype = "dashed", color = "red") +
+    
+    # 95% CI shaded area for Chao2
+    annotate("rect",
+             xmin = x_range[1], xmax = x_range[2],
+             ymin = lower_CI, ymax = upper_CI,
+             fill = "red", alpha = 0.15) +
+    
+    # Chao2 label
+    annotate("text", x = Inf, y = upper_CI + 1,
+             label = sprintf("Expected Diet Richness = %.1f (95%% CI: %.1f–%.1f)", chao_est, lower_CI, upper_CI),
+             hjust = 1.1, vjust = 0, size = 3.3, color = "red") +
+    
+    # Coverage label
+    annotate("text", x = Inf, y = 1,
+             label = sprintf("Coverage = %.1f%%", coverage * 100),
+             hjust = 1.1, vjust = 0, size = 3.3, color = "black")
+}
+
+
+
+coyote_plot_annot <- add_chao_coverage(
+  coyote_plot,
+  summary_df$observed_richness[1],
+  summary_df$chao2[1],
+  summary_df$se[1],
+  summary_df$coverage[1]
+)
+
+bobcat_plot_annot <- add_chao_coverage(
+  bobcat_plot,
+  summary_df$observed_richness[2],
+  summary_df$chao2[2],
+  summary_df$se[2],
+  summary_df$coverage[2]
+)
+
+boar_plot_annot <- add_chao_coverage(
+  boar_plot,
+  summary_df$observed_richness[3],
+  summary_df$chao2[3],
+  summary_df$se[3],
+  summary_df$coverage[3]
+)
+
+
+
+species_richness_plots_final <- coyote_plot_annot / bobcat_plot_annot / boar_plot_annot
+
+ggsave(
+  here("figs", "species_richness_rarefaction_with_chao2_CI.png"),
+  species_richness_plots_final,
+  width = 6,
+  height = 10,
+  dpi = 600
+)
+
+
+```
+
+estimate the number of samples needed to reach the Chao2 estimated richness — sample-based rarefaction extrapolation.
+```{r}
+coyote_accum
+
+# Number of scats needed to reach Chao2 estimated richness
+chao_target <- summary_df$chao2[1]  # coyote Chao2
+
+# Find first sample size where richness >= Chao2
+samples_needed <- coyote_accum$sites[which(coyote_accum$richness >= chao_target)[1]]
+samples_needed
+```
+
+
+```{r}
+library(dplyr)
+
+# create dataframe from specaccum
+coyote_df <- data.frame(
+  sites = coyote_accum$sites,
+  richness = coyote_accum$richness
+)
+
+# find bracketing points
+lower_idx <- max(which(coyote_df$richness < chao_target))
+upper_idx <- min(which(coyote_df$richness >= chao_target))
+
+# linear interpolation
+x0 <- coyote_df$sites[lower_idx]
+x1 <- coyote_df$sites[upper_idx]
+y0 <- coyote_df$richness[lower_idx]
+y1 <- coyote_df$richness[upper_idx]
+
+samples_needed_interp <- x0 + (chao_target - y0) * (x1 - x0) / (y1 - y0)
+samples_needed_interp
+
+```
+
+
+Have to extrapolate because my datasets don't reach the expected total richness.
+This is just linear extrapolation between the last 2 points. -- this isn't very robust
+```{r}
+# Function to estimate samples needed to reach Chao2
+samples_needed_to_chao <- function(accum_obj, chao_target) {
+  # Current max richness
+  max_richness <- max(accum_obj$richness)
+  
+  if(chao_target > max_richness) {
+    # Linear extrapolation using last two points
+    x0 <- accum_obj$sites[length(accum_obj$sites)-1]
+    x1 <- accum_obj$sites[length(accum_obj$sites)]
+    y0 <- accum_obj$richness[length(accum_obj$sites)-1]
+    y1 <- accum_obj$richness[length(accum_obj$sites)]
+    
+    samples_needed <- x1 + (chao_target - y1) * (x1 - x0) / (y1 - y0)
+  } else {
+    # Find first sample where richness >= Chao2
+    samples_needed <- accum_obj$sites[which(accum_obj$richness >= chao_target)[1]]
+  }
+  
+  return(samples_needed)
+}
+
+# Apply to all three predators
+coyote_samples_needed <- samples_needed_to_chao(coyote_accum, summary_df$chao2[1])
+bobcat_samples_needed <- samples_needed_to_chao(bobcat_accum, summary_df$chao2[2])
+boar_samples_needed   <- samples_needed_to_chao(boar_accum, summary_df$chao2[3])
+
+# Print results
+samples_needed <- tibble(
+  Predator = c("Coyote", "Bobcat", "Wild Boar"),
+  Samples_needed_for_Chao2 = c(coyote_samples_needed,
+                               bobcat_samples_needed,
+                               boar_samples_needed)
+)
+
+```
+
+```{r}
+coyote_plot_annot <- coyote_plot_annot 
+  
+  
+bobcat_plot_annot 
+  
+  
+boar_plot_annot
+```
+
+
+
+
+
+
+
+
+
+Use iNEXT for more robust extrapolation -- honestly couldn't get this to work properly....
+
+```{r}
+library(iNEXT)
+
+iNEXT_list <- list(
+  coyote = c(130, colSums(coyote_diet_mat)),
+  bobcat = c(34, colSums(bobcat_diet_mat)),
+  boar   = c(60, colSums(boar_diet_mat))
+)
+
+iNEXT_list <- list(
+  Coyote = c(130, colSums(coyote_diet_mat)),
+  Bobcat = c(34, colSums(bobcat_diet_mat)),
+  "Wild Boar" = c(60, colSums(boar_diet_mat))
+)
+
+
+iNEXT_out <- iNEXT(iNEXT_list, q = 0, datatype = "incidence_freq")
+
+iNEXT_out$DataInfo
+
+coverage_perc <- iNEXT_out$DataInfo %>%
+  mutate(SC_percent = SC * 100)
+
+ggiNEXT(iNEXT_out) +
+  theme_bw() +
+  labs( x = "Number of Scat Samples",
+        y = "Prey Species Diversity")
+
+iNEXT_out$DataInfo
+```
+
+
+```{r}
+# t = estimated number of samples needed to reach the target coverage of 90%
+asymp <- estimateD(iNEXT_list, q = 0, datatype = "incidence_freq", base = "cover", level = 0.90)
+
+
+# Suppose max scats for any predator = 131
+level_vec <- seq(10, 150, by = 10)  # estimates every 10 scats
+
+richness_by_size <- estimateD(
+  iNEXT_list, 
+  q = 0, 
+  datatype = "incidence_freq",
+  base = "size",
+  level = level_vec
+)
+
+richness_by_size
+```
+
+
+
+
+```{r}
+
+
+ggiNEXT(iNEXT_out) + 
+  labs(#title = "Diet Richness",
+       x = "Number of scat samples",
+       y = "Diet richness") +
+  theme_bw()
+
+# Combine results
+summary_df <- tibble(
+  host = c("Coyote", "Bobcat", "Wild Boar"),
+  observed_richness = c(coyote_results$Observed_richness,
+                        bobcat_results$Observed_richness,
+                        boar_results$Observed_richness),
+  chao2 = c(coyote_results$Chao2_estimate, 
+            bobcat_results$Chao2_estimate, 
+            boar_results$Chao2_estimate),
+  se = c(coyote_results$SE_Chao2, 
+         bobcat_results$SE_Chao2, 
+         boar_results$SE_Chao2),
+  coverage = c(coyote_results$Coverage, 
+               bobcat_results$Coverage, 
+               boar_results$Coverage)
+)
+
+estimate_samples_to_chao <- function(accum_obj, chao_est) {
+  sites <- accum_obj$sites
+  richness <- accum_obj$richness
+  if(chao_est > max(richness)) {
+    x0 <- sites[length(sites)-1]
+    x1 <- sites[length(sites)]
+    y0 <- richness[length(sites)-1]
+    y1 <- richness[length(sites)]
+    x1 + (chao_est - y1) * (x1 - x0) / (y1 - y0)
+  } else {
+    sites[which(richness >= chao_est)[1]]
+  }
+}
+
+samples_needed <- tibble(
+  host = c("Coyote", "Bobcat", "Wild Boar"),
+  samples_needed = c(
+    estimate_samples_to_chao(coyote_accum, coyote_results$Chao2_estimate),
+    estimate_samples_to_chao(bobcat_accum, bobcat_results$Chao2_estimate),
+    estimate_samples_to_chao(boar_accum, boar_results$Chao2_estimate)
+  )
+)
+samples_needed
+
+
+iNEXT_out$AsyEst
+
+shannon_diversity <- iNEXT_out$AsyEst |> 
+  filter(Diversity == 'Shannon diversity')
+
+species_richness <- iNEXT_out$AsyEst |> 
+  filter(Diversity == 'Species richness')
+
+
+
+```
+
+
+
+```{r}
+coverage_df <- iNEXT_out$iNextEst
+
+coverage_summary <- iNEXT_out$iNextEst$size_based %>%
+  filter(Method %in% c("Observed", "Extrapolation")) %>%
+  group_by(Assemblage) %>%
+  summarise(
+    Observed_Coverage = round(SC[Method == "Observed"][1] * 100, 1),
+    Expected_Coverage = round(max(SC[Method == "Extrapolation"], na.rm = TRUE) * 100, 1),
+    Percent_of_Expected = round((Observed_Coverage / Expected_Coverage) * 100, 1)
+  )
+
+coverage_summary
+
+
+ggiNEXT(iNEXT_out, type = 3) +
+  ggtitle("Sample coverage vs. number of samples")
+
+```
+
+```{r}
+sest_summary <- iNEXT_out$iNextEst$size_based %>%
+  filter(Method %in% c("Observed", "Extrapolation")) %>%
+  group_by(Assemblage) %>%
+  summarise(
+    Observed_Sest = qD[Method == "Observed"][1],
+    Total_Sest = max(qD[Method == "Extrapolation"], na.rm = TRUE),
+    Percent_Species_Sampled = round((Observed_Sest / Total_Sest) * 100, 1)
+  )
+
+sest_summary
+```
+
+
+could not figure out how to use iNEXT to extrapolate sample numbers needed for chao2 (expected prey density) estimate
+```{r}
+# # Extrapolate to 2x current sample size
+# iNEXT_out <- iNEXT(iNEXT_list, q = 0, datatype = "incidence_freq", size = 100 * nrow(coyote_diet_mat))
+# 
+# # Extract the iNEXT output dataframe
+# iNEXT_df_coyote <- iNEXT_out$iNextEst[[1]]  # first element = coyote
+# 
+# head(iNEXT_df)
+# 
+# 
+# 
+# 
+# #Find the sample size where richness reaches Chao2
+# chao2_target <- coyote_results$Chao2_estimate
+# 
+# # Find the smallest sample size where predicted richness >= Chao2
+# coyote_samples_needed <- min(iNEXT_df$t[iNEXT_df_coyote$qD >= chao2_target])
+# coyote_samples_needed
+# 
+
+
+```
+
+Do this for bobcat
+```{r}
+# # Extrapolate to 2x current sample size
+# iNEXT_out <- iNEXT(iNEXT_list, q = 0, datatype = "incidence_freq", size = 100 * nrow(coyote_diet_mat))
+# 
+# # Extract the iNEXT output dataframe
+# iNEXT_df_bobcat <- iNEXT_out$iNextEst[[2]]  
+# 
+# head(iNEXT_df_bobcat)
+# 
+# 
+# 
+# 
+# # Chao2 target
+# chao2_target <- bobcat_results$Chao2_estimate
+# 
+# # Extract bobcat predicted richness vs sample size
+# iNEXT_df_bobcat <- iNEXT_out$iNextEst[[2]]
+# 
+# # Find smallest t where predicted richness >= Chao2
+# bobcat_samples_needed <- min(iNEXT_df_bobcat$t[iNEXT_df_bobcat$qD >= chao2_target])
+# 
+# # Check result
+# bobcat_samples_needed
+
+
+```
+

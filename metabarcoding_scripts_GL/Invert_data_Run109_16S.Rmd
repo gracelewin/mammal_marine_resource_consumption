@@ -1,0 +1,554 @@
+---
+title: "Run109_16S"
+author: "Ellen Dymit"
+date: "2025-06-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(here)
+```
+
+# import data
+```{r}
+run109 <- read.csv(here("data","metabarcoding_data","invert_data","Run109.csv"), header = T)
+unique(run109$Sample)
+
+colnames(run109)
+```
+
+# create read count columns
+```{r}
+run109[c('a', 'b', 'c')] <- str_split_fixed(run109$PCR_rep_read_counts, ',', 3)
+run109$a_rep = NA
+run109$b_rep = NA
+run109$c_rep = NA
+run109$bb_rep = NA
+run109$cb_rep = NA
+run109 <- mutate(run109, 
+                 a_rep = ifelse(grepl("a:",a), a, NA), 
+                 b_rep = ifelse(grepl("b:",a), a, NA),
+                 bb_rep = ifelse(grepl("b:",b), b, NA),
+                 cb_rep = ifelse(grepl("c:",b), b, NA),
+                 c_rep = ifelse(grepl("c:",c), c, NA))
+run109$b_rep <- with(run109, coalesce(b_rep,bb_rep))
+run109$c_rep <- with(run109, coalesce(c_rep,cb_rep))
+run109 <- run109[ , ! names(run109) %in% c("bb_rep", "cb_rep", "a", "b", "c")]
+
+run109$a_rep <- parse_number(run109$a_rep)
+run109$b_rep <- parse_number(run109$b_rep)
+run109$c_rep <- parse_number(run109$c_rep)
+
+run109 <- subset(run109, select = -PCR_rep_read_counts)
+
+run109 <- run109 %>% filter(Project == "UCSB") %>% select(-Taxa, -Geographic_region, -Best_match_query_cover.SD, -Best_match_PID.SD)
+
+run109$a_rep[is.na(run109$a_rep)] <- 0
+run109$b_rep[is.na(run109$b_rep)] <- 0
+run109$c_rep[is.na(run109$c_rep)] <- 0
+
+# Total reads per row
+run109 <- run109 %>%
+  mutate(read_count = a_rep + b_rep + c_rep)
+
+# Total reads per sample
+run109 <- run109 %>%
+  group_by(Percentage_filter, Sample) %>%
+  mutate(reads_per_sample = sum(read_count, na.rm = TRUE)) %>%
+  ungroup()
+```
+
+# curate common names
+```{r}
+run109_95p <- run109 %>% filter(Best_match_PID.mean > 95)
+unique(run109_95p$Genus_species)
+
+run109_90p <- run109 %>% filter(Best_match_PID.mean < 95 & Best_match_PID.mean > 90)
+unique(run109_90p$Genus_species)
+
+run109_80p <- run109 %>% filter(Best_match_PID.mean < 90 & Best_match_PID.mean > 80)
+unique(run109_80p$Genus_species)
+
+run109_70p <- run109 %>% filter(Best_match_PID.mean < 80 & Best_match_PID.mean > 70)
+unique(run109_70p$Genus_species)
+
+run109 <- run109 %>%
+  mutate(common_name = case_when(
+    Genus_species == "Bos_taurus" ~ "cow", # 100
+    Genus_species == "Lynx_rufus" ~ "bobcat", # 100
+    Genus_species == "Heliconoides_inflatus" ~ "sea butterfly snail", # 100
+    Genus_species == "Odocoileus_virginianus" ~ "white tailed deer", # 100
+    Genus_species == "Crotalus_viridis" ~ "prairie rattlesnake", # 100
+    Genus_species == "Puma_concolor" ~ "puma", # 100
+    Genus_species == "Rattus_rattus" ~ "rat", # 100
+    Genus_species == "Gallus_sonneratii" ~ "chicken", # 100
+    Genus_species == "Callipepla_californica" ~ "California quail", # 100
+    Genus_species == "Scomber_japonicus" ~ "chub mackerel", # 100
+    Genus_species == "Lamna_ditropis" ~ "salmon shark", # 100
+    Genus_species == "Magnisudis_atlantica" ~ "duckbill barracuda", # 100
+    Genus_species == "Ophiodon_elongatus" ~ "lingcod", # 100
+    Genus_species == "Thysanoessa_inermis" ~ "krill", # 100
+    Genus_species == "Sebastes_serranoides" ~ "olive rockfish", # 100
+    Genus_species == "Clupea_pallasii" ~ "pacific herring", # 100
+    Genus_species == "Sus_scrofa" ~ "wild boar", # 
+    Genus_species == "Canis_rufus" ~ "canid", # 
+    Genus_species == "Pilaira_anomala" ~ "mold", # 
+    Genus_species == "Reithrodontomys_megalotis" ~ "western harvest mouse", # 
+    Genus_species == "Microtus_californicus" ~ "California vole", # 
+    Genus_species == "Chaetodipus_californicus" ~ "California pocket mouse", # 
+    Genus_species == "Zalophus_californianus" ~ "California sea lion", # 
+    Genus_species == "Canis_latrans" ~ "canid", # 
+    Genus_species == "Neotoma_lepida" ~ "desert woodrat", # 
+    Genus_species == "Meleagris_gallopavo" ~ "turkey", # 
+    Genus_species == "Otospermophilus_beecheyi" ~ "California ground squirrel", # 
+    Genus_species == "Taxidea_taxus" ~ "American badger", # 
+    Genus_species == "Neotoma_macrotis" ~ "big-eared woodrat", # 
+    Genus_species == "Ravinia_vagabunda" ~ "flesh fly", # 
+    Genus_species == "Canis_lupus" ~ "canid", # 
+    Genus_species == "Forficula_auricularia" ~ "earwig", # 
+    Genus_species == "Mephitis_mephitis" ~ "striped skunk", # 
+    Genus_species == "Paralucilia_pseudolyrcea" ~ "blow fly", # 
+    Genus_species == "Urocyon_cinereoargenteus" ~ "grey fox", # 
+    Genus_species == "Pandalus_jordani" ~ "ocean pink shrimp", # 
+    Genus_species == "Merluccius_productus" ~ "north pacific hake", # 
+    Genus_species == "Peromyscus_maniculatus" ~ "deer mouse", # 
+    Genus_species == "Pituophis_catenifer" ~ "gopher snake", # 
+    Genus_species == "Sylvilagus_bachmani" ~ "brush rabbit", # 
+    Genus_species == "Plestiodon_skiltonianus" ~ "western skink", # 
+    Genus_species == "Anchoa_ischana" ~ "anchovy", # 
+    Genus_species == "Gonatopsis_borealis" ~ "squid", # 
+    Genus_species == "Leucocarbo_chalconotus" ~ "shag", # 90
+    Genus_species == "Pseudopaludicola_boliviana" ~ "frog", # 90
+    Genus_species == "Microtus_chrotorrhinus" ~ "vole", # 90
+    Genus_species == "Picoides_tridactylus" ~ "woodpecker", # 90
+    Genus_species == "Thomomys_bottae" ~ "pocket gopher", # 90
+    Genus_species == "Neodon_bershulaensis" ~ "vole", # 90
+    Genus_species == "Chloropicon_sieburthii" ~ "phytoplankton", # 90
+    Genus_species == "Creophilus_maxillosus" ~ "rove beetle", # 90
+    Genus_species == "Rhipicephalus_sanguineus" ~ "tick", # 90
+    Genus_species == "Phakopsora_meibomiae" ~ "fungi", # 80
+    Genus_species == "Tettigonia_orientalis" ~ "bush cricket", # 80
+    Genus_species == "Isogenoides_varians" ~ "stonefly", # 80
+    Genus_species == "Setvena_wahkeena" ~ "stonefly", # 80
+    Genus_species == "Xiphidiopsis_gurneyi" ~ "cyanobacteria", # 80
+    Genus_species == "Abronia_graminea" ~ "lizard", # 80
+    Genus_species == "Tachycines_zorzini" ~ "camel cricket", # 80
+    Genus_species == "Chloropicon_laureae" ~ "phytoplankton", # 80
+    Genus_species == "Johnmannia_powerae" ~ "stiletto fly", # 80
+    Genus_species == "Stenopelmatus_fuscus" ~ "jerusalem cricket", # 80
+    Genus_species == "Gymnaetoides_acutilobatus" ~ "cave cricket", # 80
+    Genus_species == "Microdipodops_pallidus" ~ "rodent", # 80
+    Genus_species == "Onthophagus_crinitus" ~ "dung beetle", # 80
+    Genus_species == "Pheidole_deima" ~ "ant", # 80
+    Genus_species == "Hazenia_capsulata" ~ "algae", # 80
+    Genus_species == "Anadara_broughtonii" ~ "clam", # 70
+    Genus_species == "Cavenderia_subdiscoidea" ~ "slime mold", # 70
+    Genus_species == "Chloropicon_roscoffensis" ~ "algae", # 70
+    Genus_species == "" ~ "no match",
+    TRUE ~ NA
+  ))
+```
+
+# curate broad groups
+```{r}
+unique(run109$common_name)
+
+run109 <- run109 %>%
+  mutate(group = case_when(
+    common_name == "wild boar" ~ "mammal", # 
+    common_name == "cow" ~ "mammal", # 
+    common_name == "earwig" ~ "terrestrial invertebrate", # 
+    common_name == "pocket gopher" ~ "pocket gopher", # 
+    common_name == "deer mouse" ~ "mammal", # 
+    common_name == "canid" ~ "mammal", # 
+    common_name == "no match" ~ "no match", # 
+    common_name == "mold" ~ "fungus", # 
+    common_name == "fungi" ~ "fungus", # 
+    common_name == "western harvest mouse" ~ "mammal", # 
+    common_name == "California vole" ~ "mammal", # 
+    common_name == "turkey" ~ "bird", # 
+    common_name == "shag" ~ "bird", # 
+    common_name == "California pocket mouse" ~ "mammal", # 
+    common_name == "bush cricket" ~ "terrestrial invertebrate", # 
+    common_name == "stonefly" ~ "terrestrial invertebrate", # 
+    common_name == "cyanobacteria" ~ "cyanobacteria", # 
+    common_name == "bobcat" ~ "mammal", # 
+    common_name == "sea butterfly snail" ~ "marine invertebrate", # 
+    common_name == "frog" ~ "amphibian", # 
+    common_name == "lizard" ~ "reptile", # 
+    common_name == "California sea lion" ~ "mammal", # 
+    common_name == "gopher snake" ~ "reptile", # 
+    common_name == "brush rabbit" ~ "mammal", # 
+    common_name == "phytoplankton" ~ "algae", # 
+    common_name == "clam" ~ "marine invertebrate", # 
+    common_name == "white tailed deer" ~ "mammal", # 
+    common_name == "vole" ~ "mammal", # 
+    common_name == "camel cricket" ~ "terrestrial invertebrate", # 
+    common_name == "desert woodrat" ~ "mammal", # 
+    common_name == "western skink" ~ "reptile", # 
+    common_name == "stiletto fly" ~ "terrestrial invertebrate", # 
+    common_name == "jerusalem cricket" ~ "terrestrial invertebrate", # 
+    common_name == "cave cricket" ~ "terrestrial invertebrate", # 
+    common_name == "rodent" ~ "mammal", # 
+    common_name == "dung beetle" ~ "terrestrial invertebrate", # 
+    common_name == "slime mold" ~ "protist (slime mold)", # 
+    common_name == "algae" ~ "algae", # 
+    common_name == "prairie rattlesnake" ~ "reptile", # 
+    common_name == "California ground squirrel" ~ "mammal", # 
+    common_name == "woodpecker" ~ "bird", # 
+    common_name == "American badger" ~ "mammal", # 
+    common_name == "big-eared woodrat" ~ "mammal", # 
+    common_name == "flesh fly" ~ "terrestrial invertebrate", # 
+    common_name == "puma" ~ "mammal", # 
+    common_name == "rove beetle" ~ "terrestrial invertebrate", # 
+    common_name == "striped skunk" ~ "mammal", # 
+    common_name == "tick" ~ "terrestrial invertebrate", # 
+    common_name == "rat" ~ "mammal", # 
+    common_name == "chicken" ~ "bird", # 
+    common_name == "blow fly" ~ "terrestrial invertebrate", # 
+    common_name == "grey fox" ~ "mammal", # 
+    common_name == "California quail" ~ "bird", # 
+    common_name == "anchovy" ~ "fish", # 
+    common_name == "ant" ~ "terrestrial invertebrate", # 
+    common_name == "chub mackerel" ~ "fish", # 
+    common_name == "north pacific hake" ~ "fish", # 
+    common_name == "squid" ~ "marine invertebrate", # 
+    common_name == "salmon shark" ~ "fish", # 
+    common_name == "duckbill barracuda" ~ "fish", # 
+    common_name == "ocean pink shrimp" ~ "marine invertebrate", # 
+    common_name == "lingcod" ~ "fish", # 
+    common_name == "krill" ~ "marine invertebrate", # 
+    common_name == "olive rockfish" ~ "fish", # 
+    common_name == "pacific herring" ~ "fish", # 
+    TRUE ~ NA
+  ))
+```
+
+
+# select 0.5% filtered data
+```{r}
+run109_0.5 <- run109 %>% filter(Percentage_filter == 0.5)
+```
+
+# histogram of species read counts
+```{r}
+run109_0.5_plot1 <- run109_0.5 %>%
+  select(group, common_name, read_count) %>%
+  group_by(common_name, group) %>%
+  summarise(total_read_count = sum(read_count, na.rm = TRUE)) %>%
+  ungroup()
+
+ggplot(run109_0.5_plot1, aes(x = fct_reorder(common_name, total_read_count, .desc = FALSE), y = total_read_count, fill = group)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+
+ggplot(run109_1_plot1, aes(x = fct_reorder(common_name, total_read_count, .desc = FALSE), y = total_read_count, fill = group)) + 
+  geom_bar(stat = "identity") +
+  ylim(0,300000) +
+  coord_flip()
+
+run109_1_plot2 <- run109_0.5 %>%
+  select(group, read_count) %>%
+  group_by(group) %>%
+  summarise(total_read_count = sum(read_count, na.rm = TRUE)) %>%
+  ungroup()
+
+ggplot(run109_1_plot2, aes(x = "", y = total_read_count, fill = group)) +
+  geom_bar(stat = "identity", width = 1, color = "black") +  # black outlines
+  coord_polar(theta = "y") +
+  theme_void() +
+  labs(fill = "Group")
+
+run109_1_plot2 <- run109_1_plot2 %>% filter(!group == "mammal")
+
+ggplot(run109_1_plot2, aes(x = "", y = total_read_count, fill = group)) +
+  geom_bar(stat = "identity", width = 1, color = "black") +  # black outlines
+  coord_polar(theta = "y") +
+  theme_void() +
+  labs(fill = "Group")
+```
+
+# write out results as a .csv
+```{r}
+write_csv(run109_0.5, "run109_0.5.csv")
+```
+
+# import 12S data
+```{r}
+grace12S <- read.csv("grace12S.csv")
+
+grace12S$RepA[is.na(grace12S$RepA)] <- 0
+grace12S$RepB[is.na(grace12S$RepB)] <- 0
+grace12S$RepC[is.na(grace12S$RepC)] <- 0
+
+# Total reads per row
+grace12S <- grace12S %>%
+  mutate(read_count = RepA + RepB + RepC)
+
+# Total reads per sample
+grace12S <- grace12S %>%
+  group_by(Percentage_filter, Sample) %>%
+  mutate(reads_per_sample = sum(read_count, na.rm = TRUE)) %>%
+  ungroup()
+```
+
+# curate common names
+```{r}
+unique(grace12S$Local_taxa)
+
+grace12S <- grace12S %>%
+  mutate(common_name = case_when(
+    Local_taxa == "Canis latrans, Canis lupus" ~ "canid", # 
+    Local_taxa == "Phalacrocorax penicillatus, Phalacrocorax brasilianus, Phalacrocorax pelagicus" ~ "cormorant", # 
+    Local_taxa == "Microtus californicus" ~ "California vole", # 
+    Local_taxa == "Peromyscus" ~ "deer mouse", # 
+    Local_taxa == "Sylvilagus bachmani" ~ "brush rabbit", # 
+    Local_taxa == "Cricetidae" ~ "rodent", # 
+    Local_taxa == "Neotoma" ~ "woodrat", # 
+    Local_taxa == "Neotoma lepida" ~ "desert woodrat", # 
+    Local_taxa == "Sus scrofa" ~ "wild boar", # 
+    Local_taxa == "Zalophus californianus" ~ "California sea lion", # 
+    Local_taxa == "Bovidae" ~ "cow", # 
+    Local_taxa == "Phasianidae" ~ "Phasianidae", # 
+    Local_taxa == "Urocyon cinereoargenteus, Urocyon littoralis" ~ "gray fox", # 
+    Local_taxa == "Homo sapiens" ~ "human", # 
+    Local_taxa == "Callospermophilus, Glaucomys" ~ "squirrel", # 
+    Local_taxa == "Microtus" ~ "vole", # 
+    Local_taxa == "Thomomys bottae" ~ "pocket gopher", # 
+    Local_taxa == "Lynx rufus, Puma concolor" ~ "felid (lynx/puma)", # 
+    Local_taxa == "Odocoileus virginianus, Odocoileus hemionus" ~ "mule or white tailed deer", # 
+    Local_taxa == "Chloris sinica, Spinus pinus, Plectrophenax nivalis, Zonotrichia leucophrys, Zonotrichia atricapilla, Zonotrichia albicollis, Sturnella neglecta, Sturnella magna" ~ "bird", # 
+    Local_taxa == "Canis" ~ "canid", # 
+    Local_taxa == "Peromyscus eremicus" ~ "cactus mouse", # 
+    Local_taxa == "Pipilo maculatus" ~ "towhee", # 
+    Local_taxa == "Onychomys torridus" ~ "southern grasshopper mouse", # 
+    Local_taxa == "Canis lupus" ~ "canid", # 
+    Local_taxa == "Microtus townsendii" ~ "vole", # 
+    Local_taxa == "Peromyscus crinitus, Peromyscus eremicus" ~ "deer mouse", # 
+    Local_taxa == "Callipepla californica, Callipepla gambelii" ~ "California quail", # 
+    Local_taxa == "Clupeiformes" ~ "Clupeiformes (fish)", # 
+    Local_taxa == "Picidae" ~ "woodpecker", # 
+    Local_taxa == "Neotoma macrotis" ~ "big-eared woodrat", # 
+    Local_taxa == "Plestiodon gilberti" ~ "Gilbert's skink", # 
+    Local_taxa == "Taxidea taxus" ~ "badger", # 
+    Local_taxa == "Aphelocoma" ~ "jay", # 
+    Local_taxa == "Puma concolor" ~ "puma", # 
+    Local_taxa == "Meleagris gallopavo" ~ "turkey", # 
+    Local_taxa == "Mephitis mephitis" ~ "striped skunk", # 
+    Local_taxa == "Arctocephalus" ~ "fur seal", # 
+    Local_taxa == "Canidae" ~ "canid", # 
+    Local_taxa == "Vulpes vulpes" ~ "red fox", # 
+    Local_taxa == "Chaetodipus californicus" ~ "California pocket mouse", # 
+    Local_taxa == "Mus musculus" ~ "house mouse", # 
+    Local_taxa == "Rattus rattus" ~ "rat", # 
+    Local_taxa == "Peromyscus maniculatus, Peromyscus keeni" ~ "deer mouse", # 
+    Local_taxa == "Sylvilagus" ~ "rabbit", # 
+    Local_taxa == "Phalacrocorax pelagicus, Phalacrocorax penicillatus" ~ "cormorant", # 
+    Local_taxa == "Artiodactyla, Rodentia" ~ "mammal", # 
+    TRUE ~ NA
+  ))
+```
+
+# select 0.5% filtered data
+```{r}
+grace12S_0.5 <- grace12S %>% filter(Percentage_filter == 0.5)
+```
+
+# merge together 12S and 16S to compare
+```{r}
+run109_0.5_merge <- run109_0.5 %>% select(Sample, common_name, Best_match_PID.mean, read_count, reads_per_sample)
+run109_0.5_merge$gene = "16S"
+grace12S_0.5_merge <- grace12S_0.5 %>% select(Sample, common_name, Best_match_PID.mean, read_count, reads_per_sample)
+grace12S_0.5_merge$gene = "12S"
+
+grace12S16S <- rbind(run109_0.5_merge, grace12S_0.5_merge)
+
+write.csv(grace12S16S, "grace12S16S.csv", row.names = F)
+```
+
+# merge together 12S with 16S ONLY inverts and reptiles/amphibians
+```{r}
+grace12S_0.5_merge2 <- grace12S_0.5 %>% select(Sample, common_name, Best_match_references, Best_match_PID.mean, read_count, reads_per_sample)
+grace12S_0.5_merge2$gene = "12S"
+
+run109_0.5_merge2 <- run109_0.5 %>% filter(group %in% c("terrestrial invertebrate", "marine invertebrate", "amphibian", "reptile", "pocket gopher")) %>% select(Sample, common_name, Best_match_references, Best_match_PID.mean, read_count, reads_per_sample)
+run109_0.5_merge2$gene = "16S"
+
+grace12S16S2 <- rbind(run109_0.5_merge2, grace12S_0.5_merge2)
+```
+
+# merge in defecator information
+```{r}
+grace_defecators <- read.csv("grace_defecators.csv", header = T)
+
+grace12S16S2 <- left_join(grace12S16S2, grace_defecators, by = "Sample")
+
+unique(grace12S16S2$Sample)
+
+grace12S16S2 <- grace12S16S2 %>% filter(!Sample %in% c("F020A", "F035A", "F113A"))
+```
+
+# calculate OI
+```{r}
+grace12S16S2_all <- grace12S16S2 %>% select(defecator, Sample, common_name) %>% filter(!common_name %in% c("bobcat", "coyote", "wild boar", "felid (lynx/puma)", "canid")) %>% distinct()
+
+grace12S16S2_all <- grace12S16S2_all %>%
+  group_by(defecator) %>%
+  mutate(n.total=n()) %>%
+  ungroup()
+grace12S16S2_all <- grace12S16S2_all %>%
+  group_by(defecator, common_name) %>%
+  mutate(n.common=n()) %>%
+  ungroup()
+grace12S16S2_all <- grace12S16S2_all %>%
+  mutate(OI=n.common/n.total) %>%
+  ungroup()
+grace12S16S2_all <- grace12S16S2_all %>% select(defecator, common_name, n.total, n.common, OI)
+grace12S16S2_all <- distinct(grace12S16S2_all)
+grace12S16S2_all$OIpercent <- grace12S16S2_all$OI*100
+```
+
+# redo broad grouping
+```{r}
+unique(grace12S16S2_all$common_name)
+
+grace12S16S2_all <- grace12S16S2_all %>%
+  mutate(group = case_when(
+    common_name == "wild boar" ~ "mammal", # 
+    common_name == "cow" ~ "mammal", # 
+    common_name == "earwig" ~ "terrestrial invertebrate", # 
+    common_name == "pocket gopher" ~ "mammal", # 
+    common_name == "deer mouse" ~ "mammal", # 
+    common_name == "canid" ~ "mammal", # 
+    common_name == "no match" ~ "no match", # 
+    common_name == "mold" ~ "fungus", # 
+    common_name == "fungi" ~ "fungus", # 
+    common_name == "western harvest mouse" ~ "mammal", # 
+    common_name == "California vole" ~ "mammal", # 
+    common_name == "turkey" ~ "bird", # 
+    common_name == "shag" ~ "bird", # 
+    common_name == "California pocket mouse" ~ "mammal", # 
+    common_name == "bush cricket" ~ "terrestrial invertebrate", # 
+    common_name == "stonefly" ~ "terrestrial invertebrate", # 
+    common_name == "cyanobacteria" ~ "cyanobacteria", # 
+    common_name == "bobcat" ~ "mammal", # 
+    common_name == "sea butterfly snail" ~ "marine invertebrate", # 
+    common_name == "frog" ~ "amphibian", # 
+    common_name == "lizard" ~ "reptile", # 
+    common_name == "California sea lion" ~ "mammal", # 
+    common_name == "gopher snake" ~ "reptile", # 
+    common_name == "brush rabbit" ~ "mammal", # 
+    common_name == "phytoplankton" ~ "algae", # 
+    common_name == "clam" ~ "marine invertebrate", # 
+    common_name == "white tailed deer" ~ "mammal", # 
+    common_name == "vole" ~ "mammal", # 
+    common_name == "camel cricket" ~ "terrestrial invertebrate", # 
+    common_name == "desert woodrat" ~ "mammal", # 
+    common_name == "western skink" ~ "reptile", # 
+    common_name == "stiletto fly" ~ "terrestrial invertebrate", # 
+    common_name == "jerusalem cricket" ~ "terrestrial invertebrate", # 
+    common_name == "cave cricket" ~ "terrestrial invertebrate", # 
+    common_name == "rodent" ~ "mammal", # 
+    common_name == "dung beetle" ~ "terrestrial invertebrate", # 
+    common_name == "slime mold" ~ "protist (slime mold)", # 
+    common_name == "algae" ~ "algae", # 
+    common_name == "prairie rattlesnake" ~ "reptile", # 
+    common_name == "California ground squirrel" ~ "mammal", # 
+    common_name == "woodpecker" ~ "bird", # 
+    common_name == "American badger" ~ "mammal", # 
+    common_name == "big-eared woodrat" ~ "mammal", # 
+    common_name == "flesh fly" ~ "terrestrial invertebrate", # 
+    common_name == "puma" ~ "mammal", # 
+    common_name == "rove beetle" ~ "terrestrial invertebrate", # 
+    common_name == "striped skunk" ~ "mammal", # 
+    common_name == "tick" ~ "terrestrial invertebrate", # 
+    common_name == "rat" ~ "mammal", # 
+    common_name == "chicken" ~ "bird", # 
+    common_name == "blow fly" ~ "terrestrial invertebrate", # 
+    common_name == "grey fox" ~ "mammal", # 
+    common_name == "California quail" ~ "bird", # 
+    common_name == "anchovy" ~ "fish", # 
+    common_name == "ant" ~ "terrestrial invertebrate", # 
+    common_name == "chub mackerel" ~ "fish", # 
+    common_name == "north pacific hake" ~ "fish", # 
+    common_name == "squid" ~ "marine invertebrate", # 
+    common_name == "salmon shark" ~ "fish", # 
+    common_name == "duckbill barracuda" ~ "fish", # 
+    common_name == "ocean pink shrimp" ~ "marine invertebrate", # 
+    common_name == "lingcod" ~ "fish", # 
+    common_name == "krill" ~ "marine invertebrate", # 
+    common_name == "olive rockfish" ~ "fish", # 
+    common_name == "pacific herring" ~ "fish", # 
+    common_name == "cormorant" ~ "bird",
+    common_name == "woodrat" ~ "mammal",
+    common_name == "Phasianidae" ~ "bird",
+    common_name == "gray fox" ~ "mammal",
+    common_name == "human" ~ "mammal",
+    common_name == "squirrel" ~ "mammal",
+    common_name == "felid (lynx/puma)" ~ "mammal",
+    common_name == "mule or white tailed deer" ~ "mammal",
+    common_name == "bird" ~ "bird",
+    common_name == "cactus mouse" ~ "mammal",
+    common_name == "towhee" ~ "bird",
+    common_name == "southern grasshopper mouse" ~ "mammal",
+    common_name == "Clupeiformes (fish)" ~ "fish",
+    common_name == "Gilbert's skink" ~ "reptile",
+    common_name == "badger" ~ "mammal",
+    common_name == "jay" ~ "bird",
+    common_name == "fur seal" ~ "mammal",
+    common_name == "red fox" ~ "mammal",
+    common_name == "house mouse" ~ "mammal",
+    common_name == "rabbit" ~ "mammal",
+    common_name == "mammal" ~ "mammal",
+    TRUE ~ NA
+  ))
+```
+
+# visualize diet for carnivores
+```{r}
+grace12S16S2_all_plot <- grace12S16S2_all %>%
+  filter(defecator %in% c("bobcat", "coyote")) %>%
+  filter(!common_name %in% c("bobcat", "coyote")) %>%
+  ggplot(aes(x = common_name, y = OIpercent, fill = group)) +
+  geom_bar(width = 1, stat = "identity", color = "black") +
+  labs(x = "",
+       y = "Weighted percentage of occurrence (%)",
+       title = "") +
+  facet_wrap(~defecator, nrow = 1) + 
+  theme(strip.text = element_text(size = 16, face = "bold"),
+  plot.title = element_text(size = 16, face = "bold"),      
+  axis.title.y = element_text(face = "bold"),        
+  axis.text.y = element_text(size = 16, face = "bold"),
+  axis.text.x = element_text(size = 12),
+  axis.title.x = element_text(size= 14, face = "bold"),
+  panel.background = element_rect(fill = 'white', color = 'black'),
+  panel.grid.major = element_line(color = 'darkgray', linetype = 'dotted'),
+  panel.grid.minor = element_line(color = 'gray', linetype = 'dotted'))
+grace12S16S2_all_plot + coord_flip()
+```
+
+# visualize diet for herbivores
+```{r}
+grace12S16S2_all_plot <- grace12S16S2_all %>%
+  filter(defecator %in% c("wild boar")) %>%
+  filter(!common_name %in% c("wild boar", "deer", "mammal", "cow")) %>%
+  ggplot(aes(x = common_name, y = OIpercent, fill = group)) +
+  geom_bar(width = 1, stat = "identity", color = "black") +
+  labs(x = "",
+       y = "Weighted percentage of occurrence (%)",
+       title = "") +
+  facet_wrap(~defecator, nrow = 1) + 
+  theme(strip.text = element_text(size = 16, face = "bold"),
+  plot.title = element_text(size = 16, face = "bold"),      
+  axis.title.y = element_text(face = "bold"),        
+  axis.text.y = element_text(size = 16, face = "bold"),
+  axis.text.x = element_text(size = 12),
+  axis.title.x = element_text(size= 14, face = "bold"),
+  panel.background = element_rect(fill = 'white', color = 'black'),
+  panel.grid.major = element_line(color = 'darkgray', linetype = 'dotted'),
+  panel.grid.minor = element_line(color = 'gray', linetype = 'dotted'))
+grace12S16S2_all_plot + coord_flip()
+```

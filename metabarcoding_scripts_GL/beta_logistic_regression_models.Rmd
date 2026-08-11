@@ -1,0 +1,818 @@
+---
+title: "Model Selections"
+author: "Grace Lewin"
+date: "2025-09-08"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(betareg)
+library(MuMIn)
+library(knitr)
+library(kableExtra)
+library(here)
+library(pROC)
+library(flextable)
+library(patchwork)
+```
+
+
+Import data
+
+```{r, results = 'hide', message = F}
+# dangermond samples
+gav_dangermond_prop <- read_csv(here("data", "gav_dangermond_dist_marine_prop.csv"))
+
+# Coal Oil Point and NCOS samples
+gav_cop_ncos_prop <- read_csv(here("data", "gav_cop_ncos_dist_marine_prop.csv"))
+```
+
+# Beta Regression Dangermond
+## Response variable: Proportion of Marine diet items
+
+Transform prop_marine to avoid exact 0 or 1
+
+Take out bobcat and puma samples, as they don't have any marine prey in them.
+```{r}
+epsilon <- 1e-4
+gav_dangermond_prop <- gav_dangermond_prop |> 
+  mutate(prop_marine_beta = pmin(pmax(prop_marine, epsilon), 1 - epsilon)) |> 
+  filter(host == 'coyote') |> 
+  filter(guadelupe_fur_seal != 1)
+```
+
+
+
+2. Fit beta regression candidate models
+```{r}
+beta0null <- betareg(prop_marine_beta ~ 1, data = gav_dangermond_prop)  # intercept-only
+beta1coast <- betareg(prop_marine_beta ~ dist_to_coast_m, data = gav_dangermond_prop)
+#beta2predator <- betareg(prop_marine_beta ~ host, data = gav_dangermond_prop)
+#beta3additive <- betareg(prop_marine_beta ~ dist_to_coast_m + host, data = gav_dangermond_prop)
+#beta4interaction <- betareg(prop_marine_beta ~ dist_to_coast_m * host, data = gav_dangermond_prop)
+```
+
+3. Model selection using model.sel()
+```{r}
+#model_sel <- model.sel(beta0null, beta1coast, beta2predator, beta3additive, beta4interaction, rank = "BIC")
+
+#with only 0 and 1 model 
+model_sel <- model.sel(beta0null, beta1coast, rank = "BIC")
+
+model_sel_AIC <- model.sel(beta0null, beta1coast, rank = "AIC")
+
+model_sel
+```
+
+
+## add equation and biological explanation to model selection table
+
+Convert to data.frame
+```{r}
+model_sel_df <- as.data.frame(model_sel)
+model_sel_df$Model <- rownames(model_sel_df)
+
+# model_sel_df <- model_sel_df |> 
+#   rename(DistCoast = dist_to_coast_m,
+#          `DistCoast:host` = `dist_to_coast_m:host`)
+```
+
+
+Add LaTeX-style equations
+```{r}
+model_sel_df <- model_sel_df |> 
+  mutate(Equation = case_when(
+    Model == "beta0null" ~ "\\(\\mathrm{MarineProp} = \\beta_0\\)",
+    Model == "beta1coast" ~ "\\(\\mathrm{MarineProp} = \\beta_0 + \\beta_1 \\cdot dist\\_coast\\)"))
+
+# model_sel_df <- model_sel_df |> 
+#   mutate(Equation = case_when(
+#     Model == "beta0null" ~ "\\(\\mathrm{MarineProp} = \\beta_0\\)",
+#     Model == "beta1coast" ~ "\\(\\mathrm{MarineProp} = \\beta_0 + \\beta_1 \\cdot dist\\_coast\\)",
+#     Model == "beta2predator" ~ "\\(\\mathrm{MarineProp} = \\beta_0 + \\beta_2 \\cdot predator\\)",
+#     Model == "beta3additive" ~ "\\(\\mathrm{MarineProp} = \\beta_0 + \\beta_1 \\cdot dist\\_coast + \\beta_2 \\cdot predator\\)",
+#     Model == "beta4interaction" ~ "\\(\\mathrm{MarineProp} = \\beta_0 + \\beta_1 \\cdot dist\\_coast + \\beta_2 \\cdot predator + \\beta_3 \\cdot dist\\_coast \\cdot predator\\)"
+#   ))
+
+
+
+```
+
+Add biological explanation
+```{r}
+model_sel_df <- model_sel_df |> 
+  mutate(Explanation = case_when(
+  Model == "beta0null" ~ "The proportion of marine prey is constant across all distances from the coastline",
+  Model == "beta1coast" ~ "Proportion of marine prey is spatially structured"))
+
+# model_sel_df <- model_sel_df |> 
+#   mutate(Explanation = case_when(
+#   Model == "beta0null" ~ "The proportion of marine prey is constant across all predators and distances from the coastline",
+#   Model == "beta1coast" ~ "Proportion of marine prey is spatially structured, not predator specific",
+#   Model == "beta2predator" ~ "Feeding behavior on marine prey differs among predators, but is independent of location relative to coastline",
+#   Model == "beta3additive" ~ "The effect of distance to coast on the proportion of marine prey in a predator's diet is the same across predator species",
+#   Model == "beta4interaction" ~ "The proportion of marine prey in diet depends on both predator identity and distance to the coast"
+# ))
+```
+
+
+
+ --- Step 3: Select and reorder columns ---
+```{r}
+
+model_sel_df <- model_sel_df %>% 
+  mutate(
+    Equation = case_when(
+      Model == "beta0null"  ~ "MarineProp = β₀",
+      Model == "beta1coast" ~ "MarineProp = β₀ + β₁ × dist to coast(m)"
+    )
+  )
+
+plot_df <- model_sel_df %>%
+  select(Model, Equation, Explanation, delta) %>%
+  arrange(delta) %>%
+  rename(`ΔBIC` = delta) %>% # took out , BICWeight = weight
+  mutate(Model = case_when(
+    Model == "beta0null" ~ "Null",
+    Model == "beta1coast" ~ "Coast",
+    TRUE ~ Model
+  ))
+
+plot_df <- plot_df %>%
+  mutate(
+    #BIC = round(BIC, 2),
+    `ΔBIC` = round(`ΔBIC`, 2)
+  )
+
+# plot_df <- model_sel_df %>%
+#   select(Model, Equation, Explanation, BIC, delta, weight) %>%
+#   arrange(BIC) %>%
+#   rename(DeltaBIC = delta, BICWeight = weight) %>%
+#   mutate(Model = case_when(
+#     Model == "beta0null" ~ "Null",
+#     Model == "beta1coast" ~ "Coast",
+#     Model == "beta2predator" ~ "Predator",
+#     Model == "beta3additive" ~ "Additive",
+#     Model == "beta4interaction" ~ "Interaction",
+#     TRUE ~ Model
+#   ))
+
+
+
+
+```
+
+create a flextable that I can output to word
+```{r}
+beta_ft <- flextable(plot_df) %>%
+  autofit() %>%                        # auto-adjust column widths
+  theme_box() %>%                       # boxed style
+  bold(part = "header") %>%             # bold header
+  set_caption("Beta Regression Model selection table with ΔBIC") %>%
+  colformat_num(j = c("ΔBIC"), digits = 2) # format numbers
+
+beta_ft
+
+```
+
+
+
+Step 4: Make LaTeX kable table
+```{r, echo=T, results='asis'}
+kable(plot_df, format = "latex", booktabs = TRUE, escape = FALSE, row.names = FALSE,
+      caption = "Beta Regression Model Selection Table - Dangermond") %>%
+  kable_styling(latex_options = c("HOLD_position", "striped")) %>%
+  column_spec(2, width = "3cm") %>%
+  column_spec(3, width = "3cm")
+```
+
+```{r}
+# Compare models with BIC
+#BIC(beta0null, beta1coast)
+
+# -----------------------------
+# 2. Prediction grid
+# -----------------------------
+predgrid_beta <- data.frame(
+  dist_to_coast_m = seq(
+    min(gav_dangermond_prop$dist_to_coast_m),
+    max(gav_dangermond_prop$dist_to_coast_m),
+    length.out = 200
+  )
+)
+
+# Predicted proportions
+predgrid_beta$pred_coast <- predict(beta1coast, newdata = predgrid_beta, type = "response")
+predgrid_beta$pred_null <- predict(beta0null, newdata = predgrid_beta, type = "response")
+
+# Convert to long format for ggplot
+pred_long_beta <- predgrid_beta %>%
+  pivot_longer(
+    cols = starts_with("pred_"),
+    names_to = "model",
+    values_to = "prob"
+  ) %>%
+  mutate(
+    model = recode(model,
+                   "pred_null" = "Constant-only model",
+                   "pred_coast" = "Distance to coast"
+                   )
+  )
+
+# Create a named vector for colors matching models
+model_colors <- c("beta0null" = "red", "beta1coast" = "blue")
+
+# Plot with delta BIC annotations
+beta_plot<- ggplot(gav_dangermond_prop, aes(x = dist_to_coast_m, y = prop_marine_beta)) +
+  geom_jitter(height = 0, width = 0, alpha = 0.3, color = "gray30") +
+  geom_line(data = pred_long_beta, aes(x = dist_to_coast_m, y = prob, color = model),
+            linewidth = 1.2) +
+  scale_color_manual(values = c("Distance to coast" = "blue",
+                                "Constant-only model" = "red")) +
+  labs(
+    x = "Distance to coast (m)",
+    y = "Proportion marine prey",
+    color = "Beta Regression Model",
+    title = "Beta regression: Modeled Marine Prey Proportion"
+  ) +
+  # # Annotate ΔBIC using model_sel_df
+  # annotate("text",
+  #          x = max(gav_dangermond_prop$dist_to_coast_m),
+  #          y = 0.95,
+  #          hjust = 1,
+  #          label = paste0("Null model ΔBIC = ", round(model_sel_df$delta[model_sel_df$Model == "beta0null"], 2)),
+  #          size = 4.5,
+  #          color = model_colors["beta0null"]) +
+  # annotate("text",
+  #          x = max(gav_dangermond_prop$dist_to_coast_m),
+  #          y = 0.88,
+  #          hjust = 1,
+  #          label = paste0("Distance to coast model ΔBIC = ", round(model_sel_df$delta[model_sel_df$Model == "beta1coast"], 2)),
+  #          size = 4.5,
+  #          color = model_colors["beta1coast"]) +
+  theme_minimal(base_size = 14)
+
+beta_plot
+
+ggsave(filename = here("figs", "beta_plot.png"), plot = beta_plot, dpi = 600, units = "in", width = 8, height = 6)
+
+```
+
+
+The best fitting model is the null model, which means that the proportion of marine prey is constant across all predators and distances from the coastline. However, the model that is second best fit with a small delta BIC is the model that only takes into account the predator species. In this model, feeding behavior or marine prey differs among predators, but is independent of the location relative to the coastline. 
+
+
+**************************************************
+
+# Logistic Regression - Dangermond
+## Response variable: Presence of Marine Diet Items (1 = at least one marine diet item, 0 = terrestrial diet items only)
+
+```{r}
+gav_dangermond_prop <- gav_dangermond_prop |> 
+  mutate(marine_present = case_when(
+    marine_species_count > 0 ~ 1,
+    marine_species_count == 0 ~ 0
+  ))
+```
+
+
+Filter out puma and bobcat predators (no marine prey)
+Don't need to transform response variable to avoid exact 1 or 0 for logistic regression.
+```{r}
+#epsilon <- 1e-4
+gav_dangermond_prop <- gav_dangermond_prop |> 
+  #mutate(marine_present_beta = pmin(pmax(marine_present, epsilon), 1 - epsilon)) |> 
+  filter(host!="puma") |> 
+  filter(host != "bobcat") |> 
+  filter(host != "wild boar")
+```
+
+
+
+2. Fit logistic regression candidate models
+```{r}
+glm0null <- glm(marine_present ~ 1, family = binomial, data = gav_dangermond_prop)  # intercept-only
+glm1coast <- glm(marine_present ~ dist_to_coast_m, family = binomial, data = gav_dangermond_prop)
+#glm2predator <- glm(marine_present ~ host, family = binomial, data = gav_dangermond_prop)
+#glm3additive <- glm(marine_present ~ dist_to_coast_m + host, family = binomial, data = gav_dangermond_prop)
+#glm4interaction <- glm(marine_present ~ dist_to_coast_m * host, family = binomial, data = gav_dangermond_prop)
+
+
+# summary(glm2predator)
+# 
+# library(DHARMa)
+# 
+# simulateResiduals(glm2predator, plot = T)
+# 
+# plot()
+# 
+# plot(beta1coast)
+# 
+# plot(beta0null)
+# 
+# summary(beta2predator)
+# 
+# summary(beta1coast)
+# 
+# summary(beta0null)
+# 
+# summary(glm2predator)
+
+#log likeliehoods compare to each other
+
+
+```
+
+```{r}
+summary(glm1coast)
+```
+
+
+3. Model selection using model.sel()
+```{r}
+#model_sel <- model.sel(glm0null, glm1coast, glm2predator, glm3additive, glm4interaction, rank = "BIC")
+
+#with only model 0 and 1
+model_sel <- model.sel(glm0null, glm1coast, rank = "BIC")
+
+model_sel_AIC <- model.sel(glm0null, glm1coast, rank = "AIC")
+
+
+model_sel
+
+summary(glm1coast)$coefficients
+
+coef(glm1coast)
+```
+
+
+## add equation and biological explanation to model selection table
+
+Convert to data.frame
+```{r}
+model_sel_df <- as.data.frame(model_sel)
+model_sel_df$Model <- rownames(model_sel_df)
+
+# model_sel_df <- model_sel_df |> 
+#   rename(DistCoast = dist_to_coast_m,
+#          `DistCoast:host` = `dist_to_coast_m:host`)
+```
+
+
+Add LaTeX-style equations
+```{r}
+model_sel_df <- model_sel_df |> 
+  mutate(Equation = case_when(
+    Model == "glm0null" ~ "\\(\\mathrm{MarinePres} = \\beta_0\\)",
+    Model == "glm1coast" ~ "\\(\\mathrm{MarinePres} = \\beta_0 + \\beta_1 \\cdot dist\\_coast\\)"
+  ))
+
+# model_sel_df <- model_sel_df |> 
+#   mutate(Equation = case_when(
+#     Model == "glm0null" ~ "\\(\\mathrm{MarinePres} = \\beta_0\\)",
+#     Model == "glm1coast" ~ "\\(\\mathrm{MarinePres} = \\beta_0 + \\beta_1 \\cdot dist\\_coast\\)",
+#     Model == "glm2predator" ~ "\\(\\mathrm{MarinePres} = \\beta_0 + \\beta_2 \\cdot predator\\)",
+#     Model == "glm3additive" ~ "\\(\\mathrm{MarinePres} = \\beta_0 + \\beta_1 \\cdot dist\\_coast + \\beta_2 \\cdot predator\\)",
+#     Model == "glm4interaction" ~ "\\(\\mathrm{MarinePres} = \\beta_0 + \\beta_1 \\cdot dist\\_coast + \\beta_2 \\cdot predator + \\beta_3 \\cdot dist\\_coast \\cdot predator\\)"
+#   ))
+
+```
+
+Add biological explanation
+```{r}
+model_sel_df <- model_sel_df |> 
+  mutate(Explanation = case_when(
+  Model == "glm0null" ~ "The presence of marine prey is constant across all distances from the coastline",
+  Model == "glm1coast" ~ "Presence of marine prey is spatially structured"
+))
+
+# model_sel_df <- model_sel_df |> 
+#   mutate(Explanation = case_when(
+#   Model == "glm0null" ~ "The presence of marine prey is constant across all predators and distances from the coastline",
+#   Model == "glm1coast" ~ "Presence of marine prey is spatially structured, not predator specific",
+#   Model == "glm2predator" ~ "Feeding behavior on marine prey differs among predators, but is independent of location relative to coastline",
+#   Model == "glm3additive" ~ "The effect of distance to coast on the presence of marine prey in a predator's diet is the same across predator species",
+#   Model == "glm4interaction" ~ "The presence of marine prey in diet depends on both predator identity and distance to the coast"
+# ))
+```
+
+ --- Step 3: Select and reorder columns ---
+```{r}
+plot_df <- model_sel_df %>%
+  select(Model, Equation, Explanation, delta) %>% # took out BICWeight
+  arrange(delta) %>%
+  rename(`ΔBIC` = delta) %>%
+  mutate(Model = case_when(
+    Model == "beta0null" ~ "Null",
+    Model == "beta1coast" ~ "Coast",
+    TRUE ~ Model
+  ))
+
+
+
+# plot_df <- model_sel_df %>%
+#   select(Model, Equation, Explanation, BIC, delta) %>% # took out BICWeight
+#   arrange(BIC) %>%
+#   rename(DeltaBIC = delta) %>%
+#   mutate(Model = case_when(
+#     Model == "beta0null" ~ "Null",
+#     Model == "beta1coast" ~ "Coast",
+#     Model == "beta2predator" ~ "Predator",
+#     Model == "beta3additive" ~ "Additive",
+#     Model == "beta4interaction" ~ "Interaction",
+#     TRUE ~ Model
+#   ))
+
+
+
+```
+
+```{r}
+# model_sel_df <- model_sel_df %>% 
+#   mutate(
+#     Equation = case_when(
+#       Model == "glm0null"  ~ "MarineProp = β₀",
+#       Model == "glm1coast" ~ "MarineProp = β₀ + β₁ × dist to coast(m)"
+#     )
+#   )
+
+model_sel_df <- model_sel_df %>% 
+  mutate(
+    Equation = case_when(
+      Model == "glm0null"  ~ "p = 1 / (1 + e^(-β₀))",
+      Model == "glm1coast" ~ "p = 1 / (1 + e^(-(β₀ + β₁ × Distance to coast (m))))"
+    )
+  )
+
+
+plot_df <- model_sel_df %>%
+  select(Model, Equation, Explanation, delta) %>% # took out BICWeight
+  arrange(delta) %>%
+  rename(`ΔBIC` = delta) %>%
+  mutate(Model = case_when(
+    Model == "glm0null" ~ "Null",
+    Model == "glm1coast" ~ "Coast",
+    TRUE ~ Model
+  ))
+
+
+log_ft <- flextable(plot_df) %>%
+  autofit() %>%                        # auto-adjust column widths
+  theme_box() %>%                       # boxed style
+  bold(part = "header") %>%             # bold header
+  set_caption("Logistic Regression Model selection table with ΔBIC and BIC") %>%
+  colformat_num(j = c("`ΔBIC`"), digits = 2) # format numbers
+
+log_ft
+```
+
+
+Step 4: Make LaTeX kable table
+```{r}
+kable(plot_df, format = "latex", booktabs = TRUE, escape = FALSE, row.names = FALSE,
+      caption = "Logistic Regression Model Selection Table - Dangermond") %>%
+  kable_styling(latex_options = c("HOLD_position", "striped")) %>%
+  column_spec(2, width = "3cm") %>%
+  column_spec(3, width = "3cm")
+```
+
+The best fitting logistic regression model is the one modeling distance to coast only. In this model, presence of marine prey is spatially structured, but is not predator specific.
+
+
+
+
+
+
+
+
+
+# Plot probility curve and solve for distances at various percentages of marine detections. Using the best fitting logistic regression, *glm1coast*,
+
+Solve for distance where probability = 0.5
+
+```{r}
+coefs <- coef(glm1coast)
+intercept <- coefs[1]
+slope <- coefs[2]
+
+dist_50 <- -intercept / slope
+dist_50
+
+# Extract coefficients
+b0 <- coef(glm1coast)[1]
+b1 <- coef(glm1coast)[2]
+
+# Solve for distance at 75% probability
+p_target <- 0.75
+dist_75 <- (log(p_target / (1 - p_target)) - b0) / b1
+dist_75
+
+
+# Function: distance at probability p
+get_distance <- function(p, model) {
+  stopifnot(p > 0 & p < 1)  # probability must be between 0 and 1
+  
+  coefs <- coef(model)
+  intercept <- coefs[1]
+  slope <- coefs[2]
+  
+  # logit of p
+  #logit_p <- log(p / (1 - p))
+  
+  # solve for distance
+  #dist <- (logit_p - intercept) / slope
+  
+  dist <- -(((log((1 - p)/p)) + intercept) / slope)
+  return(dist)
+}
+                                                                                                                                                                                    get_distance(.501, glm1coast)
+                                                                                                 dist_25 <- get_distance(.25, glm1coast)                                                                                   
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                              coefs <- coef(glm1coast)
+  intercept <- coefs[1]
+  slope <- coefs[2]
+
+```
+
+
+
+
+
+```{r}
+# Make prediction grid
+predgrid <- data.frame(dist_to_coast_m = seq(min(gav_dangermond_prop$dist_to_coast_m),
+                                           max(gav_dangermond_prop$dist_to_coast_m),
+                                           length.out = 200))
+
+predgrid$pred <- predict(glm1coast, newdata = predgrid, type = "response")
+
+
+#calculate AUC for coast model
+# get fitted probabilities for the observed data
+prob <- predict(glm1coast, type = "response")
+
+# calculate AUC using observed response vs fitted prob
+roc_obj <- roc(gav_dangermond_prop$marine_present, prob)
+auc_val <- auc(roc_obj)
+
+
+print(auc_val)
+
+
+# get ROC data for ggplot
+roc_df <- data.frame(
+  specificity = rev(roc_obj$specificities),
+  sensitivity = rev(roc_obj$sensitivities)
+)
+
+#calculate AUC for null model
+# get fitted probabilities for the observed data
+prob_null <- predict(glm0null, type = "response")
+
+# calculate AUC using observed response vs fitted prob
+roc_obj_null <- roc(gav_dangermond_prop$marine_present, prob_null)
+auc_val_null <- auc(roc_obj_null)
+
+
+print(auc_val_null)
+
+# plot with label in top-right
+ggplot(roc_df, aes(x = 1 - specificity, y = sensitivity)) +
+  geom_line(color = "blue", size = 1.2) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+  annotate("text", 
+           x = 0.95, y = 0.05,   # top-right corner in ROC space
+           label = paste0("AUC = ", round(auc(roc_obj), 3)),
+           color = "black", size = 5) +
+  labs(x = "1 - Specificity", y = "Sensitivity") +
+  theme_minimal()
+
+ggplot(gav_dangermond_prop, aes(x = dist_to_coast_m, y = marine_present)) +
+  geom_jitter(height = 0.05, width = 0, alpha = 0.3) +
+  geom_line(data = predgrid, aes(x = dist_to_coast_m, y = pred),
+            color = "blue", size = 1.2) +
+  labs(y = "Probability of marine detection",
+       x = "Distance to coast (m)") +
+    annotate("text", x = max(gav_dangermond_prop$dist_to_coast_m), 
+           y = 1,  # top of y-axis
+           label = "AUC = 0.6473", color = "black", hjust = 1, vjust = 1)
+
+
+
+ggplot(gav_dangermond_prop, aes(x = dist_to_coast_m, y = marine_present)) +
+  geom_jitter(height = 0.05, width = 0, alpha = 0.3) +
+  geom_line(data = predgrid, aes(x = dist_to_coast_m, y = pred),
+            color = "blue", size = 1.2) +
+  geom_vline(xintercept = dist_50, linetype = "dashed", color = "red", size = 1) +
+  annotate("text", x = dist_50, y = 0.5, label = "50% probability of finding sample with marine detection: 6.4m from coast", color = "red", vjust = -0.5, hjust = -.025) +
+  labs(y = "Probability of marine detection",
+       x = "Distance to coast (m)") +
+  annotate("text", x = max(gav_dangermond_prop$dist_to_coast_m), 
+           y = 1,  # top of y-axis
+           label = "AUC = 0.6473", color = "black", hjust = 1, vjust = 1)
+
+```
+plot 75%
+
+```{r}
+
+ggplot(gav_dangermond_prop, aes(x = dist_to_coast_m, y = marine_present)) +
+  geom_jitter(height = 0.05, width = 0, alpha = 0.3) +
+  geom_line(data = predgrid, aes(x = dist_to_coast_m, y = pred),
+            color = "blue", size = 1.2) +
+  geom_vline(xintercept = dist_50, linetype = "dashed", color = "red", size = 1) +
+  annotate("text", x = dist_50, y = 0.5, label = "50% probability of marine detection: 6.4m", color = "red", vjust = -0.5, hjust = -.025) +
+  labs(y = "Probability of marine detection",
+       x = "Distance to coast (m)") +
+  geom_vline(xintercept = dist_75, linetype = "dashed", color = "red") +
+  annotate("text", x = dist_75, y = 0.5, label = "75% probability \nof marine detection: \n-1715.691m", color = "red", vjust = -1.5, hjust = -.025)
+  # labs(x = "Distance to coast (m)", 
+  #      y = "Probability of marine detection") +
+  # theme_minimal()
+
+```
+
+
+# Get distance within which 50% of ACTUAL marine detections occur (not modeled probability)
+
+```{r}
+# Subset only detections
+marine_samples <- gav_dangermond_prop[gav_dangermond_prop$marine_present == 1, ]
+
+# Median distance
+median_distance <- median(marine_samples$dist_to_coast_m)
+median_distance
+
+
+# plot
+
+ggplot(gav_dangermond_prop, aes(x = dist_to_coast_m, y = marine_present)) +
+  geom_jitter(height = 0.05, width = 0, alpha = 0.3) +
+  geom_line(data = predgrid, aes(x = dist_to_coast_m, y = pred),
+            color = "blue", size = 1.2) +
+  geom_vline(xintercept = median_distance, linetype = "dashed", color = "darkgreen", size = 1) +
+  annotate("text", x = median_distance, y = 0.5, label = "50% of actual sampled detections", color = "darkgreen", vjust = -0.5, hjust = -.025)
+
+```
+
+plot predicted probabilities with probability distance and actual 50% detections distance
+```{r}
+ggplot(gav_dangermond_prop, aes(x = dist_to_coast_m, y = marine_present)) +
+  geom_jitter(height = 0.05, width = 0, alpha = 0.3) +
+  geom_line(data = predgrid, aes(x = dist_to_coast_m, y = pred),
+            color = "blue", size = 1.2) +
+  geom_vline(xintercept = median_distance, linetype = "dotted", color = "darkgreen", size = 1) +
+  annotate("text", x = median_distance, y = 0.5, label = "50% (median) of actual \nsampled detections (258.6m)", color = "darkgreen", vjust = -0.5, hjust = -.025) +
+  geom_vline(xintercept = dist_50, linetype = "dotdash", color = "red", size = 1) +
+  annotate("text", x = dist_50, y = 0.5, label = "50% probability marine item detected (6.4m)", color = "red", vjust = -6.5, hjust = -0.025) +
+  labs(y = "Probability of marine detection",
+       x = "Distance to coast (m)",
+       title = "Modeled Probability of Marine Detection") +
+  geom_vline(xintercept = dist_25, linetype = "dashed", color = "red", size = 1) +
+  annotate("text", x = dist_25, y = 0.5, label = "25% probability marine item detected (1728.5)", color = "red", vjust = 5, hjust = -.025) +
+  theme_bw()
+
+```
+
+plot both models predictions on one plot
+```{r}
+# Create a prediction grid (for glm1coast, we need distance)
+predgrid <- data.frame(
+  dist_to_coast_m = seq(
+    min(gav_dangermond_prop$dist_to_coast_m),
+    max(gav_dangermond_prop$dist_to_coast_m),
+    length.out = 200
+  )
+)
+
+# Predicted probabilities for glm1coast (with slope)
+predgrid$pred_coast <- predict(glm1coast, newdata = predgrid, type = "response")
+
+# Predicted probabilities for glmnull0 (intercept only model)
+# Same probability across all distances
+predgrid$pred_null <- predict(glm0null, newdata = predgrid, type = "response")
+
+# Convert to long format for easier plotting
+pred_long <- predgrid |>
+  tidyr::pivot_longer(
+    cols = starts_with("pred_"),
+    names_to = "model",
+    values_to = "prob"
+  ) |>
+  dplyr::mutate(
+    model = dplyr::recode(model,
+      "pred_null"  = "Null model",
+      "pred_coast" = "Distance to coast"
+    )
+  )
+
+# Plot observed points + both model predictions
+log_plot <- ggplot(gav_dangermond_prop, aes(x = dist_to_coast_m, y = marine_present)) +
+  geom_jitter(height = 0.05, width = 0, alpha = 0.3, color = "gray30", size = 3) +
+  geom_line(data = pred_long, aes(x = dist_to_coast_m, y = prob, color = model),
+            linewidth = 1.2) +
+  scale_color_manual(values = c("Distance to coast" = "blue",
+                                "Null model" = "red")) +
+  labs(
+    x = "Distance to coast (m)",
+    y = "Probability of marine detection",
+    color = "Logistic Regression Model"
+    #title = "Logistic Regresion: Modeled Marine Prey Detection"
+  ) +
+  annotate("text",
+  x = max(gav_dangermond_prop$dist_to_coast_m),
+  y = .4, hjust = 1, vjust = 1,
+  label = paste0("Constant only model"),
+  size = 4.5, color = "red") +
+    annotate("text",
+  x = max(gav_dangermond_prop$dist_to_coast_m),
+  y = .20, hjust = 1, vjust = 1,
+  label = paste0("Distance to coast model"),
+  size = 4.5, color = "blue") +
+ # annotate("text",
+  #x = max(gav_dangermond_prop$dist_to_coast_m),
+  #y = .93, hjust = 1, vjust = 1,
+  #label = paste0("Null model \u0394BIC = ", round(model_sel$delta[1], 3)),
+  #size = 4.5, color = "red") +
+#annotate("text",
+ # x = max(gav_dangermond_prop$dist_to_coast_m),
+  #y = 0.86, hjust = 1, vjust = 1,
+  #label = paste0("Distance to coast model \u0394BIC = ", round(model_sel$delta[2], 3)),
+  #size = 4.5, color = "blue") +
+theme_minimal(base_size = 14) +
+theme(legend.position = "none")
+# annotate("text",
+#   x = max(gav_dangermond_prop$dist_to_coast_m),
+#   y = .72, hjust = 1, vjust = 1,
+#   label = paste0("Null model AUC = ", round(auc_val_null, 3)),
+#   size = 4.5, color = "red") +
+# annotate("text",
+#   x = max(gav_dangermond_prop$dist_to_coast_m),
+#   y = 0.64, hjust = 1, vjust = 1,
+#   label = paste0("Distance to coast model AUC = ", round(auc_val, 3)),
+#   size = 4.5, color = "blue") +
+# theme_minimal(base_size = 14)
+
+log_plot
+
+ggsave(filename = here("figs", "log_plot.png"), plot = log_plot, dpi = 600, units = "in", width = 8, height = 6)
+
+```
+
+NOTE on second field site: 
+
+I had planned to do a beta and logistic regression model selection with the samples at Coal Oil Point and North campus open space as well, but there were only 2 samples at this site that had marine prey in them. This is too small a sample size to do these models with.
+
+
+```{r}
+library(officer)
+
+beta_doc <- read_docx() %>%
+  body_add_par("Table 1: Beta Regression Model Results") %>%
+  body_add_flextable(beta_ft)
+
+print(beta_doc, target = here("figs", "beta_table.docx"))
+
+#for logistic table
+log_doc <- read_docx() %>%
+  body_add_par("Table 1: Logistic Regression Model Results") %>%
+  body_add_flextable(log_ft)
+
+print(log_doc, target = here("figs", "log_table.docx"))
+
+```
+
+```{r}
+both_figs <- log_plot / beta_plot +
+  plot_annotation(
+    tag_levels = "A",  # labels A, B
+    tag_prefix = "",    # no extra character
+    tag_suffix = "",
+    theme = theme(
+      plot.tag = element_text(face = "bold", size = 16)  # bold labels
+    )
+  )
+
+both_figs
+
+log_plot_tagged <- log_plot + labs(tag = "A") +
+  theme(plot.tag = element_text(face = "bold", size = 16))
+
+beta_plot_tagged <- beta_plot + labs(tag = "B") +
+  theme(plot.tag = element_text(face = "bold", size = 16))
+
+both_figs <- log_plot_tagged / beta_plot_tagged
+both_figs
+
+ggsave(filename = here("figs", "both_model_figs.png"), plot = both_figs, dpi = 600, units = "in", width = 8, height = 8)
+```
+

@@ -1,0 +1,2266 @@
+---
+title: "2_curate_taxonomy - Grace Lewin"
+output: html_document
+date: "2023-08-09"
+---
+
+
+curate taxonomy for 12s and 16s
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+```
+
+This section reads in the dataset:
+```{r}
+#gaviota_12s <- read_csv(here("metabarcoding_scripts_GL","gaviota_metabarcoding_results.csv"))
+
+gaviota_12s_16s <- read_csv(here("metabarcoding_scripts_GL","outputs", "gaviota_metabarcoding_results.csv"))
+
+```
+
+This section takes out human contamination and jaguar match:
+```{r}
+gaviota_12s_16s <- gaviota_12s_16s[!grepl("Homo sapiens", gaviota_12s_16s$Including_domestic.Local_species),]
+gaviota_12s_16s <- gaviota_12s_16s[!grepl("Panthera onca", gaviota_12s_16s$Including_domestic.Local_species),]
+```
+
+
+This section splits the data into 1% and 0.5% filters
+
+```{r}
+#filter percentage_filter by 0.5 and select relevant columns to look at species determined though metabarcoding and visual inspection notes.
+gaviota_12s_16s_0.5 <- gaviota_12s_16s %>% 
+  filter(Percentage_filter == 0.5) 
+  # select(c("Sample","Best_match_references", "Local_taxa", "Local_species", , "Visual_Inspection_categories", "Percentage_filter", "common_name"))
+  
+#filter percentage_filter by 1 and select relevant columns to look at species determined though metabarcoding and visual inspection notes.
+gaviota_12s_16s_1 <- gaviota_12s_16s %>% 
+  filter(Percentage_filter == 1)
+  # select(c("Sample", "Best_match_references", "Local_taxa", "Local_species", "Visual_Inspection", "Visual_Inspection_categories", "Percentage_filter", "common_name"))
+```
+
+
+
+This section of the pipeline starts with the cleaned and combined "Lewin_Gaviota_mammal_scat_data_Results_Dec2024_v2" and "UCSB_Rerun_Samples_12s_March2025" file (either 1% or 0.5% filtering) and adds columns with taxonomic info across varying levels of specificity.
+
+## choose 1% or 0.5% filtered data
+```{r}
+gaviota <- gaviota_12s_16s_0.5
+#gaviota <- gaviota_12s_16s_1
+
+#ALL filters
+#gaviota <- gaviota_12s_16s
+```
+
+
+## Curate the "Including_domestic.Local_species" column to represent the single most accurate species assignment
+```{r}
+#unique(gaviota$Including_domestic.Local_species)
+
+gaviota$curated_species = NA
+
+gaviota <- gaviota %>%
+  mutate(curated_species = case_when(
+    Including_domestic.Local_species %in% "Canis latrans, Canis lupus" ~ "Canis latrans", # coyote
+    
+    Including_domestic.Local_species %in% "Phalacrocorax penicillatus, Phalacrocorax brasilianus, Phalacrocorax pelagicus" 
+      ~ "Urile penicillatus", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Phalacrocorax pelagicus, Phalacrocorax penicillatus" 
+      ~ "Urile penicillatus", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Microtus californicus" 
+      ~ "Microtus californicus", # Californian vole
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei" ~ "Peromyscus maniculatus", #Peromyscus - deer mouse
+    
+    Including_domestic.Local_species %in% "Sylvilagus bachmani" ~ "Sylvilagus bachmani", # Brush rabbit
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Arborimus albipes, Arborimus longicaudus, Arborimus pomo, Myodes californicus, Lemmiscus curtatus, Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii, Ondatra zibethicus, Phenacomys intermedius, Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis, Onychomys leucogaster, Onychomys torridus, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei, Reithrodontomys raviventris, Reithrodontomys megalotis, Sigmodon arizonae, Sigmodon hispidus" ~ "Microtus californicus", # 	based on blast and iNat
+      
+    Including_domestic.Local_species %in% "Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis" ~ "Neotoma sp", # Neotoma - woodrat
+      
+    Including_domestic.Local_species %in% "Bos taurus, Bos indicus, Bos javanicus, Bos frontalis" ~ "Bos taurus", # Bovine
+      
+    Including_domestic.Local_species %in% "Gallus gallus" ~ "Gallus gallus", #chicken
+      
+    Including_domestic.Local_species %in% "Urocyon cinereoargenteus, Urocyon littoralis" ~ "Urocyon cinereoargenteus", # grey fox
+      
+    Including_domestic.Local_species %in% "Glaucomys oregonensis, Glaucomys sabrinus, Callospermophilus lateralis" ~ "Spermophillus beecheyi", # flying squirrel/golden mantle ground squirrel --  CA ground squirrel based on blast
+      
+    Including_domestic.Local_species %in% "Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii" ~ "Microtus californicus", # vole
+    Including_domestic.Local_species %in% "Thomomys bottae" ~"Thomomys bottae", # botta's pocket gopher
+    
+    Including_domestic.Local_species %in% "Lynx rufus, Puma concolor" ~ "Lynx rufus", # bobcat
+      
+    Including_domestic.Local_species %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Odocoileus hemionus", # mule deer
+      
+    Including_domestic.Local_species %in% "Sus scrofa" ~ "Sus scrofa", #wild boar
+      
+    Including_domestic.Local_species %in% "Chloris sinica, Spinus pinus, Plectrophenax nivalis, Zonotrichia leucophrys, Zonotrichia atricapilla, Zonotrichia albicollis, Sturnella neglecta, Sturnella magna, Serinus canaria" ~ "Zonotrichia leucophrys", # white crowned sparrow
+      
+    Including_domestic.Local_species %in% "Peromyscus eremicus" ~ "Reithrodontomys megalotus", # From Blast and species list
+      
+    Including_domestic.Local_species %in% "Zalophus californianus" ~ "Zalophus californianus", # sea lion
+    
+    Including_domestic.Local_species %in% "Canis lupus" ~ "Canis latrans", # coyote
+      
+    Including_domestic.Local_species %in% "Peromyscus crinitus, Peromyscus eremicus" ~ "Reithrodontomys megalotis", # from blast and COPR species list. Western harvest mouse
+      
+    Including_domestic.Local_species %in% "Callipepla californica, Callipepla gambelii" ~ "Callipepla californica", # CA quail 
+      
+    Including_domestic.Local_species %in% "Alosa sapidissima, Dorosoma petenense" ~ "Alosa sapidissima", # American shad
+      
+    Including_domestic.Local_species %in% "Leuconotopicus albolarvatus, Jynx torquilla, Melanerpes lewis, Melanerpes erythrocephalus, Melanerpes formicivorus, Melanerpes uropygialis, Sphyrapicus thyroideus, Sphyrapicus varius, Sphyrapicus nuchalis, Sphyrapicus ruber, Picoides arcticus, Dryobates pubescens, Dryobates nuttallii, Dryobates scalaris, Picoides villosus, Colaptes auratus, Colaptes chrysoides, Dryocopus pileatus" ~ "Melanerpes formicivorus", # acorn woodpecker
+      
+    Including_domestic.Local_species %in% "Plestiodon gilberti" ~ "Plestiodon skiltonianus", # Skilton's skink
+      
+    Including_domestic.Local_species %in% "Taxidea taxus" ~ "Taxidea taxus", # American badger
+      
+    Including_domestic.Local_species %in% "Microtus townsendii" ~ "Microtus californicus", # From species list. Microtus - townsend's vole
+      
+    Including_domestic.Local_species %in% "Neotoma macrotis" ~ "Neotoma sp", #  from species list. big eared woodrat
+    
+    Including_domestic.Local_species %in% "Aphelocoma insularis, Aphelocoma californica, Aphelocoma woodhouseii" ~ "Aphelocoma californica", # CA scrub jay
+      
+    Including_domestic.Local_species %in% "Puma concolor" ~ "Puma concolor", # puma
+      
+    Including_domestic.Local_species %in% "Meleagris gallopavo, Gallus gallus" ~ "Meleagris gallopavo", # wild turkey
+      
+    Including_domestic.Local_species %in% "Mephitis mephitis" ~ "Mephitis mephitis", # striped skunk
+      
+    Including_domestic.Local_species %in% "Vulpes vulpes" ~ "Vulpes vulpes", # red fox
+      
+    Including_domestic.Local_species %in% "Chaetodipus californicus" ~ "Dipodomys heermanni", # Blast to match species list
+      
+    Including_domestic.Local_species %in% "Mus musculus" ~ "Mus musculus", # house mouse
+    
+    Including_domestic.Local_species %in% "Rattus rattus" ~ "Rattus rattus", # black rat
+      
+    Including_domestic.Local_species %in% "Peromyscus maniculatus, Peromyscus keeni" ~ "Peromyscus maniculatus", # deer mice
+      
+    Including_domestic.Local_species %in% "Sylvilagus floridanus, Sylvilagus nuttallii" ~ "Sylvilagus bachmani", # brush rabbit
+      
+    Including_domestic.Local_species %in% "Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii" ~ "Microtus californicus", # vole
+      
+    Including_domestic.Local_species %in% "Lemmiscus curtatus, Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii, Ondatra zibethicus, Onychomys leucogaster, Synaptomys borealis, Peromyscus maniculatus, Peromyscus keeni" ~ "Peromyscus maniculatus", # cricetidae - some kind of rodent -- (choosing microtus sp)
+   
+     Including_domestic.Local_species %in% "Neotoma lepida" ~ "Neotoma sp", # desert woodrat
+    
+     Including_domestic.Local_species %in% "Canis latrans, Canis lupus, Urocyon cinereoargenteus, Urocyon littoralis, Vulpes macrotis, Vulpes vulpes" ~ "Canis latrans", # coyote
+    
+    Including_domestic.Local_species %in% "Turdus obscurus, Turdus migratorius" ~ "Turdus migratorius", #American robin
+    
+    Including_domestic.Local_species %in% "Spizella passerina, Passerella iliaca, Melospiza melodia" ~ "Melospiza melodia", #Song sparrow, could  be chipping or fox sparrow too though.
+    
+    Including_domestic.Local_species %in% "Ascaphus truei, Incilius alvarius, Anaxyrus boreas, Anaxyrus californicus, Anaxyrus canorus, Anaxyrus cognatus, Anaxyrus exsul, Anaxyrus microscaphus, Anaxyrus punctatus, Anaxyrus woodhousii, Pseudacris cadaverina, Pseudacris hypochondriaca, Pseudacris regilla, Pseudacris sierra, Scaphiopus couchii, Spea hammondii, Spea intermontana, Rana aurora, Lithobates berlandieri, Rana boylii, Rana cascadae, Lithobates catesbeianus, Rana draytonii, Rana luteiventris, Rana muscosa, Lithobates pipiens, Rana pretiosa, Rana sierrae, Lithobates sphenocephalus, Lithobates yavapaiensis, Xenopus laevis" ~ "Anura", #frog or toad
+    
+    Including_domestic.Local_species %in% "Phoca fasciata, Phoca vitulina" ~ "Phoca vitulina", #harbor seal
+    
+    Including_domestic.Local_species %in% "Nucifraga columbiana, Corvus brachyrhynchos, Corvus corax" ~ "Corvus corax", # Common raven -- blast match
+    
+    Including_domestic.Local_species %in% "Pipilo maculatus" ~ "Pipilo maculatus", #spotted towhee
+    
+    Including_domestic.Local_species %in% "Onychomys torridus" ~ "Peromyscus maniculatus", #southern grasshopper mouse BLAST match to peromyscus maniculatus
+    
+    Including_domestic.Local_species %in% "Arctocephalus townsendi" ~ "Arctocephalus townsendi", #guadelupe fur seal
+    
+    Including_domestic.Local_species %in% "Callospermophilus lateralis" ~ "Spermophillus beecheyi", #CA ground squirrel
+    
+    Including_domestic.Local_species %in% "Marmota flaviventris" ~ "Spermophillus beecheyi", #yellow-bellied marmot
+    
+    Including_domestic.Local_species %in% "Microtus montanus" ~ "Microtus californicus" #california vole
+  ))
+
+# for the 16s run
+gaviota <- gaviota %>%
+  mutate(curated_species = case_when(
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus" ~ "Bos taurus", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lynx rufus" ~ "Lynx rufus", # 100
+    #Best_match_references %in% "Heliconoides inflatus" ~ "Heliconoides inflatus", # sea butterfly snail
+    #Best_match_references %in% "Odocoileus virginianus" ~ "white tailed deer", # 100
+    #Best_match_references %in% "Crotalus viridis" ~ "prairie rattlesnake", # 100
+    Barcode_region == "16" & Best_match_references %in% "Puma concolor" ~ "Puma concolor", # puma
+    Barcode_region == "16" & Best_match_references %in% "Rattus rattus" ~ "Rattus rattus", # rat
+    #Best_match_references %in% "Gallus sonneratii" ~ "chicken", # 100
+    Barcode_region == "16" & Best_match_references %in% "Callipepla californica" ~ "Callipepla californica", # California quail
+    #Best_match_references %in% "Scomber japonicus" ~ "chub mackerel", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lamna ditropis" ~ "Lamna ditropis", #salmon shark
+    Barcode_region == "16" & Best_match_references %in% "Magnisudis atlantica" ~ "Magnisudis atlantica", # duckbill barracuda
+    Barcode_region == "16" & Best_match_references %in% "Ophiodon elongatus" ~ "Ophiodon elongatus", # lingcod
+    Barcode_region == "16" & Best_match_references %in% "Thysanoessa inermis" ~ "Thysanoessa inermis", # Krill
+    #Best_match_references %in% "Sebastes serranoides" ~ "Sebastes sp", # olive rockfish
+    Barcode_region == "16" & Best_match_references %in% "Clupea pallasii" ~ "Clupea pallasii", # pacific herring
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa" ~ "Sus scrofa", #wild boar
+    #Best_match_references %in% "Canis rufus" ~ "canid", #
+    Barcode_region == "16" & Best_match_references %in% "Pilaira anomala" ~ "Pilaira anomala", #mold
+    Barcode_region == "16" & Best_match_references %in% "Reithrodontomys megalotis" ~ "Reithrodontomys megalotis", #western harvest mouse
+    Barcode_region == "16" & Best_match_references %in% "Microtus californicus" ~ "Microtus californicus", #California vole
+    Barcode_region == "16" & Best_match_references %in% "Chaetodipus californicus" ~ "Dipodomys heermanni", #California pocket mouse
+    Barcode_region == "16" & Best_match_references %in% "Zalophus californianus" ~ "Zalophus californianus", #California sea lion
+    Barcode_region == "16" & Best_match_references %in% "Canis latrans" ~ "Canis latrans", #coyote
+    Barcode_region == "16" & Best_match_references %in% "Neotoma lepida" ~ "Neotoma sp", #desert woodrat
+    #Best_match_references %in% "Meleagris gallopavo" ~ "turkey", #
+    Barcode_region == "16" & Best_match_references %in% "Otospermophilus beecheyi" ~ "Spermophillus beecheyi", #California ground squirrel
+    Barcode_region == "16" & Best_match_references %in% "Taxidea taxus" ~ "Taxidea taxus", #american badger
+    Barcode_region == "16" & Best_match_references %in% "Neotoma macrotis" ~ "Neotoma sp", #big-eared woodrat
+    #Best_match_references %in% "Ravinia vagabunda" ~ "flesh fly", #
+    Barcode_region == "16" & Best_match_references %in% "Canis lupus" ~ "Canis latrans", # canid
+    Barcode_region == "16" & Best_match_references %in% "Forficula auricularia" ~ "Forficula sp", # earwig
+    Barcode_region == "16" & Best_match_references %in% "Mephitis mephitis" ~ "Mephitis mephitis", #striped skunk
+    #Best_match_references %in% "Paralucilia pseudolyrcea" ~ "blow fly", #
+    Barcode_region == "16" & Best_match_references %in% "Urocyon cinereoargenteus" ~ "Urocyon cinereoargenteus", #grey fox
+    Barcode_region == "16" & Best_match_references %in% "Pandalus jordani" ~ "Pandalus jordani", #ocean pink shrimp
+    #Best_match_references %in% "Merluccius productus" ~ "north pacific hake", #
+    Barcode_region == "16" & Best_match_references %in% "Peromyscus maniculatus" ~ "Peromyscus maniculatus", #deer mouse
+    Barcode_region == "16" & Best_match_references %in% "Pituophis catenifer" ~ "Pituophis catenifer", #gopher snake
+    Barcode_region == "16" & Best_match_references %in% "Sylvilagus bachmani" ~ "Sylvilagus bachmani", #brush rabbit
+    Barcode_region == "16" & Best_match_references %in% "Plestiodon skiltonianus" ~ "Plestiodon skiltonianus", #skilton's skink
+    Barcode_region == "16" & Best_match_references %in% "Anchoa ischana" ~ "Anchoa ischana", #sharpnose anchovy
+    Barcode_region == "16" & Best_match_references %in% "Gonatopsis borealis" ~ "Gonatopsis borealis", #Boreopacific armhook squid
+    Barcode_region == "16" & Best_match_references %in% "Leucocarbo chalconotus" ~ "Urile pelagicus", # pelagic cormorant species, checked with BLAST. 3rd result, 92.99%match
+    Barcode_region == "16" & Best_match_references %in% "Pseudopaludicola boliviana" ~ "Anura", # frog, Leptodactylidae family, found in regions in south america???
+    Barcode_region == "16" & Best_match_references %in% "Microtus chrotorrhinus" ~ "Microtus californicus", # rock vole, found in eastern US
+    Barcode_region == "16" & Best_match_references %in% "Picoides tridactylus" ~ "Dryobates pubescens", # eurasian three-toed woodpecker, not found in US --- changed to Dryobates pubescens, downy woodpecker
+    Barcode_region == "16" & Best_match_references %in% "Thomomys bottae" ~ "Thomomys bottae", # Botta's pocket gopher
+    Barcode_region == "16" & Best_match_references %in% "Neodon bershulaensis" ~ "Microtus californicus", # Bershula mountain vole, found in China -- BLAST shows microtus species second match
+    #Best_match_references %in% "Chloropicon sieburthii" ~ "phytoplankton", # 90
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus" ~ "Creophilus sp", # hairy rove beetle -- only shows up once
+    Barcode_region == "16" & Best_match_references %in% "Rhipicephalus sanguineus" ~ "Rhipicephalus sanguineus", # Brown dog tick
+    Barcode_region == "16" & Best_match_references %in% "Phakopsora meibomiae" ~ "Phakopsora meibomiae", # fungi
+    Barcode_region == "16" & Best_match_references %in% "Tettigonia orientalis" ~ "Stenopelmatus sp", # bush cricket, but this species is found in Japan ---BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Isogenoides varians" ~ "Isogenoides sp", # stonefly
+    Barcode_region == "16" & Best_match_references %in% "Setvena wahkeena" ~ "Stenopelmatus sp", # stonefly (found in socal?) -- BLAST - cricket match
+    Barcode_region == "16" & Best_match_references %in% "Xiphidiopsis gurneyi" ~ "Stenopelmatus sp", #bush cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Abronia graminea" ~ "Elgaria multicarinata", # alligator lizard (found in socal?) -- BLAST - southern aligator lizard
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini" ~ "Stenopelmatus sp", # camel cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon laureae" ~ "Chloropicon sp", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae" ~ "Stenopelmatus sp", #Scarabaeidae (scarab) -- changed to species that came up with this species in results -- BLAST- cricket
+    Barcode_region == "16" & Best_match_references %in% "Stenopelmatus fuscus" ~ "Stenopelmatus sp", # jerusalem cricket
+    Barcode_region == "16" & Best_match_references %in% "Gymnaetoides acutilobatus" ~ "Stenopelmatus sp", # endemic to china??? cave cricket --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Microdipodops pallidus" ~ "Dipodomys heermanni", # pale kangaroo mouse
+    Barcode_region == "16" & Best_match_references %in% "Onthophagus crinitus" ~ "Onthophagus sp", # dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Pheidole deima" ~ "Veromessor sp", # ant (found in socal?) --- BLAST - Veromessor andrei - harvestor ant
+    Barcode_region == "16" & Best_match_references %in% "Hazenia capsulata" ~ "Hazenia capsulata", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Anadara broughtonii" ~ "Anadara sp", # Inflated ark clam
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea" ~ "Cavenderia subdiscoidea", # slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis" ~ "Chloropicon sp", # 70
+
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos javanicus, Bos indicus, Bos grunniens, Bos grunniens x Bos taurus" ~ "Bos taurus",
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos primigenius, Bos indicus" ~ "Bos taurus", #cow
+    Barcode_region == "16" & Best_match_references %in% "Canis rufus, Canis lupus, Canis latrans" ~ "Canis latrans", # coyote
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea, Cavenderia pseudoaureostipes" ~ "Cavenderia sp", #slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Chloropicon sp", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon sieburthii, Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Chloropicon sp", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus, Anthrenus scrophulariae" ~ "Anthrenus sp", # Common carpet beetle/Buffalo carpet beetle
+    Barcode_region == "16" & Best_match_references %in% "Crotalus viridis, Crotalus oreganus" ~ "Crotalus oreganus", #western rattlesnake
+    Barcode_region == "16" & Best_match_references %in% "Gallus sonneratii, Gallus gallus" ~ "Gallus gallus", # wild turkey probably, or chicken
+    Barcode_region == "16" & Best_match_references %in% "Heliconoides inflatus, Cathaica polystigma, Nesiohelix moreletiana, Karaftohelix maackii, Atlanta turriculata, Aceria guerreronis, Hahnia ngai, Grylloprimevala jilina, Aconurella prolixa, Processina dashahensis, Tapinoma indicum, Homo sapiens" ~ "Heliconoides inflatus", # Heliconoides inflatus -- Sea butterfly (range is not Socal, but Mexico, and it's the closest species in the list) 
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae, Paratriodonta lentula" ~ "Stenopelmatus sp", #Scarabaeidae (scarab)
+    Barcode_region == "16" & Best_match_references %in% "Meleagris gallopavo, Labidesthes sicculus" ~ "Meleagris gallopavo", #wild turkey
+    Barcode_region == "16" & Best_match_references %in% "Merluccius productus, Merluccius angustimanus" ~ "Merluccius productus", #North Pacific Hake
+    Barcode_region == "16" & Best_match_references %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Odocoileus hemionus", #mule deer
+    Barcode_region == "16" & Best_match_references %in% "Paralucilia pseudolyrcea, Paralucilia paraensis, Hemilucilia semidiaphana, Calliphora vomitoria, Calliphora vicina, Calliphora sinensis, Calliphora nigribarbis, Calliphora calliphoroides" ~ "Diptera", # fly
+    Barcode_region == "16" & Best_match_references %in% "Ravinia vagabunda, Ravinia stimulans, Ravinia derelicta" ~ "Ravinia", #flesh fly
+    Barcode_region == "16" & Best_match_references %in% "Scomber japonicus, Scomber colias, Scomber australasicus"~ "Scomber japonicus", #pacific mackerel
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa, Thryonomys swinderianus" ~ "Sus scrofa", #wild pig
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini, Onthophagus obscurior" ~ "Onthophagus sp", #dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Sebastes serranoides, Sebastes melanops, Sebastes flavidus" ~ "Sebastes sp",  #rockfish
+    Barcode_region == "16" & Best_match_references %in% "" ~ "no match",
+    TRUE ~ curated_species
+    ))
+
+
+ 
+
+checkna <- gaviota[is.na(gaviota$curated_species), ] 
+#Best_match_references ==rm(checkna)
+
+```
+
+## Curate common names
+
+```{r}
+gaviota$common_name = NA
+
+gaviota <- gaviota %>%
+  mutate(common_name = case_when(
+    Including_domestic.Local_species %in% "Canis latrans, Canis lupus" ~ "Coyote", # coyote
+    
+    Including_domestic.Local_species %in% "Phalacrocorax penicillatus, Phalacrocorax brasilianus, Phalacrocorax pelagicus" 
+      ~ "Brandt's cormorant", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Phalacrocorax pelagicus, Phalacrocorax penicillatus" 
+      ~ "Brandt's cormorant", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Microtus californicus" 
+      ~ "California vole", # Californian vole
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei" ~ "Deer mouse", #Peromyscus - deer mouse
+    
+    Including_domestic.Local_species %in% "Sylvilagus bachmani" ~ "Brush rabbit", # Brush rabbit
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Arborimus albipes, Arborimus longicaudus, Arborimus pomo, Myodes californicus, Lemmiscus curtatus, Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii, Ondatra zibethicus, Phenacomys intermedius, Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis, Onychomys leucogaster, Onychomys torridus, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei, Reithrodontomys raviventris, Reithrodontomys megalotis, Sigmodon arizonae, Sigmodon hispidus" ~ "California vole", # 	based on blast and iNat
+      
+    Including_domestic.Local_species %in% "Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis" ~ "Woodrat", # Neotoma - woodrat
+      
+    Including_domestic.Local_species %in% "Bos taurus, Bos indicus, Bos javanicus, Bos frontalis" ~ "Domestic cattle", # Bovine
+      
+    Including_domestic.Local_species %in% "Gallus gallus" ~ "Chicken", #chicken
+      
+    Including_domestic.Local_species %in% "Urocyon cinereoargenteus, Urocyon littoralis" ~ "Grey fox", # grey fox
+      
+    Including_domestic.Local_species %in% "Glaucomys oregonensis, Glaucomys sabrinus, Callospermophilus lateralis" ~ "California ground squirrel", # flying squirrel/golden mantle ground squirrel --  CA ground squirrel based on blast
+      
+    Including_domestic.Local_species %in% "Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii" ~ "California vole", # vole
+    Including_domestic.Local_species %in% "Thomomys bottae" ~"Botta's pocket gopher", # botta's pocket gopher
+    
+    Including_domestic.Local_species %in% "Lynx rufus, Puma concolor" ~ "Bobcat", # bobcat
+      
+    Including_domestic.Local_species %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Mule deer", # mule deer
+      
+    Including_domestic.Local_species %in% "Sus scrofa" ~ "Wild boar", #wild boar
+      
+    Including_domestic.Local_species %in% "Chloris sinica, Spinus pinus, Plectrophenax nivalis, Zonotrichia leucophrys, Zonotrichia atricapilla, Zonotrichia albicollis, Sturnella neglecta, Sturnella magna, Serinus canaria" ~ "White-crowned sparrow", # white crowned sparrow
+      
+    Including_domestic.Local_species %in% "Peromyscus eremicus" ~ "Western harvest mouse", # From Blast and species list
+      
+    Including_domestic.Local_species %in% "Zalophus californianus" ~ "California sea lion", # sea lion
+    
+    Including_domestic.Local_species %in% "Canis lupus" ~ "Coyote", # coyote
+      
+    Including_domestic.Local_species %in% "Peromyscus crinitus, Peromyscus eremicus" ~ "Western harvest mouse", # from blast and COPR species list. Western harvest mouse
+      
+    Including_domestic.Local_species %in% "Callipepla californica, Callipepla gambelii" ~ "California quail", # CA quail 
+      
+    Including_domestic.Local_species %in% "Alosa sapidissima, Dorosoma petenense" ~ "American shad", # American shad
+      
+    Including_domestic.Local_species %in% "Leuconotopicus albolarvatus, Jynx torquilla, Melanerpes lewis, Melanerpes erythrocephalus, Melanerpes formicivorus, Melanerpes uropygialis, Sphyrapicus thyroideus, Sphyrapicus varius, Sphyrapicus nuchalis, Sphyrapicus ruber, Picoides arcticus, Dryobates pubescens, Dryobates nuttallii, Dryobates scalaris, Picoides villosus, Colaptes auratus, Colaptes chrysoides, Dryocopus pileatus" ~ "Acorn woodpecker", # acorn woodpecker
+      
+    Including_domestic.Local_species %in% "Plestiodon gilberti" ~ "Skilton's skink", # Gilbert's skink
+      
+    Including_domestic.Local_species %in% "Taxidea taxus" ~ "American badger", # American badger
+      
+    Including_domestic.Local_species %in% "Microtus townsendii" ~ "California vole", # From species list. Microtus - townsend's vole
+      
+    Including_domestic.Local_species %in% "Neotoma macrotis" ~ "Woodrat", #  from species list. big eared woodrat
+    
+    Including_domestic.Local_species %in% "Aphelocoma insularis, Aphelocoma californica, Aphelocoma woodhouseii" ~ "Western scrub jay", # CA scrub jay
+      
+    Including_domestic.Local_species %in% "Puma concolor" ~ "Puma", # puma
+      
+    Including_domestic.Local_species %in% "Meleagris gallopavo, Gallus gallus" ~ "Wild turkey", # wild turkey
+      
+    Including_domestic.Local_species %in% "Mephitis mephitis" ~ "Striped skunk", # striped skunk
+      
+    Including_domestic.Local_species %in% "Vulpes vulpes" ~ "Red fox", # red fox
+      
+    Including_domestic.Local_species %in% "Chaetodipus californicus" ~ "Heerman's kangaroo rat", # Blast to match species list
+      
+    Including_domestic.Local_species %in% "Mus musculus" ~ "house mouse", # house mouse
+    
+    Including_domestic.Local_species %in% "Rattus rattus" ~ "Black rat", # black rat
+      
+    Including_domestic.Local_species %in% "Peromyscus maniculatus, Peromyscus keeni" ~ "Deer mouse", # deer mice
+      
+    Including_domestic.Local_species %in% "Sylvilagus floridanus, Sylvilagus nuttallii" ~ "Brush rabbit", # brush rabbit
+      
+    Including_domestic.Local_species %in% "Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii" ~ "California vole", # vole
+      
+    Including_domestic.Local_species %in% "Lemmiscus curtatus, Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii, Ondatra zibethicus, Onychomys leucogaster, Synaptomys borealis, Peromyscus maniculatus, Peromyscus keeni" ~ "Deer mouse", # cricetidae - some kind of rodent -- (choosing microtus sp)
+   
+     Including_domestic.Local_species %in% "Neotoma lepida" ~ "Woodrat", # desert woodrat
+    
+     Including_domestic.Local_species %in% "Canis latrans, Canis lupus, Urocyon cinereoargenteus, Urocyon littoralis, Vulpes macrotis, Vulpes vulpes" ~ "Coyote", # coyote
+    
+    Including_domestic.Local_species %in% "Turdus obscurus, Turdus migratorius" ~ "American robin", #American robin
+    
+    Including_domestic.Local_species %in% "Spizella passerina, Passerella iliaca, Melospiza melodia" ~ "Song sparrow", #Song sparrow, could  be chipping or fox sparrow too though.
+    
+    Including_domestic.Local_species %in% "Ascaphus truei, Incilius alvarius, Anaxyrus boreas, Anaxyrus californicus, Anaxyrus canorus, Anaxyrus cognatus, Anaxyrus exsul, Anaxyrus microscaphus, Anaxyrus punctatus, Anaxyrus woodhousii, Pseudacris cadaverina, Pseudacris hypochondriaca, Pseudacris regilla, Pseudacris sierra, Scaphiopus couchii, Spea hammondii, Spea intermontana, Rana aurora, Lithobates berlandieri, Rana boylii, Rana cascadae, Lithobates catesbeianus, Rana draytonii, Rana luteiventris, Rana muscosa, Lithobates pipiens, Rana pretiosa, Rana sierrae, Lithobates sphenocephalus, Lithobates yavapaiensis, Xenopus laevis" ~ "Frog", #frog or toad
+    
+    Including_domestic.Local_species %in% "Phoca fasciata, Phoca vitulina" ~ "Harbor seal", #harbor seal
+    
+    Including_domestic.Local_species %in% "Nucifraga columbiana, Corvus brachyrhynchos, Corvus corax" ~ "Common raven", # Common raven -- blast match
+    
+    Including_domestic.Local_species %in% "Pipilo maculatus" ~ "Spotted towhee", #spotted towhee
+    
+    Including_domestic.Local_species %in% "Onychomys torridus" ~ "Deer mouse", #southern grasshopper mouse BLAST match to peromyscus maniculatus
+    
+    Including_domestic.Local_species %in% "Arctocephalus townsendi" ~ "Guadelupe fur seal", #guadelupe fur seal
+    
+    Including_domestic.Local_species %in% "Callospermophilus lateralis" ~ "California ground squirrel", #CA ground squirrel
+    
+    Including_domestic.Local_species %in% "Marmota flaviventris" ~ "California ground squirrel", #yellow-bellied marmot
+    
+    Including_domestic.Local_species %in% "Microtus montanus" ~ "California vole" #california vole
+  ))
+
+# for the 16s run - common names
+gaviota <- gaviota %>%
+  mutate(common_name = case_when(
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus" ~ "Domestic cattle", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lynx rufus" ~ "Bobcat", # 100
+    #Best_match_references %in% "Heliconoides inflatus" ~ "Heliconoides inflatus", # sea butterfly snail
+    #Best_match_references %in% "Odocoileus virginianus" ~ "white tailed deer", # 100
+    #Best_match_references %in% "Crotalus viridis" ~ "prairie rattlesnake", # 100
+    Barcode_region == "16" & Best_match_references %in% "Puma concolor" ~ "Puma", # puma
+    Barcode_region == "16" & Best_match_references %in% "Rattus rattus" ~ "Black rat", # rat
+    #Best_match_references %in% "Gallus sonneratii" ~ "chicken", # 100
+    Barcode_region == "16" & Best_match_references %in% "Callipepla californica" ~ "California quail", # California quail
+    #Best_match_references %in% "Scomber japonicus" ~ "chub mackerel", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lamna ditropis" ~ "Salmon shark", #salmon shark
+    Barcode_region == "16" & Best_match_references %in% "Magnisudis atlantica" ~ "Duckbill barracuda", # duckbill barracuda
+    Barcode_region == "16" & Best_match_references %in% "Ophiodon elongatus" ~ "Lingcod", # lingcod
+    Barcode_region == "16" & Best_match_references %in% "Thysanoessa inermis" ~ "Krill", # Krill
+    #Best_match_references %in% "Sebastes serranoides" ~ "Sebastes sp", # olive rockfish
+    Barcode_region == "16" & Best_match_references %in% "Clupea pallasii" ~ "Pacific herring", # pacific herring
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa" ~ "Wild boar", #wild boar
+    #Best_match_references %in% "Canis rufus" ~ "canid", #
+    Barcode_region == "16" & Best_match_references %in% "Pilaira anomala" ~ "mold", #mold
+    Barcode_region == "16" & Best_match_references %in% "Reithrodontomys megalotis" ~ "Western harvest mouse", #western harvest mouse
+    Barcode_region == "16" & Best_match_references %in% "Microtus californicus" ~ "California vole", #California vole
+    Barcode_region == "16" & Best_match_references %in% "Chaetodipus californicus" ~ "Heerman's kangaroo rat", #Heerman's kangaroo rat
+    Barcode_region == "16" & Best_match_references %in% "Zalophus californianus" ~ "California sea lion", #California sea lion
+    Barcode_region == "16" & Best_match_references %in% "Canis latrans" ~ "Coyote", #coyote
+    Barcode_region == "16" & Best_match_references %in% "Neotoma lepida" ~ "Woodrat", #desert woodrat
+    #Best_match_references %in% "Meleagris gallopavo" ~ "turkey", #
+    Barcode_region == "16" & Best_match_references %in% "Otospermophilus beecheyi" ~ "California ground squirrel", #California ground squirrel
+    Barcode_region == "16" & Best_match_references %in% "Taxidea taxus" ~ "American badger", #american badger
+    Barcode_region == "16" & Best_match_references %in% "Neotoma macrotis" ~ "Woodrat", #big-eared woodrat
+    #Best_match_references %in% "Ravinia vagabunda" ~ "flesh fly", #
+    Barcode_region == "16" & Best_match_references %in% "Canis lupus" ~ "Coyote", # canid
+    Barcode_region == "16" & Best_match_references %in% "Forficula auricularia" ~ "Earwig", # earwig
+    Barcode_region == "16" & Best_match_references %in% "Mephitis mephitis" ~ "Striped skunk", #striped skunk
+    #Best_match_references %in% "Paralucilia pseudolyrcea" ~ "blow fly", #
+    Barcode_region == "16" & Best_match_references %in% "Urocyon cinereoargenteus" ~ "Grey fox", #grey fox
+    Barcode_region == "16" & Best_match_references %in% "Pandalus jordani" ~ "Ocean pink shrimp", #ocean pink shrimp
+    #Best_match_references %in% "Merluccius productus" ~ "north pacific hake", #
+    Barcode_region == "16" & Best_match_references %in% "Peromyscus maniculatus" ~ "Deer mouse", #deer mouse
+    Barcode_region == "16" & Best_match_references %in% "Pituophis catenifer" ~ "Gopher snake", #gopher snake
+    Barcode_region == "16" & Best_match_references %in% "Sylvilagus bachmani" ~ "Brush rabbit", #brush rabbit
+    Barcode_region == "16" & Best_match_references %in% "Plestiodon skiltonianus" ~ "Skilton's skink", #western skink
+    Barcode_region == "16" & Best_match_references %in% "Anchoa ischana" ~ "Sharpnose anchovy", #sharpnose anchovy
+    Barcode_region == "16" & Best_match_references %in% "Gonatopsis borealis" ~ "Boreopacific armhook squid", #Boreopacific armhook squid
+    Barcode_region == "16" & Best_match_references %in% "Leucocarbo chalconotus" ~ "Pelagic cormorant", # pelagic cormorant species, checked with BLAST. 3rd result, 92.99%match
+    Barcode_region == "16" & Best_match_references %in% "Pseudopaludicola boliviana" ~ "Frog", # frog, Leptodactylidae family, found in regions in south america???
+    Barcode_region == "16" & Best_match_references %in% "Microtus chrotorrhinus" ~ "California vole", # rock vole, found in eastern US
+    Barcode_region == "16" & Best_match_references %in% "Picoides tridactylus" ~ "Downy woodpecker", # eurasian three-toed woodpecker, not found in US --- changed to Dryobates pubescens, downy woodpecker
+    Barcode_region == "16" & Best_match_references %in% "Thomomys bottae" ~ "Botta's pocket gopher", # Botta's pocket gopher
+    Barcode_region == "16" & Best_match_references %in% "Neodon bershulaensis" ~ "California vole", # Bershula mountain vole, found in China -- BLAST shows microtus species second match
+    #Best_match_references %in% "Chloropicon sieburthii" ~ "phytoplankton", # 90
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus" ~ "Rove beetle", # hairy rove beetle -- only shows up once
+    Barcode_region == "16" & Best_match_references %in% "Rhipicephalus sanguineus" ~ "Brown dog tick", # Brown dog tick
+    Barcode_region == "16" & Best_match_references %in% "Phakopsora meibomiae" ~ "Fungi", # fungi
+    Barcode_region == "16" & Best_match_references %in% "Tettigonia orientalis" ~ "Cricket", # bush cricket, but this species is found in Japan ---BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Isogenoides varians" ~ "Stonefly", # stonefly
+    Barcode_region == "16" & Best_match_references %in% "Setvena wahkeena" ~ "Cricket", # stonefly (found in socal?) -- BLAST - cricket match
+    Barcode_region == "16" & Best_match_references %in% "Xiphidiopsis gurneyi" ~ "Cricket", #bush cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Abronia graminea" ~ "California alligator lizard", # alligator lizard (found in socal?) -- BLAST - southern aligator lizard
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini" ~ "Cricket", # camel cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon laureae" ~ "Green algae", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae" ~ "Cricket", #Scarabaeidae (scarab) -- changed to species that came up with this species in results -- BLAST- cricket
+    Barcode_region == "16" & Best_match_references %in% "Stenopelmatus fuscus" ~ "Cricket", # jerusalem cricket
+    Barcode_region == "16" & Best_match_references %in% "Gymnaetoides acutilobatus" ~ "Cricket", # endemic to china??? cave cricket --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Microdipodops pallidus" ~ "Heerman's kangaroo rat", # pale kangaroo mouse
+    Barcode_region == "16" & Best_match_references %in% "Onthophagus crinitus" ~ "Dung beetle", # dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Pheidole deima" ~ "Harvestor ant", # ant (found in socal?) --- BLAST - Veromessor andrei - harvestor ant
+    Barcode_region == "16" & Best_match_references %in% "Hazenia capsulata" ~ "Green algae", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Anadara broughtonii" ~ "Clam", # Inflated ark clam
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea" ~ "Slime mold", # slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis" ~ "Green algae", # 70
+
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos javanicus, Bos indicus, Bos grunniens, Bos grunniens x Bos taurus" ~ "Domestic cattle",
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos primigenius, Bos indicus" ~ "Domestic cattle", #cow
+    Barcode_region == "16" & Best_match_references %in% "Canis rufus, Canis lupus, Canis latrans" ~ "Coyote", # coyote
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea, Cavenderia pseudoaureostipes" ~ "Slime mold", #slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Green algae", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon sieburthii, Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Green algae", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus, Anthrenus scrophulariae" ~ "Carpet beetle", # Common carpet beetle/Buffalo carpet beetle
+    Barcode_region == "16" & Best_match_references %in% "Crotalus viridis, Crotalus oreganus" ~ "Western Rattlesnake", #western rattlesnake
+    Barcode_region == "16" & Best_match_references %in% "Gallus sonneratii, Gallus gallus" ~ "Chicken", # wild turkey probably, or chicken
+    Barcode_region == "16" & Best_match_references %in% "Heliconoides inflatus, Cathaica polystigma, Nesiohelix moreletiana, Karaftohelix maackii, Atlanta turriculata, Aceria guerreronis, Hahnia ngai, Grylloprimevala jilina, Aconurella prolixa, Processina dashahensis, Tapinoma indicum, Homo sapiens" ~ "Sea butterfly snail", # Heliconoides inflatus -- Sea butterfly (range is not Socal, but Mexico, and it's the closest species in the list) 
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae, Paratriodonta lentula" ~ "Cricket", #Scarabaeidae (scarab)
+    Barcode_region == "16" & Best_match_references %in% "Meleagris gallopavo, Labidesthes sicculus" ~ "Wild turkey", #wild turkey
+    Barcode_region == "16" & Best_match_references %in% "Merluccius productus, Merluccius angustimanus" ~ "North pacific hake", #North Pacific Hake
+    Barcode_region == "16" & Best_match_references %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Mule deer", #mule deer
+    Barcode_region == "16" & Best_match_references %in% "Paralucilia pseudolyrcea, Paralucilia paraensis, Hemilucilia semidiaphana, Calliphora vomitoria, Calliphora vicina, Calliphora sinensis, Calliphora nigribarbis, Calliphora calliphoroides" ~ "Fly", # fly
+    Barcode_region == "16" & Best_match_references %in% "Ravinia vagabunda, Ravinia stimulans, Ravinia derelicta" ~ "Ravinia", #flesh fly
+    Barcode_region == "16" & Best_match_references %in% "Scomber japonicus, Scomber colias, Scomber australasicus"~ "Pacific makerel", #pacific mackerel
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa, Thryonomys swinderianus" ~ "Wild boar", #wild pig
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini, Onthophagus obscurior" ~ "Dung beetle", #dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Sebastes serranoides, Sebastes melanops, Sebastes flavidus" ~ "Rockfish",  #rockfish
+    Barcode_region == "16" & Best_match_references %in% "" ~ "no match",
+    TRUE ~ common_name
+    ))
+
+
+checkna <- gaviota[is.na(gaviota$common_name), ] 
+#rm(checkna)
+```
+
+## Curate broad tax
+
+```{r}
+gaviota$broadtax = NA
+
+gaviota <- gaviota %>%
+  mutate(broadtax = case_when(
+    Including_domestic.Local_species %in% "Canis latrans, Canis lupus" ~ "Coyote", # coyote
+    
+    Including_domestic.Local_species %in% "Phalacrocorax penicillatus, Phalacrocorax brasilianus, Phalacrocorax pelagicus" 
+      ~ "Brandt's cormorant", # Brant's cormorant
+    
+    Including_domestic.Local_species %in% "Phalacrocorax pelagicus, Phalacrocorax penicillatus" 
+      ~ "Brandt's cormorant", # Brant's cormorant
+    
+    Including_domestic.Local_species %in% "Microtus californicus" 
+      ~ "Small rodent", # Californian vole
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei" ~ "Small rodent", #Peromyscus - deer mouse
+    
+    Including_domestic.Local_species %in% "Sylvilagus bachmani" ~ "Brush rabbit", # Brush rabbit
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Arborimus albipes, Arborimus longicaudus, Arborimus pomo, Myodes californicus, Lemmiscus curtatus, Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii, Ondatra zibethicus, Phenacomys intermedius, Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis, Onychomys leucogaster, Onychomys torridus, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei, Reithrodontomys raviventris, Reithrodontomys megalotis, Sigmodon arizonae, Sigmodon hispidus" ~ "Small rodent", # 	Cricetidae (mouse or vole)
+      
+    Including_domestic.Local_species %in% "Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis" ~ "Small rodent", # Neotoma - woodrat
+      
+    Including_domestic.Local_species %in% "Bos taurus, Bos indicus, Bos javanicus, Bos frontalis" ~ "Cattle", # Bovine
+      
+    Including_domestic.Local_species %in% "Gallus gallus" ~ "Terrestrial bird", #chicken
+      
+    Including_domestic.Local_species %in% "Urocyon cinereoargenteus, Urocyon littoralis" ~ "Grey fox", # grey fox
+      
+    Including_domestic.Local_species %in% "Glaucomys oregonensis, Glaucomys sabrinus, Callospermophilus lateralis" ~ "Small rodent", # flying squirrel/golden mantle ground squirrel
+      
+    Including_domestic.Local_species %in% "Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii" ~ "Small rodent", # vole
+    
+    Including_domestic.Local_species %in% "Thomomys bottae" ~"Small rodent", # botta's pocket gopher
+    
+    Including_domestic.Local_species %in% "Lynx rufus, Puma concolor" ~ "Bobcat", # bobcat
+      
+    Including_domestic.Local_species %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Mule deer", # mule deer
+      
+    Including_domestic.Local_species %in% "Sus scrofa" ~ "Wild boar", #wild boar
+      
+    Including_domestic.Local_species %in% "Chloris sinica, Spinus pinus, Plectrophenax nivalis, Zonotrichia leucophrys, Zonotrichia atricapilla, Zonotrichia albicollis, Sturnella neglecta, Sturnella magna, Serinus canaria" ~ "Terrestrial bird", # Passeriformes
+      
+    Including_domestic.Local_species %in% "Peromyscus eremicus" ~ "Small rodent", # cactus mouse
+      
+    Including_domestic.Local_species %in% "Zalophus californianus" ~ "California sea lion", # sea lion
+    
+    Including_domestic.Local_species %in% "Canis lupus" ~ "Coyote", # coyote
+      
+    Including_domestic.Local_species %in% "Peromyscus crinitus, Peromyscus eremicus" ~ "Small rodent", # Peromyscus
+      
+    Including_domestic.Local_species %in% "Callipepla californica, Callipepla gambelii" ~ "Terrestrial bird", # CA quail 
+      
+    Including_domestic.Local_species %in% "Alosa sapidissima, Dorosoma petenense" ~ "American shad", # American shad
+      
+    Including_domestic.Local_species %in% "Leuconotopicus albolarvatus, Jynx torquilla, Melanerpes lewis, Melanerpes erythrocephalus, Melanerpes formicivorus, Melanerpes uropygialis, Sphyrapicus thyroideus, Sphyrapicus varius, Sphyrapicus nuchalis, Sphyrapicus ruber, Picoides arcticus, Dryobates pubescens, Dryobates nuttallii, Dryobates scalaris, Picoides villosus, Colaptes auratus, Colaptes chrysoides, Dryocopus pileatus" ~ "Terrestrial bird", # woodpecker
+      
+    Including_domestic.Local_species %in% "Plestiodon gilberti" ~ "Gilbert's skink", # Gilbert's skink
+      
+    Including_domestic.Local_species %in% "Taxidea taxus" ~ "American badger", # American badger
+      
+    Including_domestic.Local_species %in% "Microtus townsendii" ~ "Small rodent", # Microtus - townsend's vole
+      
+    Including_domestic.Local_species %in% "Neotoma macrotis" ~ "Small rodent", # big eared woodrat
+    
+    Including_domestic.Local_species %in% "Aphelocoma insularis, Aphelocoma californica, Aphelocoma woodhouseii" ~ "Terrestrial bird", # CA scrub jay
+      
+    Including_domestic.Local_species %in% "Puma concolor" ~ "Puma", # puma
+      
+    Including_domestic.Local_species %in% "Meleagris gallopavo, Gallus gallus" ~ "Terrestrial bird", # wild turkey
+      
+    Including_domestic.Local_species %in% "Mephitis mephitis" ~ "Striped skunk", # striped skunk
+      
+    Including_domestic.Local_species %in% "Vulpes vulpes" ~ "Red fox", # red fox
+      
+    Including_domestic.Local_species %in% "Chaetodipus californicus" ~ "Small rodent", # California pocket mouse
+      
+    Including_domestic.Local_species %in% "Mus musculus" ~ "Small rodent", # house mouse
+    
+    Including_domestic.Local_species %in% "Rattus rattus" ~ "Small rodent", # black rat
+      
+    Including_domestic.Local_species %in% "Peromyscus maniculatus, Peromyscus keeni" ~ "Small rodent", # deer mice
+      
+    Including_domestic.Local_species %in% "Sylvilagus floridanus, Sylvilagus nuttallii" ~ "Brush rabbit", # brush rabbit
+      
+    Including_domestic.Local_species %in% "Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii" ~ "Small rodent", # vole
+      
+    Including_domestic.Local_species %in% "Lemmiscus curtatus, Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii, Ondatra zibethicus, Onychomys leucogaster, Synaptomys borealis, Peromyscus maniculatus, Peromyscus keeni" ~ "Small rodent", # cricetidae - some kind of rodent
+    
+    Including_domestic.Local_species %in% "Neotoma lepida" ~ "Small rodent", # desert woodrat
+    
+    Including_domestic.Local_species %in% "Canis latrans, Canis lupus, Urocyon cinereoargenteus, Urocyon littoralis, Vulpes macrotis, Vulpes vulpes" ~ "Coyote", # coyote
+        
+        Including_domestic.Local_species %in% "Turdus obscurus, Turdus migratorius" ~ "Terrestrial bird", #American robin
+    
+    Including_domestic.Local_species %in% "Spizella passerina, Passerella iliaca, Melospiza melodia" ~ "Terrestrial bird", #Song sparrow, could  be chipping or fox sparrow too though.
+    
+    Including_domestic.Local_species %in% "Ascaphus truei, Incilius alvarius, Anaxyrus boreas, Anaxyrus californicus, Anaxyrus canorus, Anaxyrus cognatus, Anaxyrus exsul, Anaxyrus microscaphus, Anaxyrus punctatus, Anaxyrus woodhousii, Pseudacris cadaverina, Pseudacris hypochondriaca, Pseudacris regilla, Pseudacris sierra, Scaphiopus couchii, Spea hammondii, Spea intermontana, Rana aurora, Lithobates berlandieri, Rana boylii, Rana cascadae, Lithobates catesbeianus, Rana draytonii, Rana luteiventris, Rana muscosa, Lithobates pipiens, Rana pretiosa, Rana sierrae, Lithobates sphenocephalus, Lithobates yavapaiensis, Xenopus laevis" ~ "Frog", #frog or toad
+    
+    Including_domestic.Local_species %in% "Phoca fasciata, Phoca vitulina" ~ "Harbor seal", #harbor seal
+    
+    Including_domestic.Local_species %in% "Nucifraga columbiana, Corvus brachyrhynchos, Corvus corax" ~ "Terrestrial bird", #corvidae -- Clark's nutcracker, American crow, Common raven
+    
+        Including_domestic.Local_species %in% "Pipilo maculatus" ~ "Terrestrial bird", #spotted towhee
+    
+    Including_domestic.Local_species %in% "Onychomys torridus" ~ "Small rodent", #southern grasshopper mouse
+    
+    Including_domestic.Local_species %in% "Arctocephalus townsendi" ~ "Guadelupe fur seal", #guadelupe fur seal
+    
+    Including_domestic.Local_species %in% "Callospermophilus lateralis" ~ "Small rodent", #golden-mantled ground squirrel
+    
+    Including_domestic.Local_species %in% "Marmota flaviventris" ~ "Small rodent", #yellow-bellied marmot
+    
+    Including_domestic.Local_species %in% "Microtus montanus" ~ "Small rodent" #montane vole
+  ))
+
+# for the 16s run - broad taxonomy
+gaviota <- gaviota %>%
+  mutate(broadtax = case_when(
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus" ~ "Cattle", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lynx rufus" ~ "Bobcat", # 100
+    #Best_match_references %in% "Heliconoides inflatus" ~ "Heliconoides inflatus", # sea butterfly snail
+    #Best_match_references %in% "Odocoileus virginianus" ~ "white tailed deer", # 100
+    #Best_match_references %in% "Crotalus viridis" ~ "prairie rattlesnake", # 100
+    Barcode_region == "16" & Best_match_references %in% "Puma concolor" ~ "Puma", # puma
+    Barcode_region == "16" & Best_match_references %in% "Rattus rattus" ~ "Small rodent", # rat
+    #Best_match_references %in% "Gallus sonneratii" ~ "chicken", # 100
+    Barcode_region == "16" & Best_match_references %in% "Callipepla californica" ~ "Terrestrial bird", # California quail
+    #Best_match_references %in% "Scomber japonicus" ~ "chub mackerel", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lamna ditropis" ~ "Salmon shark", #salmon shark
+    Barcode_region == "16" & Best_match_references %in% "Magnisudis atlantica" ~ "Duckbill baracuda", # duckbill barracuda
+    Barcode_region == "16" & Best_match_references %in% "Ophiodon elongatus" ~ "Lingcod", # lingcod
+    Barcode_region == "16" & Best_match_references %in% "Thysanoessa inermis" ~ "Krill", # Krill
+    #Best_match_references %in% "Sebastes serranoides" ~ "Sebastes sp", # olive rockfish
+    Barcode_region == "16" & Best_match_references %in% "Clupea pallasii" ~ "Pacific herring", # pacific herring
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa" ~ "Wild boar", #wild boar
+    #Best_match_references %in% "Canis rufus" ~ "canid", #
+    Barcode_region == "16" & Best_match_references %in% "Pilaira anomala" ~ "Mold", #mold
+    Barcode_region == "16" & Best_match_references %in% "Reithrodontomys megalotis" ~ "Small rodent", #western harvest mouse
+    Barcode_region == "16" & Best_match_references %in% "Microtus californicus" ~ "Small rodent", #California vole
+    Barcode_region == "16" & Best_match_references %in% "Chaetodipus californicus" ~ "Small rodent", #California pocket mouse
+    Barcode_region == "16" & Best_match_references %in% "Zalophus californianus" ~ "California sea lion", #California sea lion
+    Barcode_region == "16" & Best_match_references %in% "Canis latrans" ~ "Coyote", #coyote
+    Barcode_region == "16" & Best_match_references %in% "Neotoma lepida" ~ "Small rodent", #desert woodrat
+    #Best_match_references %in% "Meleagris gallopavo" ~ "turkey", #
+    Barcode_region == "16" & Best_match_references %in% "Otospermophilus beecheyi" ~ "Small rodent", #California ground squirrel
+    Barcode_region == "16" & Best_match_references %in% "Taxidea taxus" ~ "Other terrestrial mammal", #american badger
+    Barcode_region == "16" & Best_match_references %in% "Neotoma macrotis" ~ "Small rodent", #big-eared woodrat
+    #Best_match_references %in% "Ravinia vagabunda" ~ "flesh fly", #
+    Barcode_region == "16" & Best_match_references %in% "Canis lupus" ~ "Coyote", # canid
+    Barcode_region == "16" & Best_match_references %in% "Forficula auricularia" ~ "Terrestrial insect", #European earwig
+    Barcode_region == "16" & Best_match_references %in% "Mephitis mephitis" ~ "Striped skunk", #striped skunk
+    #Best_match_references %in% "Paralucilia pseudolyrcea" ~ "blow fly", #
+    Barcode_region == "16" & Best_match_references %in% "Urocyon cinereoargenteus" ~ "Grey fox", #grey fox
+    Barcode_region == "16" & Best_match_references %in% "Pandalus jordani" ~ "Ocean pink shrimp", #ocean pink shrimp
+    #Best_match_references %in% "Merluccius productus" ~ "north pacific hake", #
+    Barcode_region == "16" & Best_match_references %in% "Peromyscus maniculatus" ~ "Small rodent", #deer mouse
+    Barcode_region == "16" & Best_match_references %in% "Pituophis catenifer" ~ "Reptile", #gopher snake
+    Barcode_region == "16" & Best_match_references %in% "Sylvilagus bachmani" ~ "Brush rabbit", #brush rabbit
+    Barcode_region == "16" & Best_match_references %in% "Plestiodon skiltonianus" ~ "Reptile", #western skink
+    Barcode_region == "16" & Best_match_references %in% "Anchoa ischana" ~ "Sharpnose anchovy", #sharpnose anchovy
+    Barcode_region == "16" & Best_match_references %in% "Gonatopsis borealis" ~ "Boreopacific armhook squid", #Boreopacific armhook squid
+    Barcode_region == "16" & Best_match_references %in% "Leucocarbo chalconotus" ~ "Pelagic cormorant", # cormorant species, checked with BLAST. shag (stewart island shag, but those are just in NZ)
+    Barcode_region == "16" & Best_match_references %in% "Pseudopaludicola boliviana" ~ "Anura", # frog, Leptodactylidae family, found in regions in south america???
+    Barcode_region == "16" & Best_match_references %in% "Microtus chrotorrhinus" ~ "Small rodent", # rock vole, found in eastern US
+    Barcode_region == "16" & Best_match_references %in% "Picoides tridactylus" ~ "Terrestrial bird", # eurasian three-toed woodpecker, not found in US --- changed to Dryobates pubescens, downy woodpecker
+    Barcode_region == "16" & Best_match_references %in% "Thomomys bottae" ~ "Small rodent", # Botta's pocket gopher
+    Barcode_region == "16" & Best_match_references %in% "Neodon bershulaensis" ~ "Small rodent", # Bershula mountain vole, found in China -- BLAST shows microtus species second match
+    #Best_match_references %in% "Chloropicon sieburthii" ~ "phytoplankton", # 90
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus" ~ "Terrestrial insect", # hairy rove beetle -- only shows up once
+    Barcode_region == "16" & Best_match_references %in% "Rhipicephalus sanguineus" ~ "Brown dog tick", # Brown dog tick
+    Barcode_region == "16" & Best_match_references %in% "Phakopsora meibomiae" ~ "Fungi", # fungi
+    Barcode_region == "16" & Best_match_references %in% "Tettigonia orientalis" ~ "Terrestrial insect", # bush cricket, but this species is found in Japan --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Isogenoides varians" ~ "Terrestrial insect", # stonefly
+    Barcode_region == "16" & Best_match_references %in% "Setvena wahkeena" ~ "Terrestrial insect", # stonefly (found in socal?) -- BLAST - cricket match
+    Barcode_region == "16" & Best_match_references %in% "Xiphidiopsis gurneyi" ~ "Terrestrial insect", #bush cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Abronia graminea" ~ "Reptile", # alligator lizard (found in socal?) -- BLAST - southern aligator lizard
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini" ~ "Terrestrial insect", # camel cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon laureae" ~ "Green algae", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae" ~ "Terrestrial insect", #Scarabaeidae (scarab) -- changed to species that came up with this species in results -- BLAST- cricket
+    Barcode_region == "16" & Best_match_references %in% "Stenopelmatus fuscus" ~ "Terrestrial insect", # 80
+    Barcode_region == "16" & Best_match_references %in% "Gymnaetoides acutilobatus" ~ "Small rodent", # endemic to china??? --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Microdipodops pallidus" ~ "Terrestrial insect", # pale kangaroo mouse
+    Barcode_region == "16" & Best_match_references %in% "Onthophagus crinitus" ~ "Terrestrial insect", # dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Pheidole deima" ~ "Terrestrial insect", # ant (found in socal?) --- BLAST - Veromessor andrei - harvester ant
+    Barcode_region == "16" & Best_match_references %in% "Hazenia capsulata" ~ "Green algae", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Anadara broughtonii" ~ "Clam", # Inflated ark clam
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea" ~ "mold", # slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis" ~ "Green algae", # 70
+
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos javanicus, Bos indicus, Bos grunniens, Bos grunniens x Bos taurus" ~ "Cattle",
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos primigenius, Bos indicus" ~ "Cattle", #cow
+    Barcode_region == "16" & Best_match_references %in% "Canis rufus, Canis lupus, Canis latrans" ~ "Coyote", # coyote
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea, Cavenderia pseudoaureostipes" ~ "mold", #slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Green algae", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon sieburthii, Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Green algae", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus, Anthrenus scrophulariae" ~ "Terrestrial insect", # Common carpet beetle/Buffalo carpet beetle
+    Barcode_region == "16" & Best_match_references %in% "Crotalus viridis, Crotalus oreganus" ~ "Reptile", #western rattlesnake
+    Barcode_region == "16" & Best_match_references %in% "Gallus sonneratii, Gallus gallus" ~ "Terrestrial bird", # wild turkey probably
+    Barcode_region == "16" & Best_match_references %in% "Heliconoides inflatus, Cathaica polystigma, Nesiohelix moreletiana, Karaftohelix maackii, Atlanta turriculata, Aceria guerreronis, Hahnia ngai, Grylloprimevala jilina, Aconurella prolixa, Processina dashahensis, Tapinoma indicum, Homo sapiens" ~ "Sea butterfly snail", # Heliconoides inflatus -- Sea butterfly (range is not Socal, but Mexico, and it's the closest species in the list) 
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae, Paratriodonta lentula" ~ "Terrestrial insect", #Scarabaeidae (scarab)
+    Barcode_region == "16" & Best_match_references %in% "Meleagris gallopavo, Labidesthes sicculus" ~ "Terrestrial bird", #wild turkey
+    Barcode_region == "16" & Best_match_references %in% "Merluccius productus, Merluccius angustimanus" ~ "North Pacific Hake", #North Pacific Hake
+    Barcode_region == "16" & Best_match_references %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Mule deer", #mule deer
+    Barcode_region == "16" & Best_match_references %in% "Paralucilia pseudolyrcea, Paralucilia paraensis, Hemilucilia semidiaphana, Calliphora vomitoria, Calliphora vicina, Calliphora sinensis, Calliphora nigribarbis, Calliphora calliphoroides" ~ "Terrestrial insect", # fly
+    Barcode_region == "16" & Best_match_references %in% "Ravinia vagabunda, Ravinia stimulans, Ravinia derelicta" ~ "Terrestrial insect", #flesh fly
+    Barcode_region == "16" & Best_match_references %in% "Scomber japonicus, Scomber colias, Scomber australasicus"~ "Pacific makerel", #pacific mackerel
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa, Thryonomys swinderianus" ~ "Wild boar", #wild pig
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini, Onthophagus obscurior" ~ "Terrestrial insect", #dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Sebastes serranoides, Sebastes melanops, Sebastes flavidus" ~ "Rockfish",  #rockfish
+    Barcode_region == "16" & Best_match_references %in% "" ~ "no match",
+    TRUE ~ broadtax
+    ))
+
+
+
+checkna <- gaviota[is.na(gaviota$broadtax), ] 
+rm(checkna)
+```
+
+## Curate broader taxonomic class
+grouping categories:
+- coyote
+- cattle
+- mule deer
+- reptiles/amphibians
+- small rodents
+- brandt's cormorant
+- terrestrial bird
+- wild boar
+- other terrestrial mammal
+- california sea lion
+- puma
+- American shad
+
+
+```{r}
+gaviota$broadtax1 = NA
+
+gaviota <- gaviota %>%
+  mutate(broadtax1 = case_when(
+    Including_domestic.Local_species %in% "Canis latrans, Canis lupus" ~ "Coyote", # coyote
+    
+    Including_domestic.Local_species %in% "Phalacrocorax penicillatus, Phalacrocorax brasilianus, Phalacrocorax pelagicus" 
+      ~ "Brandt's cormorant", # Brant's cormorant
+    
+    Including_domestic.Local_species %in% "Phalacrocorax pelagicus, Phalacrocorax penicillatus" 
+      ~ "Brandt's cormorant", # Brant's cormorant
+    
+    Including_domestic.Local_species %in% "Microtus californicus" 
+      ~ "Small rodent", # Californian vole
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei" ~ "Small rodent", #Peromyscus - deer mouse
+    
+    Including_domestic.Local_species %in% "Sylvilagus bachmani" ~ "Brush rabbit", # Brush rabbit
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Arborimus albipes, Arborimus longicaudus, Arborimus pomo, Myodes californicus, Lemmiscus curtatus, Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii, Ondatra zibethicus, Phenacomys intermedius, Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis, Onychomys leucogaster, Onychomys torridus, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei, Reithrodontomys raviventris, Reithrodontomys megalotis, Sigmodon arizonae, Sigmodon hispidus" ~ "Small rodent", # 	Cricetidae (mouse or vole)
+      
+    Including_domestic.Local_species %in% "Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis" ~ "Small rodent", # Neotoma - woodrat
+      
+    Including_domestic.Local_species %in% "Bos taurus, Bos indicus, Bos javanicus, Bos frontalis" ~ "Cattle", # Bovine
+      
+    Including_domestic.Local_species %in% "Gallus gallus" ~ "Terrestrial bird", #chicken
+      
+    Including_domestic.Local_species %in% "Urocyon cinereoargenteus, Urocyon littoralis" ~ "Grey fox", # grey fox
+      
+    Including_domestic.Local_species %in% "Glaucomys oregonensis, Glaucomys sabrinus, Callospermophilus lateralis" ~ "Small rodent", # flying squirrel/golden mantle ground squirrel
+      
+    Including_domestic.Local_species %in% "Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii" ~ "Small rodent", # vole
+    
+    Including_domestic.Local_species %in% "Thomomys bottae" ~"Small rodent", # botta's pocket gopher
+    
+    Including_domestic.Local_species %in% "Lynx rufus, Puma concolor" ~ "Bobcat", # bobcat
+      
+    Including_domestic.Local_species %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Mule deer", # mule deer
+      
+    Including_domestic.Local_species %in% "Sus scrofa" ~ "Wild boar", #wild boar
+      
+    Including_domestic.Local_species %in% "Chloris sinica, Spinus pinus, Plectrophenax nivalis, Zonotrichia leucophrys, Zonotrichia atricapilla, Zonotrichia albicollis, Sturnella neglecta, Sturnella magna, Serinus canaria" ~ "Terrestrial bird", # Passeriformes
+      
+    Including_domestic.Local_species %in% "Peromyscus eremicus" ~ "Small rodent", # cactus mouse
+      
+    Including_domestic.Local_species %in% "Zalophus californianus" ~ "California sea lion", # sea lion
+    
+    Including_domestic.Local_species %in% "Canis lupus" ~ "Coyote", # coyote
+      
+    Including_domestic.Local_species %in% "Peromyscus crinitus, Peromyscus eremicus" ~ "Small rodent", # Peromyscus
+      
+    Including_domestic.Local_species %in% "Callipepla californica, Callipepla gambelii" ~ "Terrestrial bird", # CA quail 
+      
+    Including_domestic.Local_species %in% "Alosa sapidissima, Dorosoma petenense" ~ "American shad", # American shad
+      
+    Including_domestic.Local_species %in% "Leuconotopicus albolarvatus, Jynx torquilla, Melanerpes lewis, Melanerpes erythrocephalus, Melanerpes formicivorus, Melanerpes uropygialis, Sphyrapicus thyroideus, Sphyrapicus varius, Sphyrapicus nuchalis, Sphyrapicus ruber, Picoides arcticus, Dryobates pubescens, Dryobates nuttallii, Dryobates scalaris, Picoides villosus, Colaptes auratus, Colaptes chrysoides, Dryocopus pileatus" ~ "Terrestrial bird", # woodpecker
+      
+    Including_domestic.Local_species %in% "Plestiodon gilberti" ~ "Reptile/amphibian", # Gilbert's skink
+      
+    Including_domestic.Local_species %in% "Taxidea taxus" ~ "Other terrestrial mammal", # American badger
+      
+    Including_domestic.Local_species %in% "Microtus townsendii" ~ "Small rodent", # Microtus - townsend's vole
+      
+    Including_domestic.Local_species %in% "Neotoma macrotis" ~ "Small rodent", # big eared woodrat
+    
+    Including_domestic.Local_species %in% "Aphelocoma insularis, Aphelocoma californica, Aphelocoma woodhouseii" ~ "Terrestrial bird", # CA scrub jay
+      
+    Including_domestic.Local_species %in% "Puma concolor" ~ "Puma", # puma
+      
+    Including_domestic.Local_species %in% "Meleagris gallopavo, Gallus gallus" ~ "Terrestrial bird", # wild turkey
+      
+    Including_domestic.Local_species %in% "Mephitis mephitis" ~ "other terrestrial mammal", # striped skunk
+      
+    Including_domestic.Local_species %in% "Vulpes vulpes" ~ "Red fox", # red fox
+      
+    Including_domestic.Local_species %in% "Chaetodipus californicus" ~ "Small rodent", # California pocket mouse
+      
+    Including_domestic.Local_species %in% "Mus musculus" ~ "Small rodent", # house mouse
+    
+    Including_domestic.Local_species %in% "Rattus rattus" ~ "Small rodent", # black rat
+      
+    Including_domestic.Local_species %in% "Peromyscus maniculatus, Peromyscus keeni" ~ "Small rodent", # deer mice
+      
+    Including_domestic.Local_species %in% "Sylvilagus floridanus, Sylvilagus nuttallii" ~ "Brush rabbit", # brush rabbit
+      
+    Including_domestic.Local_species %in% "Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii" ~ "Small rodent", # vole
+      
+    Including_domestic.Local_species %in% "Lemmiscus curtatus, Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii, Ondatra zibethicus, Onychomys leucogaster, Synaptomys borealis, Peromyscus maniculatus, Peromyscus keeni" ~ "Small rodent", # cricetidae - some kind of rodent
+    
+    Including_domestic.Local_species %in% "Neotoma lepida" ~ "Small rodent", # desert woodrat
+    
+    Including_domestic.Local_species %in% "Canis latrans, Canis lupus, Urocyon cinereoargenteus, Urocyon littoralis, Vulpes macrotis, Vulpes vulpes" ~ "Coyote", # coyote
+    
+            
+        Including_domestic.Local_species %in% "Turdus obscurus, Turdus migratorius" ~ "Terrestrial bird", #American robin
+    
+    Including_domestic.Local_species %in% "Spizella passerina, Passerella iliaca, Melospiza melodia" ~ "Terrestrial bird", #Song sparrow, could  be chipping or fox sparrow too though.
+    
+    Including_domestic.Local_species %in% "Ascaphus truei, Incilius alvarius, Anaxyrus boreas, Anaxyrus californicus, Anaxyrus canorus, Anaxyrus cognatus, Anaxyrus exsul, Anaxyrus microscaphus, Anaxyrus punctatus, Anaxyrus woodhousii, Pseudacris cadaverina, Pseudacris hypochondriaca, Pseudacris regilla, Pseudacris sierra, Scaphiopus couchii, Spea hammondii, Spea intermontana, Rana aurora, Lithobates berlandieri, Rana boylii, Rana cascadae, Lithobates catesbeianus, Rana draytonii, Rana luteiventris, Rana muscosa, Lithobates pipiens, Rana pretiosa, Rana sierrae, Lithobates sphenocephalus, Lithobates yavapaiensis, Xenopus laevis" ~ "reptile/amphibian", #frog or toad
+    
+    Including_domestic.Local_species %in% "Phoca fasciata, Phoca vitulina" ~ "Harbor seal", #harbor seal
+    
+    Including_domestic.Local_species %in% "Nucifraga columbiana, Corvus brachyrhynchos, Corvus corax" ~ "Terrestrial bird", #corvidae -- Clark's nutcracker, American crow, Common raven
+    
+            Including_domestic.Local_species %in% "Pipilo maculatus" ~ "Terrestrial bird", #spotted towhee
+    
+    Including_domestic.Local_species %in% "Onychomys torridus" ~ "Small rodent", #southern grasshopper mouse
+    
+    Including_domestic.Local_species %in% "Arctocephalus townsendi" ~ "Guadelupe fur seal", #guadelupe fur seal
+    
+    Including_domestic.Local_species %in% "Callospermophilus lateralis" ~ "Small rodent", #golden-mantled ground squirrel
+    
+    Including_domestic.Local_species %in% "Marmota flaviventris" ~ "Small rodent", #yellow-bellied marmot
+    
+    Including_domestic.Local_species %in% "Microtus montanus" ~ "Small rodent" #montane vole
+  ))
+
+# for the 16s run - broad taxonomy 1
+gaviota <- gaviota %>%
+  mutate(broadtax1 = case_when(
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus" ~ "Cattle", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lynx rufus" ~ "Bobcat", # 100
+    #Best_match_references %in% "Heliconoides inflatus" ~ "Heliconoides inflatus", # sea butterfly snail
+    #Best_match_references %in% "Odocoileus virginianus" ~ "white tailed deer", # 100
+    #Best_match_references %in% "Crotalus viridis" ~ "prairie rattlesnake", # 100
+    Barcode_region == "16" & Best_match_references %in% "Puma concolor" ~ "Puma", # puma
+    Barcode_region == "16" & Best_match_references %in% "Rattus rattus" ~ "Small rodent", # rat
+    #Best_match_references %in% "Gallus sonneratii" ~ "chicken", # 100
+    Barcode_region == "16" & Best_match_references %in% "Callipepla californica" ~ "Terrestrial bird", # California quail
+    #Best_match_references %in% "Scomber japonicus" ~ "chub mackerel", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lamna ditropis" ~ "Salmon shark", #salmon shark
+    Barcode_region == "16" & Best_match_references %in% "Magnisudis atlantica" ~ "Duckbill baracuda", # duckbill barracuda
+    Barcode_region == "16" & Best_match_references %in% "Ophiodon elongatus" ~ "Lingcod", # lingcod
+    Barcode_region == "16" & Best_match_references %in% "Thysanoessa inermis" ~ "Krill", # Krill
+    #Best_match_references %in% "Sebastes serranoides" ~ "Sebastes sp", # olive rockfish
+    Barcode_region == "16" & Best_match_references %in% "Clupea pallasii" ~ "Pacific herring", # pacific herring
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa" ~ "Wild boar", #wild boar
+    #Best_match_references %in% "Canis rufus" ~ "canid", #
+    Barcode_region == "16" & Best_match_references %in% "Pilaira anomala" ~ "Mold", #mold
+    Barcode_region == "16" & Best_match_references %in% "Reithrodontomys megalotis" ~ "Small rodent", #western harvest mouse
+    Barcode_region == "16" & Best_match_references %in% "Microtus californicus" ~ "Small rodent", #California vole
+    Barcode_region == "16" & Best_match_references %in% "Chaetodipus californicus" ~ "Small rodent", #California pocket mouse
+    Barcode_region == "16" & Best_match_references %in% "Zalophus californianus" ~ "California sea lion", #California sea lion
+    Barcode_region == "16" & Best_match_references %in% "Canis latrans" ~ "Coyote", #coyote
+    Barcode_region == "16" & Best_match_references %in% "Neotoma lepida" ~ "Small rodent", #desert woodrat
+    #Best_match_references %in% "Meleagris gallopavo" ~ "turkey", #
+    Barcode_region == "16" & Best_match_references %in% "Otospermophilus beecheyi" ~ "Small rodent", #California ground squirrel
+    Barcode_region == "16" & Best_match_references %in% "Taxidea taxus" ~ "Other terrestrial mammal", #american badger
+    Barcode_region == "16" & Best_match_references %in% "Neotoma macrotis" ~ "Small rodent", #big-eared woodrat
+    #Best_match_references %in% "Ravinia vagabunda" ~ "flesh fly", #
+    Barcode_region == "16" & Best_match_references %in% "Canis lupus" ~ "Coyote", # canid
+    Barcode_region == "16" & Best_match_references %in% "Forficula auricularia" ~ "Terrestrial insect", #European earwig
+    Barcode_region == "16" & Best_match_references %in% "Mephitis mephitis" ~ "Striped skunk", #striped skunk
+    #Best_match_references %in% "Paralucilia pseudolyrcea" ~ "blow fly", #
+    Barcode_region == "16" & Best_match_references %in% "Urocyon cinereoargenteus" ~ "Grey fox", #grey fox
+    Barcode_region == "16" & Best_match_references %in% "Pandalus jordani" ~ "Ocean pink shrimp", #ocean pink shrimp
+    #Best_match_references %in% "Merluccius productus" ~ "north pacific hake", #
+    Barcode_region == "16" & Best_match_references %in% "Peromyscus maniculatus" ~ "Small rodent", #deer mouse
+    Barcode_region == "16" & Best_match_references %in% "Pituophis catenifer" ~ "Reptile/amphibian", #gopher snake
+    Barcode_region == "16" & Best_match_references %in% "Sylvilagus bachmani" ~ "Brush rabbit", #brush rabbit
+    Barcode_region == "16" & Best_match_references %in% "Plestiodon skiltonianus" ~ "Reptile/amphibian", #western skink
+    Barcode_region == "16" & Best_match_references %in% "Anchoa ischana" ~ "Sharpnose anchovy", #sharpnose anchovy
+    Barcode_region == "16" & Best_match_references %in% "Gonatopsis borealis" ~ "Boreopacific armhook squid", #Boreopacific armhook squid
+    Barcode_region == "16" & Best_match_references %in% "Leucocarbo chalconotus" ~ "Pelagic cormorant", # cormorant species, checked with BLAST. shag (stewart island shag, but those are just in NZ)
+    Barcode_region == "16" & Best_match_references %in% "Pseudopaludicola boliviana" ~ "Reptile/amphibian", # frog, Leptodactylidae family, found in regions in south america???
+    Barcode_region == "16" & Best_match_references %in% "Microtus chrotorrhinus" ~ "Small rodent", # rock vole, found in eastern US
+    Barcode_region == "16" & Best_match_references %in% "Picoides tridactylus" ~ "Terrestrial bird", # eurasian three-toed woodpecker, not found in US --- changed to Dryobates pubescens, downy woodpecker
+    Barcode_region == "16" & Best_match_references %in% "Thomomys bottae" ~ "Small rodent", # Botta's pocket gopher
+    Barcode_region == "16" & Best_match_references %in% "Neodon bershulaensis" ~ "Small rodent", # Bershula mountain vole, found in China -- BLAST shows microtus species second match
+    #Best_match_references %in% "Chloropicon sieburthii" ~ "phytoplankton", # 90
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus" ~ "Terrestrial insect", # hairy rove beetle -- only shows up once
+    Barcode_region == "16" & Best_match_references %in% "Rhipicephalus sanguineus" ~ "Brown dog tick", # Brown dog tick
+    Barcode_region == "16" & Best_match_references %in% "Phakopsora meibomiae" ~ "fungi", # fungi
+    Barcode_region == "16" & Best_match_references %in% "Tettigonia orientalis" ~ "Terrestrial insect", # bush cricket, but this species is found in Japan --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Isogenoides varians" ~ "Terrestrial insect", # stonefly
+    Barcode_region == "16" & Best_match_references %in% "Setvena wahkeena" ~ "Terrestrial insect", # stonefly (found in socal?) -- BLAST - cricket match
+    Barcode_region == "16" & Best_match_references %in% "Xiphidiopsis gurneyi" ~ "Terrestrial insect", #bush cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Abronia graminea" ~ "Reptile/amphibian", # alligator lizard (found in socal?) -- BLAST - southern aligator lizard
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini" ~ "Terrestrial insect", # camel cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon laureae" ~ "Green algae", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae" ~ "Terrestrial insect", #Scarabaeidae (scarab) -- changed to species that came up with this species in results -- BLAST- cricket
+    Barcode_region == "16" & Best_match_references %in% "Stenopelmatus fuscus" ~ "Terrestrial insect", # 80
+    Barcode_region == "16" & Best_match_references %in% "Gymnaetoides acutilobatus" ~ "Small rodent", # endemic to china??? --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Microdipodops pallidus" ~ "Terrestrial insect", # pale kangaroo mouse
+    Barcode_region == "16" & Best_match_references %in% "Onthophagus crinitus" ~ "Terrestrial insect", # dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Pheidole deima" ~ "Terrestrial insect", # ant (found in socal?) --- BLAST - Veromessor andrei - harvester ant
+    Barcode_region == "16" & Best_match_references %in% "Hazenia capsulata" ~ "Green algae", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Anadara broughtonii" ~ "Inflated ark clam", # Inflated ark clam
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea" ~ "mold", # slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis" ~ "Green algae", # 70
+
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos javanicus, Bos indicus, Bos grunniens, Bos grunniens x Bos taurus" ~ "Cattle",
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos primigenius, Bos indicus" ~ "Cattle", #cow
+    Barcode_region == "16" & Best_match_references %in% "Canis rufus, Canis lupus, Canis latrans" ~ "Coyote", # coyote
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea, Cavenderia pseudoaureostipes" ~ "mold", #slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Green algae", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon sieburthii, Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Green algae", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus, Anthrenus scrophulariae" ~ "Terrestrial insect", # Common carpet beetle/Buffalo carpet beetle
+    Barcode_region == "16" & Best_match_references %in% "Crotalus viridis, Crotalus oreganus" ~ "Reptile/amphibian", #western rattlesnake
+    Barcode_region == "16" & Best_match_references %in% "Gallus sonneratii, Gallus gallus" ~ "Terrestrial bird", # wild turkey probably
+    Barcode_region == "16" & Best_match_references %in% "Heliconoides inflatus, Cathaica polystigma, Nesiohelix moreletiana, Karaftohelix maackii, Atlanta turriculata, Aceria guerreronis, Hahnia ngai, Grylloprimevala jilina, Aconurella prolixa, Processina dashahensis, Tapinoma indicum, Homo sapiens" ~ "Sea butterfly snail", # Heliconoides inflatus -- Sea butterfly (range is not Socal, but Mexico, and it's the closest species in the list) 
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae, Paratriodonta lentula" ~ "Terrestrial insect", #Scarabaeidae (scarab)
+    Barcode_region == "16" & Best_match_references %in% "Meleagris gallopavo, Labidesthes sicculus" ~ "Terrestrial bird", #wild turkey
+    Barcode_region == "16" & Best_match_references %in% "Merluccius productus, Merluccius angustimanus" ~ "North Pacific Hake", #North Pacific Hake
+    Barcode_region == "16" & Best_match_references %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Mule deer", #mule deer
+    Barcode_region == "16" & Best_match_references %in% "Paralucilia pseudolyrcea, Paralucilia paraensis, Hemilucilia semidiaphana, Calliphora vomitoria, Calliphora vicina, Calliphora sinensis, Calliphora nigribarbis, Calliphora calliphoroides" ~ "Terrestrial insect", # fly
+    Barcode_region == "16" & Best_match_references %in% "Ravinia vagabunda, Ravinia stimulans, Ravinia derelicta" ~ "Terrestrial insect", #flesh fly
+    Barcode_region == "16" & Best_match_references %in% "Scomber japonicus, Scomber colias, Scomber australasicus"~ "Pacific makerel", #pacific mackerel
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa, Thryonomys swinderianus" ~ "Wild boar", #wild pig
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini, Onthophagus obscurior" ~ "Terrestrial insect", #dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Sebastes serranoides, Sebastes melanops, Sebastes flavidus" ~ "Rockfish",  #rockfish
+    Barcode_region == "16" & Best_match_references %in% "" ~ "no match",
+    TRUE ~ broadtax1
+    ))
+
+
+
+checkna <- gaviota[is.na(gaviota$broadtax1), ] 
+#rm(checkna)
+
+#write.csv(alaska, "alaska.csv")
+```
+
+species name
+
+```{r}
+gaviota$species = NA
+
+gaviota <- gaviota %>%
+  mutate(species = case_when(
+    Including_domestic.Local_species %in% "Canis latrans, Canis lupus" ~ "latrans", # coyote
+    
+    Including_domestic.Local_species %in% "Phalacrocorax penicillatus, Phalacrocorax brasilianus, Phalacrocorax pelagicus" 
+      ~ "penicillatus", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Phalacrocorax pelagicus, Phalacrocorax penicillatus" 
+      ~ "penicillatus", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Microtus californicus" 
+      ~ "californicus", # Californian vole
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei" ~ "maniculatus", #Peromyscus - deer mouse
+    
+    Including_domestic.Local_species %in% "Sylvilagus bachmani" ~ "bachmani", # Brush rabbit
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Arborimus albipes, Arborimus longicaudus, Arborimus pomo, Myodes californicus, Lemmiscus curtatus, Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii, Ondatra zibethicus, Phenacomys intermedius, Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis, Onychomys leucogaster, Onychomys torridus, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei, Reithrodontomys raviventris, Reithrodontomys megalotis, Sigmodon arizonae, Sigmodon hispidus" ~ "californicus", # 	based on blast and iNat
+      
+    Including_domestic.Local_species %in% "Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis" ~ NA, # Neotoma - woodrat
+      
+    Including_domestic.Local_species %in% "Bos taurus, Bos indicus, Bos javanicus, Bos frontalis" ~ "taurus", # Bovine
+      
+    Including_domestic.Local_species %in% "Gallus gallus" ~ "gallus", #chicken
+      
+    Including_domestic.Local_species %in% "Urocyon cinereoargenteus, Urocyon littoralis" ~ "cinereoargenteus", # grey fox
+      
+    Including_domestic.Local_species %in% "Glaucomys oregonensis, Glaucomys sabrinus, Callospermophilus lateralis" ~ "beecheyi", # flying squirrel/golden mantle ground squirrel --  CA ground squirrel based on blast
+      
+    Including_domestic.Local_species %in% "Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii" ~ "californicus", # vole
+    Including_domestic.Local_species %in% "Thomomys bottae" ~"bottae", # botta's pocket gopher
+    
+    Including_domestic.Local_species %in% "Lynx rufus, Puma concolor" ~ "rufus", # bobcat
+      
+    Including_domestic.Local_species %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "hemionus", # mule deer
+      
+    Including_domestic.Local_species %in% "Sus scrofa" ~ "scrofa", #wild boar
+      
+    Including_domestic.Local_species %in% "Chloris sinica, Spinus pinus, Plectrophenax nivalis, Zonotrichia leucophrys, Zonotrichia atricapilla, Zonotrichia albicollis, Sturnella neglecta, Sturnella magna, Serinus canaria" ~ "leucophrys", # white crowned sparrow
+      
+    Including_domestic.Local_species %in% "Peromyscus eremicus" ~ "megalotus", # From Blast and species list
+      
+    Including_domestic.Local_species %in% "Zalophus californianus" ~ "californianus", # sea lion
+    
+    Including_domestic.Local_species %in% "Canis lupus" ~ "latrans", # coyote
+      
+    Including_domestic.Local_species %in% "Peromyscus crinitus, Peromyscus eremicus" ~ "megalotis", # from blast and COPR species list. Western harvest mouse
+      
+    Including_domestic.Local_species %in% "Callipepla californica, Callipepla gambelii" ~ "californica", # CA quail 
+      
+    Including_domestic.Local_species %in% "Alosa sapidissima, Dorosoma petenense" ~ "sapidissima", # American shad
+      
+    Including_domestic.Local_species %in% "Leuconotopicus albolarvatus, Jynx torquilla, Melanerpes lewis, Melanerpes erythrocephalus, Melanerpes formicivorus, Melanerpes uropygialis, Sphyrapicus thyroideus, Sphyrapicus varius, Sphyrapicus nuchalis, Sphyrapicus ruber, Picoides arcticus, Dryobates pubescens, Dryobates nuttallii, Dryobates scalaris, Picoides villosus, Colaptes auratus, Colaptes chrysoides, Dryocopus pileatus" ~ "formicivorus", # acorn woodpecker
+      
+    Including_domestic.Local_species %in% "Plestiodon gilberti" ~ "skiltonianus", # Skilton's skink
+      
+    Including_domestic.Local_species %in% "Taxidea taxus" ~ "taxus", # American badger
+      
+    Including_domestic.Local_species %in% "Microtus townsendii" ~ "californicus", # From species list. Microtus - townsend's vole
+      
+    Including_domestic.Local_species %in% "Neotoma macrotis" ~ NA, #  from species list. big eared woodrat
+    
+    Including_domestic.Local_species %in% "Aphelocoma insularis, Aphelocoma californica, Aphelocoma woodhouseii" ~ "californica", # CA scrub jay
+      
+    Including_domestic.Local_species %in% "Puma concolor" ~ "concolor", # puma
+      
+    Including_domestic.Local_species %in% "Meleagris gallopavo, Gallus gallus" ~ "gallopavo", # wild turkey
+      
+    Including_domestic.Local_species %in% "Mephitis mephitis" ~ "mephitis", # striped skunk
+      
+    Including_domestic.Local_species %in% "Vulpes vulpes" ~ "vulpes", # red fox
+      
+    Including_domestic.Local_species %in% "Chaetodipus californicus" ~ "heermanni", # Blast to match species list
+      
+    Including_domestic.Local_species %in% "Mus musculus" ~ "musculus", # house mouse
+    
+    Including_domestic.Local_species %in% "Rattus rattus" ~ "rattus", # black rat
+      
+    Including_domestic.Local_species %in% "Peromyscus maniculatus, Peromyscus keeni" ~ "maniculatus", # deer mice
+      
+    Including_domestic.Local_species %in% "Sylvilagus floridanus, Sylvilagus nuttallii" ~ "bachmani", # brush rabbit
+      
+    Including_domestic.Local_species %in% "Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii" ~ "californicus", # vole
+      
+    Including_domestic.Local_species %in% "Lemmiscus curtatus, Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii, Ondatra zibethicus, Onychomys leucogaster, Synaptomys borealis, Peromyscus maniculatus, Peromyscus keeni" ~ "maniculatus", # cricetidae - some kind of rodent -- (choosing microtus sp)
+   
+     Including_domestic.Local_species %in% "Neotoma lepida" ~ NA, # desert woodrat
+    
+     Including_domestic.Local_species %in% "Canis latrans, Canis lupus, Urocyon cinereoargenteus, Urocyon littoralis, Vulpes macrotis, Vulpes vulpes" ~ "latrans", # coyote
+    
+    Including_domestic.Local_species %in% "Turdus obscurus, Turdus migratorius" ~ "migratorius", #American robin
+    
+    Including_domestic.Local_species %in% "Spizella passerina, Passerella iliaca, Melospiza melodia" ~ "melodia", #Song sparrow, could  be chipping or fox sparrow too though.
+    
+    Including_domestic.Local_species %in% "Ascaphus truei, Incilius alvarius, Anaxyrus boreas, Anaxyrus californicus, Anaxyrus canorus, Anaxyrus cognatus, Anaxyrus exsul, Anaxyrus microscaphus, Anaxyrus punctatus, Anaxyrus woodhousii, Pseudacris cadaverina, Pseudacris hypochondriaca, Pseudacris regilla, Pseudacris sierra, Scaphiopus couchii, Spea hammondii, Spea intermontana, Rana aurora, Lithobates berlandieri, Rana boylii, Rana cascadae, Lithobates catesbeianus, Rana draytonii, Rana luteiventris, Rana muscosa, Lithobates pipiens, Rana pretiosa, Rana sierrae, Lithobates sphenocephalus, Lithobates yavapaiensis, Xenopus laevis" ~ NA, #frog or toad
+    
+    Including_domestic.Local_species %in% "Phoca fasciata, Phoca vitulina" ~ "vitulina", #harbor seal
+    
+    Including_domestic.Local_species %in% "Nucifraga columbiana, Corvus brachyrhynchos, Corvus corax" ~ "corax", # Common raven -- blast match
+    
+    Including_domestic.Local_species %in% "Pipilo maculatus" ~ "maculatus", #spotted towhee
+    
+    Including_domestic.Local_species %in% "Onychomys torridus" ~ "maniculatus", #southern grasshopper mouse BLAST match to peromyscus maniculatus
+    
+    Including_domestic.Local_species %in% "Arctocephalus townsendi" ~ "townsendi", #guadelupe fur seal
+    
+    Including_domestic.Local_species %in% "Callospermophilus lateralis" ~ "beecheyi", #CA ground squirrel
+    
+    Including_domestic.Local_species %in% "Marmota flaviventris" ~ "beecheyi", #yellow-bellied marmot
+    
+    Including_domestic.Local_species %in% "Microtus montanus" ~ "californicus" #california vole
+  ))
+
+# for the 16s run
+gaviota <- gaviota %>%
+  mutate(species = case_when(
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus" ~ "taurus", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lynx rufus" ~ "rufus", # 100
+    #Best_match_references %in% "Heliconoides inflatus" ~ "Heliconoides inflatus", # sea butterfly snail
+    #Best_match_references %in% "Odocoileus virginianus" ~ "white tailed deer", # 100
+    #Best_match_references %in% "Crotalus viridis" ~ "prairie rattlesnake", # 100
+    Barcode_region == "16" & Best_match_references %in% "Puma concolor" ~ "concolor", # puma
+    Barcode_region == "16" & Best_match_references %in% "Rattus rattus" ~ "rattus", # rat
+    #Best_match_references %in% "Gallus sonneratii" ~ "chicken", # 100
+    Barcode_region == "16" & Best_match_references %in% "californica" ~ "californica", # California quail
+    #Best_match_references %in% "Scomber japonicus" ~ "chub mackerel", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lamna ditropis" ~ "ditropis", #salmon shark
+    Barcode_region == "16" & Best_match_references %in% "Magnisudis atlantica" ~ "atlantica", # duckbill barracuda
+    Barcode_region == "16" & Best_match_references %in% "Ophiodon elongatus" ~ "elongatus", # lingcod
+    Barcode_region == "16" & Best_match_references %in% "Thysanoessa inermis" ~ "inermis", # Krill
+    #Best_match_references %in% "Sebastes serranoides" ~ "Sebastes sp", # olive rockfish
+    Barcode_region == "16" & Best_match_references %in% "Clupea pallasii" ~ "pallasii", # pacific herring
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa" ~ "scrofa", #wild boar
+    #Best_match_references %in% "Canis rufus" ~ "canid", #
+    Barcode_region == "16" & Best_match_references %in% "Pilaira anomala" ~ "anomala", #mold
+    Barcode_region == "16" & Best_match_references %in% "Reithrodontomys megalotis" ~ "megalotis", #western harvest mouse
+    Barcode_region == "16" & Best_match_references %in% "Microtus californicus" ~ "californicus", #California vole
+    Barcode_region == "16" & Best_match_references %in% "Chaetodipus californicus" ~ "heermanni", #California pocket mouse
+    Barcode_region == "16" & Best_match_references %in% "Zalophus californianus" ~ "californianus", #California sea lion
+    Barcode_region == "16" & Best_match_references %in% "Canis latrans" ~ "latrans", #coyote
+    Barcode_region == "16" & Best_match_references %in% "Neotoma lepida" ~ NA, #desert woodrat
+    #Best_match_references %in% "Meleagris gallopavo" ~ "turkey", #
+    Barcode_region == "16" & Best_match_references %in% "Otospermophilus beecheyi" ~ "beecheyi", #California ground squirrel
+    Barcode_region == "16" & Best_match_references %in% "Taxidea taxus" ~ "taxus", #american badger
+    Barcode_region == "16" & Best_match_references %in% "Neotoma macrotis" ~ NA, #big-eared woodrat
+    #Best_match_references %in% "Ravinia vagabunda" ~ "flesh fly", #
+    Barcode_region == "16" & Best_match_references %in% "Canis lupus" ~ "latrans", # canid
+    Barcode_region == "16" & Best_match_references %in% "Forficula auricularia" ~ NA, # earwig
+    Barcode_region == "16" & Best_match_references %in% "Mephitis mephitis" ~ "mephitis", #striped skunk
+    #Best_match_references %in% "Paralucilia pseudolyrcea" ~ "blow fly", #
+    Barcode_region == "16" & Best_match_references %in% "Urocyon cinereoargenteus" ~ "cinereoargenteus", #grey fox
+    Barcode_region == "16" & Best_match_references %in% "Pandalus jordani" ~ "jordani", #ocean pink shrimp
+    #Best_match_references %in% "Merluccius productus" ~ "north pacific hake", #
+    Barcode_region == "16" & Best_match_references %in% "Peromyscus maniculatus" ~ "maniculatus", #deer mouse
+    Barcode_region == "16" & Best_match_references %in% "Pituophis catenifer" ~ "catenifer", #gopher snake
+    Barcode_region == "16" & Best_match_references %in% "Sylvilagus bachmani" ~ "bachmani", #brush rabbit
+    Barcode_region == "16" & Best_match_references %in% "Plestiodon skiltonianus" ~ "skiltonianus", #skilton's skink
+    Barcode_region == "16" & Best_match_references %in% "Anchoa ischana" ~ "ischana", #sharpnose anchovy
+    Barcode_region == "16" & Best_match_references %in% "Gonatopsis borealis" ~ "borealis", #Boreopacific armhook squid
+    Barcode_region == "16" & Best_match_references %in% "Leucocarbo chalconotus" ~ "pelagicus", # pelagic cormorant species, checked with BLAST. 3rd result, 92.99%match
+    Barcode_region == "16" & Best_match_references %in% "Pseudopaludicola boliviana" ~ NA, # frog, Leptodactylidae family, found in regions in south america???
+    Barcode_region == "16" & Best_match_references %in% "Microtus chrotorrhinus" ~ "californicus", # rock vole, found in eastern US
+    Barcode_region == "16" & Best_match_references %in% "Picoides tridactylus" ~ "pubescens", # eurasian three-toed woodpecker, not found in US --- changed to Dryobates pubescens, downy woodpecker
+    Barcode_region == "16" & Best_match_references %in% "Thomomys bottae" ~ "bottae", # Botta's pocket gopher
+    Barcode_region == "16" & Best_match_references %in% "Neodon bershulaensis" ~ "californicus", # Bershula mountain vole, found in China -- BLAST shows microtus species second match
+    #Best_match_references %in% "Chloropicon sieburthii" ~ "phytoplankton", # 90
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus" ~ NA, # hairy rove beetle -- only shows up once
+    Barcode_region == "16" & Best_match_references %in% "Rhipicephalus sanguineus" ~ "sanguineus", # Brown dog tick
+    Barcode_region == "16" & Best_match_references %in% "Phakopsora meibomiae" ~ "meibomiae", # fungi
+    Barcode_region == "16" & Best_match_references %in% "Tettigonia orientalis" ~ NA, # bush cricket, but this species is found in Japan ---BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Isogenoides varians" ~ NA, # stonefly
+    Barcode_region == "16" & Best_match_references %in% "Setvena wahkeena" ~ NA, # stonefly (found in socal?) -- BLAST - cricket match
+    Barcode_region == "16" & Best_match_references %in% "Xiphidiopsis gurneyi" ~ NA, #bush cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Abronia graminea" ~ "multicarinata", # alligator lizard (found in socal?) -- BLAST - southern aligator lizard
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini" ~ NA, # camel cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon laureae" ~ NA, # green algae
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae" ~ NA, #Scarabaeidae (scarab) -- changed to species that came up with this species in results -- BLAST- cricket
+    Barcode_region == "16" & Best_match_references %in% "Stenopelmatus fuscus" ~ NA, # jerusalem cricket
+    Barcode_region == "16" & Best_match_references %in% "Gymnaetoides acutilobatus" ~ NA, # endemic to china??? cave cricket --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Microdipodops pallidus" ~ "heermanni", # pale kangaroo mouse
+    Barcode_region == "16" & Best_match_references %in% "Onthophagus crinitus" ~ NA, # dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Pheidole deima" ~ NA, # ant (found in socal?) --- BLAST - Veromessor andrei - harvestor ant
+    Barcode_region == "16" & Best_match_references %in% "Hazenia capsulata" ~ "capsulata", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Anadara broughtonii" ~ NA, # Inflated ark clam
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea" ~ "subdiscoidea", # slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis" ~ NA, # 70
+
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos javanicus, Bos indicus, Bos grunniens, Bos grunniens x Bos taurus" ~ "taurus",
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos primigenius, Bos indicus" ~ "taurus", #cow
+    Barcode_region == "16" & Best_match_references %in% "Canis rufus, Canis lupus, Canis latrans" ~ "latrans", # coyote
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea, Cavenderia pseudoaureostipes" ~ NA, #slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ NA, #green algae
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon sieburthii, Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ NA, #green algae
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus, Anthrenus scrophulariae" ~ NA, # Common carpet beetle/Buffalo carpet beetle
+    Barcode_region == "16" & Best_match_references %in% "Crotalus viridis, Crotalus oreganus" ~ "oreganus", #western rattlesnake
+    Barcode_region == "16" & Best_match_references %in% "Gallus sonneratii, Gallus gallus" ~ "gallus", # wild turkey probably, or chicken
+    Barcode_region == "16" & Best_match_references %in% "Heliconoides inflatus, Cathaica polystigma, Nesiohelix moreletiana, Karaftohelix maackii, Atlanta turriculata, Aceria guerreronis, Hahnia ngai, Grylloprimevala jilina, Aconurella prolixa, Processina dashahensis, Tapinoma indicum, Homo sapiens" ~ "inflatus", # Heliconoides inflatus -- Sea butterfly (range is not Socal, but Mexico, and it's the closest species in the list) 
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae, Paratriodonta lentula" ~ NA, #Scarabaeidae (scarab)
+    Barcode_region == "16" & Best_match_references %in% "Meleagris gallopavo, Labidesthes sicculus" ~ "gallopavo", #wild turkey
+    Barcode_region == "16" & Best_match_references %in% "Merluccius productus, Merluccius angustimanus" ~ "productus", #North Pacific Hake
+    Barcode_region == "16" & Best_match_references %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "hemionus", #mule deer
+    Barcode_region == "16" & Best_match_references %in% "Paralucilia pseudolyrcea, Paralucilia paraensis, Hemilucilia semidiaphana, Calliphora vomitoria, Calliphora vicina, Calliphora sinensis, Calliphora nigribarbis, Calliphora calliphoroides" ~ NA, # fly
+    Barcode_region == "16" & Best_match_references %in% "Ravinia vagabunda, Ravinia stimulans, Ravinia derelicta" ~ NA, #flesh fly
+    Barcode_region == "16" & Best_match_references %in% "Scomber japonicus, Scomber colias, Scomber australasicus"~ "japonicus", #pacific mackerel
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa, Thryonomys swinderianus" ~ "scrofa", #wild pig
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini, Onthophagus obscurior" ~ NA, #dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Sebastes serranoides, Sebastes melanops, Sebastes flavidus" ~ NA,  #rockfish
+    Barcode_region == "16" & Best_match_references %in% "" ~ "no match",
+    TRUE ~ species
+    ))
+
+
+ 
+
+checkna <- gaviota[is.na(gaviota$species), ] 
+```
+
+
+genus name
+```{r}
+gaviota$genus = NA
+
+gaviota <- gaviota %>%
+  mutate(genus = case_when(
+Including_domestic.Local_species %in% "Canis latrans, Canis lupus" ~ "Canis", # coyote
+    
+    Including_domestic.Local_species %in% "Phalacrocorax penicillatus, Phalacrocorax brasilianus, Phalacrocorax pelagicus" 
+      ~ "Urile", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Phalacrocorax pelagicus, Phalacrocorax penicillatus" 
+      ~ "Urile", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Microtus californicus" 
+      ~ "Microtus", # Californian vole
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei" ~ "Peromyscus", #Peromyscus - deer mouse
+    
+    Including_domestic.Local_species %in% "Sylvilagus bachmani" ~ "Sylvilagus", # Brush rabbit
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Arborimus albipes, Arborimus longicaudus, Arborimus pomo, Myodes californicus, Lemmiscus curtatus, Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii, Ondatra zibethicus, Phenacomys intermedius, Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis, Onychomys leucogaster, Onychomys torridus, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei, Reithrodontomys raviventris, Reithrodontomys megalotis, Sigmodon arizonae, Sigmodon hispidus" ~ "Microtus", # 	based on blast and iNat
+      
+    Including_domestic.Local_species %in% "Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis" ~ "Neotoma", # Neotoma - woodrat
+      
+    Including_domestic.Local_species %in% "Bos taurus, Bos indicus, Bos javanicus, Bos frontalis" ~ "Bos", # Bovine
+      
+    Including_domestic.Local_species %in% "Gallus gallus" ~ "Gallus", #chicken
+      
+    Including_domestic.Local_species %in% "Urocyon cinereoargenteus, Urocyon littoralis" ~ "Urocyon", # grey fox
+      
+    Including_domestic.Local_species %in% "Glaucomys oregonensis, Glaucomys sabrinus, Callospermophilus lateralis" ~ "Spermophillus", # flying squirrel/golden mantle ground squirrel --  CA ground squirrel based on blast
+      
+    Including_domestic.Local_species %in% "Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii" ~ "Microtus", # vole
+    Including_domestic.Local_species %in% "Thomomys bottae" ~"Thomomys", # botta's pocket gopher
+    
+    Including_domestic.Local_species %in% "Lynx rufus, Puma concolor" ~ "Lynx", # bobcat
+      
+    Including_domestic.Local_species %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Odocoileus", # mule deer
+      
+    Including_domestic.Local_species %in% "Sus scrofa" ~ "Sus", #wild boar
+      
+    Including_domestic.Local_species %in% "Chloris sinica, Spinus pinus, Plectrophenax nivalis, Zonotrichia leucophrys, Zonotrichia atricapilla, Zonotrichia albicollis, Sturnella neglecta, Sturnella magna, Serinus canaria" ~ "Zonotrichia", # white crowned sparrow
+      
+    Including_domestic.Local_species %in% "Peromyscus eremicus" ~ "Reithrodontomys", # From Blast and species list
+      
+    Including_domestic.Local_species %in% "Zalophus californianus" ~ "Zalophus", # sea lion
+    
+    Including_domestic.Local_species %in% "Canis lupus" ~ "Canis", # coyote
+      
+    Including_domestic.Local_species %in% "Peromyscus crinitus, Peromyscus eremicus" ~ "Reithrodontomys", # from blast and COPR species list. Western harvest mouse
+      
+    Including_domestic.Local_species %in% "Callipepla californica, Callipepla gambelii" ~ "Callipepla", # CA quail 
+      
+    Including_domestic.Local_species %in% "Alosa sapidissima, Dorosoma petenense" ~ "Alosa", # American shad
+      
+    Including_domestic.Local_species %in% "Leuconotopicus albolarvatus, Jynx torquilla, Melanerpes lewis, Melanerpes erythrocephalus, Melanerpes formicivorus, Melanerpes uropygialis, Sphyrapicus thyroideus, Sphyrapicus varius, Sphyrapicus nuchalis, Sphyrapicus ruber, Picoides arcticus, Dryobates pubescens, Dryobates nuttallii, Dryobates scalaris, Picoides villosus, Colaptes auratus, Colaptes chrysoides, Dryocopus pileatus" ~ "Melanerpes", # acorn woodpecker
+      
+    Including_domestic.Local_species %in% "Plestiodon gilberti" ~ "Plestiodon", # Skilton's skink
+      
+    Including_domestic.Local_species %in% "Taxidea taxus" ~ "Taxidea", # American badger
+      
+    Including_domestic.Local_species %in% "Microtus townsendii" ~ "Microtus", # From species list. Microtus - townsend's vole
+      
+    Including_domestic.Local_species %in% "Neotoma macrotis" ~ "Neotoma", #  from species list. big eared woodrat
+    
+    Including_domestic.Local_species %in% "Aphelocoma insularis, Aphelocoma californica, Aphelocoma woodhouseii" ~ "Aphelocoma", # CA scrub jay
+      
+    Including_domestic.Local_species %in% "Puma concolor" ~ "Puma", # puma
+      
+    Including_domestic.Local_species %in% "Meleagris gallopavo, Gallus gallus" ~ "Meleagris", # wild turkey
+      
+    Including_domestic.Local_species %in% "Mephitis mephitis" ~ "Mephitis", # striped skunk
+      
+    Including_domestic.Local_species %in% "Vulpes vulpes" ~ "Vulpes", # red fox
+      
+    Including_domestic.Local_species %in% "Chaetodipus californicus" ~ "Dipodomys", # Blast to match species list
+      
+    Including_domestic.Local_species %in% "Mus musculus" ~ "Mus", # house mouse
+    
+    Including_domestic.Local_species %in% "Rattus rattus" ~ "Rattus", # black rat
+      
+    Including_domestic.Local_species %in% "Peromyscus maniculatus, Peromyscus keeni" ~ "Peromyscus", # deer mice
+      
+    Including_domestic.Local_species %in% "Sylvilagus floridanus, Sylvilagus nuttallii" ~ "Sylvilagus", # brush rabbit
+      
+    Including_domestic.Local_species %in% "Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii" ~ "Microtus", # vole
+      
+    Including_domestic.Local_species %in% "Lemmiscus curtatus, Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii, Ondatra zibethicus, Onychomys leucogaster, Synaptomys borealis, Peromyscus maniculatus, Peromyscus keeni" ~ "Peromyscus", # cricetidae - some kind of rodent -- (choosing microtus sp)
+   
+     Including_domestic.Local_species %in% "Neotoma lepida" ~ "Neotoma", # desert woodrat
+    
+     Including_domestic.Local_species %in% "Canis latrans, Canis lupus, Urocyon cinereoargenteus, Urocyon littoralis, Vulpes macrotis, Vulpes vulpes" ~ "Canis", # coyote
+    
+    Including_domestic.Local_species %in% "Turdus obscurus, Turdus migratorius" ~ "Turdus", #American robin
+    
+    Including_domestic.Local_species %in% "Spizella passerina, Passerella iliaca, Melospiza melodia" ~ "Melospiza", #Song sparrow, could  be chipping or fox sparrow too though.
+    
+    Including_domestic.Local_species %in% "Ascaphus truei, Incilius alvarius, Anaxyrus boreas, Anaxyrus californicus, Anaxyrus canorus, Anaxyrus cognatus, Anaxyrus exsul, Anaxyrus microscaphus, Anaxyrus punctatus, Anaxyrus woodhousii, Pseudacris cadaverina, Pseudacris hypochondriaca, Pseudacris regilla, Pseudacris sierra, Scaphiopus couchii, Spea hammondii, Spea intermontana, Rana aurora, Lithobates berlandieri, Rana boylii, Rana cascadae, Lithobates catesbeianus, Rana draytonii, Rana luteiventris, Rana muscosa, Lithobates pipiens, Rana pretiosa, Rana sierrae, Lithobates sphenocephalus, Lithobates yavapaiensis, Xenopus laevis" ~ NA, #frog or toad
+    
+    Including_domestic.Local_species %in% "Phoca fasciata, Phoca vitulina" ~ "Phoca", #harbor seal
+    
+    Including_domestic.Local_species %in% "Nucifraga columbiana, Corvus brachyrhynchos, Corvus corax" ~ "Corvus", # Common raven -- blast match
+    
+    Including_domestic.Local_species %in% "Pipilo maculatus" ~ "Pipilo", #spotted towhee
+    
+    Including_domestic.Local_species %in% "Onychomys torridus" ~ "Peromyscus", #southern grasshopper mouse BLAST match to peromyscus maniculatus
+    
+    Including_domestic.Local_species %in% "Arctocephalus townsendi" ~ "Arctocephalus", #guadelupe fur seal
+    
+    Including_domestic.Local_species %in% "Callospermophilus lateralis" ~ "Spermophillus", #CA ground squirrel
+    
+    Including_domestic.Local_species %in% "Marmota flaviventris" ~ "Spermophillus", #yellow-bellied marmot
+    
+    Including_domestic.Local_species %in% "Microtus montanus" ~ "Microtus" #california vole
+  ))
+
+# for the 16s run
+gaviota <- gaviota %>%
+  mutate(genus = case_when(
+     Barcode_region == "16" & Best_match_references %in% "Bos taurus" ~ "Bos", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lynx rufus" ~ "Lynx", # 100
+    #Best_match_references %in% "Heliconoides inflatus" ~ "Heliconoides inflatus", # sea butterfly snail
+    #Best_match_references %in% "Odocoileus virginianus" ~ "white tailed deer", # 100
+    #Best_match_references %in% "Crotalus viridis" ~ "prairie rattlesnake", # 100
+    Barcode_region == "16" & Best_match_references %in% "Puma concolor" ~ "Puma", # puma
+    Barcode_region == "16" & Best_match_references %in% "Rattus rattus" ~ "Rattus", # rat
+    #Best_match_references %in% "Gallus sonneratii" ~ "chicken", # 100
+    Barcode_region == "16" & Best_match_references %in% "Callipepla californica" ~ "Callipepla", # California quail
+    #Best_match_references %in% "Scomber japonicus" ~ "chub mackerel", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lamna ditropis" ~ "Lamna", #salmon shark
+    Barcode_region == "16" & Best_match_references %in% "Magnisudis atlantica" ~ "Magnisudis", # duckbill barracuda
+    Barcode_region == "16" & Best_match_references %in% "Ophiodon elongatus" ~ "Ophiodon", # lingcod
+    Barcode_region == "16" & Best_match_references %in% "Thysanoessa inermis" ~ "Thysanoessa", # Krill
+    #Best_match_references %in% "Sebastes serranoides" ~ "Sebastes sp", # olive rockfish
+    Barcode_region == "16" & Best_match_references %in% "Clupea pallasii" ~ "Clupea", # pacific herring
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa" ~ "Sus", #wild boar
+    #Best_match_references %in% "Canis rufus" ~ "canid", #
+    Barcode_region == "16" & Best_match_references %in% "Pilaira anomala" ~ "Pilaira", #mold
+    Barcode_region == "16" & Best_match_references %in% "Reithrodontomys megalotis" ~ "Reithrodontomys", #western harvest mouse
+    Barcode_region == "16" & Best_match_references %in% "Microtus californicus" ~ "Microtus", #California vole
+    Barcode_region == "16" & Best_match_references %in% "Chaetodipus californicus" ~ "Dipodomys", #California pocket mouse
+    Barcode_region == "16" & Best_match_references %in% "Zalophus californianus" ~ "Zalophus", #California sea lion
+    Barcode_region == "16" & Best_match_references %in% "Canis latrans" ~ "Canis", #coyote
+    Barcode_region == "16" & Best_match_references %in% "Neotoma lepida" ~ "Neotoma", #desert woodrat
+    #Best_match_references %in% "Meleagris gallopavo" ~ "turkey", #
+    Barcode_region == "16" & Best_match_references %in% "Otospermophilus beecheyi" ~ "Spermophillus", #California ground squirrel
+    Barcode_region == "16" & Best_match_references %in% "Taxidea taxus" ~ "Taxidea", #american badger
+    Barcode_region == "16" & Best_match_references %in% "Neotoma macrotis" ~ "Neotoma", #big-eared woodrat
+    #Best_match_references %in% "Ravinia vagabunda" ~ "flesh fly", #
+    Barcode_region == "16" & Best_match_references %in% "Canis lupus" ~ "Canis", # canid
+    Barcode_region == "16" & Best_match_references %in% "Forficula auricularia" ~ "Forficula", # earwig
+    Barcode_region == "16" & Best_match_references %in% "Mephitis mephitis" ~ "Mephitis", #striped skunk
+    #Best_match_references %in% "Paralucilia pseudolyrcea" ~ "blow fly", #
+    Barcode_region == "16" & Best_match_references %in% "Urocyon cinereoargenteus" ~ "Urocyon", #grey fox
+    Barcode_region == "16" & Best_match_references %in% "Pandalus jordani" ~ "Pandalus", #ocean pink shrimp
+    #Best_match_references %in% "Merluccius productus" ~ "north pacific hake", #
+    Barcode_region == "16" & Best_match_references %in% "Peromyscus maniculatus" ~ "Peromyscus", #deer mouse
+    Barcode_region == "16" & Best_match_references %in% "Pituophis catenifer" ~ "Pituophis", #gopher snake
+    Barcode_region == "16" & Best_match_references %in% "Sylvilagus bachmani" ~ "Sylvilagus", #brush rabbit
+    Barcode_region == "16" & Best_match_references %in% "Plestiodon skiltonianus" ~ "Plestiodon", #skilton's skink
+    Barcode_region == "16" & Best_match_references %in% "Anchoa ischana" ~ "Anchoa", #sharpnose anchovy
+    Barcode_region == "16" & Best_match_references %in% "Gonatopsis borealis" ~ "Gonatopsis", #Boreopacific armhook squid
+    Barcode_region == "16" & Best_match_references %in% "Leucocarbo chalconotus" ~ "Urile", # pelagic cormorant species, checked with BLAST. 3rd result, 92.99%match
+    Barcode_region == "16" & Best_match_references %in% "Pseudopaludicola boliviana" ~ NA, # frog, Leptodactylidae family, found in regions in south america???
+    Barcode_region == "16" & Best_match_references %in% "Microtus chrotorrhinus" ~ "Microtus", # rock vole, found in eastern US
+    Barcode_region == "16" & Best_match_references %in% "Picoides tridactylus" ~ "Dryobates", # eurasian three-toed woodpecker, not found in US --- changed to Dryobates pubescens, downy woodpecker
+    Barcode_region == "16" & Best_match_references %in% "Thomomys bottae" ~ "Thomomys", # Botta's pocket gopher
+    Barcode_region == "16" & Best_match_references %in% "Neodon bershulaensis" ~ "Microtus", # Bershula mountain vole, found in China -- BLAST shows microtus species second match
+    #Best_match_references %in% "Chloropicon sieburthii" ~ "phytoplankton", # 90
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus" ~ "Creophilus", # hairy rove beetle -- only shows up once
+    Barcode_region == "16" & Best_match_references %in% "Rhipicephalus sanguineus" ~ "Rhipicephalus", # Brown dog tick
+    Barcode_region == "16" & Best_match_references %in% "Phakopsora meibomiae" ~ "Phakopsora", # fungi
+    Barcode_region == "16" & Best_match_references %in% "Tettigonia orientalis" ~ "Stenopelmatus", # bush cricket, but this species is found in Japan ---BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Isogenoides varians" ~ "Isogenoides", # stonefly
+    Barcode_region == "16" & Best_match_references %in% "Setvena wahkeena" ~ "Stenopelmatus", # stonefly (found in socal?) -- BLAST - cricket match
+    Barcode_region == "16" & Best_match_references %in% "Xiphidiopsis gurneyi" ~ "Stenopelmatus", #bush cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Abronia graminea" ~ "Elgaria", # alligator lizard (found in socal?) -- BLAST - southern aligator lizard
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini" ~ "Stenopelmatus", # camel cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon laureae" ~ "Chloropicon", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae" ~ "Stenopelmatus", #Scarabaeidae (scarab) -- changed to species that came up with this species in results -- BLAST- cricket
+    Barcode_region == "16" & Best_match_references %in% "Stenopelmatus fuscus" ~ "Stenopelmatus", # jerusalem cricket
+    Barcode_region == "16" & Best_match_references %in% "Gymnaetoides acutilobatus" ~ "Stenopelmatus", # endemic to china??? cave cricket --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Microdipodops pallidus" ~ "Dipodomys", # pale kangaroo mouse
+    Barcode_region == "16" & Best_match_references %in% "Onthophagus crinitus" ~ "Onthophagus", # dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Pheidole deima" ~ "Veromessor", # ant (found in socal?) --- BLAST - Veromessor andrei - harvestor ant
+    Barcode_region == "16" & Best_match_references %in% "Hazenia capsulata" ~ "Hazenia", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Anadara broughtonii" ~ "Anadara", # Inflated ark clam
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea" ~ "Cavenderia", # slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis" ~ "Chloropicon", # 70
+
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos javanicus, Bos indicus, Bos grunniens, Bos grunniens x Bos taurus" ~ "Bos",
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos primigenius, Bos indicus" ~ "Bos", #cow
+    Barcode_region == "16" & Best_match_references %in% "Canis rufus, Canis lupus, Canis latrans" ~ "Canis", # coyote
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea, Cavenderia pseudoaureostipes" ~ "Cavenderia", #slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Chloropicon", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon sieburthii, Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Chloropicon", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus, Anthrenus scrophulariae" ~ "Anthrenus", # Common carpet beetle/Buffalo carpet beetle
+    Barcode_region == "16" & Best_match_references %in% "Crotalus viridis, Crotalus oreganus" ~ "Crotalus", #western rattlesnake
+    Barcode_region == "16" & Best_match_references %in% "Gallus sonneratii, Gallus gallus" ~ "Gallus", # wild turkey probably, or chicken
+    Barcode_region == "16" & Best_match_references %in% "Heliconoides inflatus, Cathaica polystigma, Nesiohelix moreletiana, Karaftohelix maackii, Atlanta turriculata, Aceria guerreronis, Hahnia ngai, Grylloprimevala jilina, Aconurella prolixa, Processina dashahensis, Tapinoma indicum, Homo sapiens" ~ "Heliconoides", # Heliconoides inflatus -- Sea butterfly (range is not Socal, but Mexico, and it's the closest species in the list) 
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae, Paratriodonta lentula" ~ "Stenopelmatus", #Scarabaeidae (scarab)
+    Barcode_region == "16" & Best_match_references %in% "Meleagris gallopavo, Labidesthes sicculus" ~ "Meleagris", #wild turkey
+    Barcode_region == "16" & Best_match_references %in% "Merluccius productus, Merluccius angustimanus" ~ "Merluccius", #North Pacific Hake
+    Barcode_region == "16" & Best_match_references %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Odocoileus", #mule deer
+    Barcode_region == "16" & Best_match_references %in% "Paralucilia pseudolyrcea, Paralucilia paraensis, Hemilucilia semidiaphana, Calliphora vomitoria, Calliphora vicina, Calliphora sinensis, Calliphora nigribarbis, Calliphora calliphoroides" ~ "Diptera", # fly
+    Barcode_region == "16" & Best_match_references %in% "Ravinia vagabunda, Ravinia stimulans, Ravinia derelicta" ~ "Ravinia", #flesh fly
+    Barcode_region == "16" & Best_match_references %in% "Scomber japonicus, Scomber colias, Scomber australasicus"~ "Scomber", #pacific mackerel
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa, Thryonomys swinderianus" ~ "Sus", #wild pig
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini, Onthophagus obscurior" ~ "Onthophagus", #dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Sebastes serranoides, Sebastes melanops, Sebastes flavidus" ~ "Sebastes",  #rockfish
+    Barcode_region == "16" & Best_match_references %in% "" ~ "no match",
+    TRUE ~ genus
+    ))
+
+
+ 
+
+checkna <- gaviota[is.na(gaviota$genus), ] 
+```
+
+
+
+family name
+```{r}
+gaviota$family = NA
+
+gaviota <- gaviota %>%
+  mutate(family = case_when(
+Including_domestic.Local_species %in% "Canis latrans, Canis lupus" ~ "Canidae", # coyote
+    
+    Including_domestic.Local_species %in% "Phalacrocorax penicillatus, Phalacrocorax brasilianus, Phalacrocorax pelagicus" 
+      ~ "Phalacrocoracidae", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Phalacrocorax pelagicus, Phalacrocorax penicillatus" 
+      ~ "Phalacrocoracidae", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Microtus californicus" 
+      ~ "Cricetidae", # Californian vole
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei" ~ "Cricetidae", #Peromyscus - deer mouse
+    
+    Including_domestic.Local_species %in% "Sylvilagus bachmani" ~ "Leporidae", # Brush rabbit
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Arborimus albipes, Arborimus longicaudus, Arborimus pomo, Myodes californicus, Lemmiscus curtatus, Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii, Ondatra zibethicus, Phenacomys intermedius, Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis, Onychomys leucogaster, Onychomys torridus, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei, Reithrodontomys raviventris, Reithrodontomys megalotis, Sigmodon arizonae, Sigmodon hispidus" ~ "Cricetidae", # 	based on blast and iNat
+      
+    Including_domestic.Local_species %in% "Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis" ~ "Cricetidae", # Neotoma - woodrat
+      
+    Including_domestic.Local_species %in% "Bos taurus, Bos indicus, Bos javanicus, Bos frontalis" ~ "Bovidae", # Bovine
+      
+    Including_domestic.Local_species %in% "Gallus gallus" ~ "Phasianidae", #chicken
+      
+    Including_domestic.Local_species %in% "Urocyon cinereoargenteus, Urocyon littoralis" ~ "Canidae", # grey fox
+      
+    Including_domestic.Local_species %in% "Glaucomys oregonensis, Glaucomys sabrinus, Callospermophilus lateralis" ~ "Sciuridae", # flying squirrel/golden mantle ground squirrel --  CA ground squirrel based on blast
+      
+    Including_domestic.Local_species %in% "Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii" ~ "Cricetidae", # vole
+    Including_domestic.Local_species %in% "Thomomys bottae" ~"Geomyidae", # botta's pocket gopher
+    
+    Including_domestic.Local_species %in% "Lynx rufus, Puma concolor" ~ "Felidae", # bobcat
+      
+    Including_domestic.Local_species %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Cervidae", # mule deer
+      
+    Including_domestic.Local_species %in% "Sus scrofa" ~ "Suidae", #wild boar
+      
+    Including_domestic.Local_species %in% "Chloris sinica, Spinus pinus, Plectrophenax nivalis, Zonotrichia leucophrys, Zonotrichia atricapilla, Zonotrichia albicollis, Sturnella neglecta, Sturnella magna, Serinus canaria" ~ "Passerellidae", # white crowned sparrow
+      
+    Including_domestic.Local_species %in% "Peromyscus eremicus" ~ "Cricetidae", # From Blast and species list
+      
+    Including_domestic.Local_species %in% "Zalophus californianus" ~ "Otariidae", # sea lion
+    
+    Including_domestic.Local_species %in% "Canis lupus" ~ "Canidae", # coyote
+      
+    Including_domestic.Local_species %in% "Peromyscus crinitus, Peromyscus eremicus" ~ "Cricetidae", # from blast and COPR species list. Western harvest mouse
+      
+    Including_domestic.Local_species %in% "Callipepla californica, Callipepla gambelii" ~ "Odontophoridae", # CA quail 
+      
+    Including_domestic.Local_species %in% "Alosa sapidissima, Dorosoma petenense" ~ "Clupeidae", # American shad
+      
+    Including_domestic.Local_species %in% "Leuconotopicus albolarvatus, Jynx torquilla, Melanerpes lewis, Melanerpes erythrocephalus, Melanerpes formicivorus, Melanerpes uropygialis, Sphyrapicus thyroideus, Sphyrapicus varius, Sphyrapicus nuchalis, Sphyrapicus ruber, Picoides arcticus, Dryobates pubescens, Dryobates nuttallii, Dryobates scalaris, Picoides villosus, Colaptes auratus, Colaptes chrysoides, Dryocopus pileatus" ~ "Picidae", # acorn woodpecker
+      
+    Including_domestic.Local_species %in% "Plestiodon gilberti" ~ "Scincidae", # Skilton's skink
+      
+    Including_domestic.Local_species %in% "Taxidea taxus" ~ "Mustelidae", # American badger
+      
+    Including_domestic.Local_species %in% "Microtus townsendii" ~ "Cricetidae", # From species list. Microtus - townsend's vole
+      
+    Including_domestic.Local_species %in% "Neotoma macrotis" ~ "Cricetidae", #  from species list. big eared woodrat
+    
+    Including_domestic.Local_species %in% "Aphelocoma insularis, Aphelocoma californica, Aphelocoma woodhouseii" ~ "Corvidae", # CA scrub jay
+      
+    Including_domestic.Local_species %in% "Puma concolor" ~ "Felidae", # puma
+      
+    Including_domestic.Local_species %in% "Meleagris gallopavo, Gallus gallus" ~ "Phasianidae", # wild turkey
+      
+    Including_domestic.Local_species %in% "Mephitis mephitis" ~ "Mephitidae", # striped skunk
+      
+    Including_domestic.Local_species %in% "Vulpes vulpes" ~ "Canidae", # red fox
+      
+    Including_domestic.Local_species %in% "Chaetodipus californicus" ~ "Heteromyidae", # Blast to match species list
+      
+    Including_domestic.Local_species %in% "Mus musculus" ~ "Muridae", # house mouse
+    
+    Including_domestic.Local_species %in% "Rattus rattus" ~ "Muridae", # black rat
+      
+    Including_domestic.Local_species %in% "Peromyscus maniculatus, Peromyscus keeni" ~ "Cricetidae", # deer mice
+      
+    Including_domestic.Local_species %in% "Sylvilagus floridanus, Sylvilagus nuttallii" ~ "Leporidae", # brush rabbit
+      
+    Including_domestic.Local_species %in% "Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii" ~ "Cricetidae", # vole
+      
+    Including_domestic.Local_species %in% "Lemmiscus curtatus, Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii, Ondatra zibethicus, Onychomys leucogaster, Synaptomys borealis, Peromyscus maniculatus, Peromyscus keeni" ~ "Cricetidae", # cricetidae - some kind of rodent -- (choosing microtus sp)
+   
+     Including_domestic.Local_species %in% "Neotoma lepida" ~ "Cricetidae", # desert woodrat
+    
+     Including_domestic.Local_species %in% "Canis latrans, Canis lupus, Urocyon cinereoargenteus, Urocyon littoralis, Vulpes macrotis, Vulpes vulpes" ~ "Canidae", # coyote
+    
+    Including_domestic.Local_species %in% "Turdus obscurus, Turdus migratorius" ~ "Turdidae", #American robin
+    
+    Including_domestic.Local_species %in% "Spizella passerina, Passerella iliaca, Melospiza melodia" ~ "Passerellidae", #Song sparrow, could  be chipping or fox sparrow too though.
+    
+    Including_domestic.Local_species %in% "Ascaphus truei, Incilius alvarius, Anaxyrus boreas, Anaxyrus californicus, Anaxyrus canorus, Anaxyrus cognatus, Anaxyrus exsul, Anaxyrus microscaphus, Anaxyrus punctatus, Anaxyrus woodhousii, Pseudacris cadaverina, Pseudacris hypochondriaca, Pseudacris regilla, Pseudacris sierra, Scaphiopus couchii, Spea hammondii, Spea intermontana, Rana aurora, Lithobates berlandieri, Rana boylii, Rana cascadae, Lithobates catesbeianus, Rana draytonii, Rana luteiventris, Rana muscosa, Lithobates pipiens, Rana pretiosa, Rana sierrae, Lithobates sphenocephalus, Lithobates yavapaiensis, Xenopus laevis" ~ NA, #frog or toad
+    
+    Including_domestic.Local_species %in% "Phoca fasciata, Phoca vitulina" ~ "Otariidae", #harbor seal
+    
+    Including_domestic.Local_species %in% "Nucifraga columbiana, Corvus brachyrhynchos, Corvus corax" ~ "Corvidae", # Common raven -- blast match
+    
+    Including_domestic.Local_species %in% "Pipilo maculatus" ~ "Passerellidae", #spotted towhee
+    
+    Including_domestic.Local_species %in% "Onychomys torridus" ~ "Cricetidae", #southern grasshopper mouse BLAST match to peromyscus maniculatus
+    
+    Including_domestic.Local_species %in% "Arctocephalus townsendi" ~ "Otariidae", #guadelupe fur seal
+    
+    Including_domestic.Local_species %in% "Callospermophilus lateralis" ~ "Sciuridae", #CA ground squirrel
+    
+    Including_domestic.Local_species %in% "Marmota flaviventris" ~ "Sciuridae", #yellow-bellied marmot
+    
+    Including_domestic.Local_species %in% "Microtus montanus" ~ "Cricetidae" #california vole
+  ))
+
+# for the 16s run
+gaviota <- gaviota %>%
+  mutate(family = case_when(
+      Barcode_region == "16" & Best_match_references %in% "Bos taurus" ~ "Bovidae", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lynx rufus" ~ "Felidae", # 100
+    #Best_match_references %in% "Heliconoides inflatus" ~ "Heliconoides inflatus", # sea butterfly snail
+    #Best_match_references %in% "Odocoileus virginianus" ~ "white tailed deer", # 100
+    #Best_match_references %in% "Crotalus viridis" ~ "prairie rattlesnake", # 100
+    Barcode_region == "16" & Best_match_references %in% "Puma concolor" ~ "Felidae", # puma
+    Barcode_region == "16" & Best_match_references %in% "Rattus rattus" ~ "Muridae", # rat
+    #Best_match_references %in% "Gallus sonneratii" ~ "chicken", # 100
+    Barcode_region == "16" & Best_match_references %in% "Callipepla californica" ~ "Odontophoridae", # California quail
+    #Best_match_references %in% "Scomber japonicus" ~ "chub mackerel", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lamna ditropis" ~ "Lamnidae", #salmon shark
+    Barcode_region == "16" & Best_match_references %in% "Magnisudis atlantica" ~ "Paralepididae", # duckbill barracuda
+    Barcode_region == "16" & Best_match_references %in% "Ophiodon elongatus" ~ "Hexagrammidae", # lingcod
+    Barcode_region == "16" & Best_match_references %in% "Thysanoessa inermis" ~ "Euphausiidae", # Krill
+    #Best_match_references %in% "Sebastes serranoides" ~ "Sebastes sp", # olive rockfish
+    Barcode_region == "16" & Best_match_references %in% "Clupea pallasii" ~ "Clupeidae", # pacific herring
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa" ~ "Suidae", #wild boar
+    #Best_match_references %in% "Canis rufus" ~ "canid", #
+    Barcode_region == "16" & Best_match_references %in% "Pilaira anomala" ~ "Pilobolaceae", #mold
+    Barcode_region == "16" & Best_match_references %in% "Reithrodontomys megalotis" ~ "Cricetidae", #western harvest mouse
+    Barcode_region == "16" & Best_match_references %in% "Microtus californicus" ~ "Cricetidae", #California vole
+    Barcode_region == "16" & Best_match_references %in% "Chaetodipus californicus" ~ "Heteromyidae", #California pocket mouse
+    Barcode_region == "16" & Best_match_references %in% "Zalophus californianus" ~ "Otariidae", #California sea lion
+    Barcode_region == "16" & Best_match_references %in% "Canis latrans" ~ "Canidae", #coyote
+    Barcode_region == "16" & Best_match_references %in% "Neotoma lepida" ~ "Cricetidae", #desert woodrat
+    #Best_match_references %in% "Meleagris gallopavo" ~ "turkey", #
+    Barcode_region == "16" & Best_match_references %in% "Otospermophilus beecheyi" ~ "Sciuridae", #California ground squirrel
+    Barcode_region == "16" & Best_match_references %in% "Taxidea taxus" ~ "Mustelidae", #american badger
+    Barcode_region == "16" & Best_match_references %in% "Neotoma macrotis" ~ "Cricetidae", #big-eared woodrat
+    #Best_match_references %in% "Ravinia vagabunda" ~ "flesh fly", #
+    Barcode_region == "16" & Best_match_references %in% "Canis lupus" ~ "Canidae", # canid
+    Barcode_region == "16" & Best_match_references %in% "Forficula auricularia" ~ "Forficulidae", # earwig
+    Barcode_region == "16" & Best_match_references %in% "Mephitis mephitis" ~ "Mephitidae", #striped skunk
+    #Best_match_references %in% "Paralucilia pseudolyrcea" ~ "blow fly", #
+    Barcode_region == "16" & Best_match_references %in% "Urocyon cinereoargenteus" ~ "Canidae", #grey fox
+    Barcode_region == "16" & Best_match_references %in% "Pandalus jordani" ~ "Pandalidae", #ocean pink shrimp
+    #Best_match_references %in% "Merluccius productus" ~ "north pacific hake", #
+    Barcode_region == "16" & Best_match_references %in% "Peromyscus maniculatus" ~ "Cricetidae", #deer mouse
+    Barcode_region == "16" & Best_match_references %in% "Pituophis catenifer" ~ "Colubridae", #gopher snake
+    Barcode_region == "16" & Best_match_references %in% "Sylvilagus bachmani" ~ "Leporidae", #brush rabbit
+    Barcode_region == "16" & Best_match_references %in% "Plestiodon skiltonianus" ~ "Scincidae", #skilton's skink
+    Barcode_region == "16" & Best_match_references %in% "Anchoa ischana" ~ "Engraulidae", #sharpnose anchovy
+    Barcode_region == "16" & Best_match_references %in% "Gonatopsis borealis" ~ "Gonatidae", #Boreopacific armhook squid
+    Barcode_region == "16" & Best_match_references %in% "Leucocarbo chalconotus" ~ "Phalacrocoracidae", # pelagic cormorant species, checked with BLAST. 3rd result, 92.99%match
+    Barcode_region == "16" & Best_match_references %in% "Pseudopaludicola boliviana" ~ NA, # frog, Leptodactylidae family, found in regions in south america???
+    Barcode_region == "16" & Best_match_references %in% "Microtus chrotorrhinus" ~ "Cricetidae", # rock vole, found in eastern US
+    Barcode_region == "16" & Best_match_references %in% "Picoides tridactylus" ~ "Picidae", # eurasian three-toed woodpecker, not found in US --- changed to Dryobates pubescens, downy woodpecker
+    Barcode_region == "16" & Best_match_references %in% "Thomomys bottae" ~ "Geomyidae", # Botta's pocket gopher
+    Barcode_region == "16" & Best_match_references %in% "Neodon bershulaensis" ~ "Cricetidae", # Bershula mountain vole, found in China -- BLAST shows microtus species second match
+    #Best_match_references %in% "Chloropicon sieburthii" ~ "phytoplankton", # 90
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus" ~ "Staphylinidae", # hairy rove beetle -- only shows up once
+    Barcode_region == "16" & Best_match_references %in% "Rhipicephalus sanguineus" ~ "Ixodidae", # Brown dog tick
+    Barcode_region == "16" & Best_match_references %in% "Phakopsora meibomiae" ~ "Phakopsoraceae", # fungi
+    Barcode_region == "16" & Best_match_references %in% "Tettigonia orientalis" ~ "Stenopelmatidae", # bush cricket, but this species is found in Japan ---BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Isogenoides varians" ~ "Perlodidae", # stonefly
+    Barcode_region == "16" & Best_match_references %in% "Setvena wahkeena" ~ "Stenopelmatidae", # stonefly (found in socal?) -- BLAST - cricket match
+    Barcode_region == "16" & Best_match_references %in% "Xiphidiopsis gurneyi" ~ "Stenopelmatidae", #bush cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Abronia graminea" ~ "Anguidae", # alligator lizard (found in socal?) -- BLAST - southern aligator lizard
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini" ~ "Stenopelmatidae", # camel cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon laureae" ~ "Chloropicaceae", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae" ~ "Stenopelmatidae", #Scarabaeidae (scarab) -- changed to species that came up with this species in results -- BLAST- cricket
+    Barcode_region == "16" & Best_match_references %in% "Stenopelmatus fuscus" ~ "Stenopelmatidae", # jerusalem cricket
+    Barcode_region == "16" & Best_match_references %in% "Gymnaetoides acutilobatus" ~ "Stenopelmatidae", # endemic to china??? cave cricket --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Microdipodops pallidus" ~ "Heteromyidae", # pale kangaroo mouse
+    Barcode_region == "16" & Best_match_references %in% "Onthophagus crinitus" ~ "Scarabaeidae", # dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Pheidole deima" ~ "Formicidae", # ant (found in socal?) --- BLAST - Veromessor andrei - harvestor ant
+    Barcode_region == "16" & Best_match_references %in% "Hazenia capsulata" ~ "Gayraliaceae", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Anadara broughtonii" ~ "Arcidae", # Inflated ark clam
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea" ~ "Cavenderiaceae", # slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis" ~ "Chloropicaceae", # 70
+
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos javanicus, Bos indicus, Bos grunniens, Bos grunniens x Bos taurus" ~ "Bovidae",
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos primigenius, Bos indicus" ~ "Bovidae", #cow
+    Barcode_region == "16" & Best_match_references %in% "Canis rufus, Canis lupus, Canis latrans" ~ "Canidae", # coyote
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea, Cavenderia pseudoaureostipes" ~ "Cavenderiaceae", #slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Chloropicaceae", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon sieburthii, Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Chloropicaceae", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus, Anthrenus scrophulariae" ~ "Dermestidae", # Common carpet beetle/Buffalo carpet beetle
+    Barcode_region == "16" & Best_match_references %in% "Crotalus viridis, Crotalus oreganus" ~ "Viperidae", #western rattlesnake
+    Barcode_region == "16" & Best_match_references %in% "Gallus sonneratii, Gallus gallus" ~ "Phasianidae", # wild turkey probably, or chicken
+    Barcode_region == "16" & Best_match_references %in% "Heliconoides inflatus, Cathaica polystigma, Nesiohelix moreletiana, Karaftohelix maackii, Atlanta turriculata, Aceria guerreronis, Hahnia ngai, Grylloprimevala jilina, Aconurella prolixa, Processina dashahensis, Tapinoma indicum, Homo sapiens" ~ "Heliconoididae", # Heliconoides inflatus -- Sea butterfly (range is not Socal, but Mexico, and it's the closest species in the list) 
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae, Paratriodonta lentula" ~ "Stenopelmatidae", #Scarabaeidae (scarab)
+    Barcode_region == "16" & Best_match_references %in% "Meleagris gallopavo, Labidesthes sicculus" ~ "Phasianidae", #wild turkey
+    Barcode_region == "16" & Best_match_references %in% "Merluccius productus, Merluccius angustimanus" ~ "Merlucciidae", #North Pacific Hake
+    Barcode_region == "16" & Best_match_references %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Cervidae", #mule deer
+    Barcode_region == "16" & Best_match_references %in% "Paralucilia pseudolyrcea, Paralucilia paraensis, Hemilucilia semidiaphana, Calliphora vomitoria, Calliphora vicina, Calliphora sinensis, Calliphora nigribarbis, Calliphora calliphoroides" ~ "Culicidae", # fly
+    Barcode_region == "16" & Best_match_references %in% "Ravinia vagabunda, Ravinia stimulans, Ravinia derelicta" ~ "Sarcophagidae", #flesh fly
+    Barcode_region == "16" & Best_match_references %in% "Scomber japonicus, Scomber colias, Scomber australasicus"~ "Scombridae", #pacific mackerel
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa, Thryonomys swinderianus" ~ "Suidae", #wild pig
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini, Onthophagus obscurior" ~ "Scarabaeidae", #dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Sebastes serranoides, Sebastes melanops, Sebastes flavidus" ~ "Scorpaenidae",  #rockfish
+    Barcode_region == "16" & Best_match_references %in% "" ~ "no match",
+    TRUE ~ family
+    ))
+
+
+ 
+
+checkna <- gaviota[is.na(gaviota$family), ] 
+```
+
+
+
+order name
+```{r}
+gaviota$order = NA
+
+gaviota <- gaviota %>%
+  mutate(order = case_when(
+Including_domestic.Local_species %in% "Canis latrans, Canis lupus" ~ "Carnivora", # coyote
+    
+    Including_domestic.Local_species %in% "Phalacrocorax penicillatus, Phalacrocorax brasilianus, Phalacrocorax pelagicus" 
+      ~ "Suliformes", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Phalacrocorax pelagicus, Phalacrocorax penicillatus" 
+      ~ "Suliformes", # Brandt's cormorant
+    
+    Including_domestic.Local_species %in% "Microtus californicus" 
+      ~ "Rodentia", # Californian vole
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei" ~ "Rodentia", #Peromyscus - deer mouse
+    
+    Including_domestic.Local_species %in% "Sylvilagus bachmani" ~ "Lagomorpha", # Brush rabbit
+    
+    Including_domestic.Local_species %in% "Peromyscus gambelii, Arborimus albipes, Arborimus longicaudus, Arborimus pomo, Myodes californicus, Lemmiscus curtatus, Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii, Ondatra zibethicus, Phenacomys intermedius, Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis, Onychomys leucogaster, Onychomys torridus, Peromyscus boylii, Peromyscus californicus, Peromyscus crinitus, Peromyscus eremicus, Peromyscus fraterculus, Peromyscus sonoriensis, Peromyscus truei, Reithrodontomys raviventris, Reithrodontomys megalotis, Sigmodon arizonae, Sigmodon hispidus" ~ "Rodentia", # 	based on blast and iNat
+      
+    Including_domestic.Local_species %in% "Neotoma albigula, Neotoma cinerea, Neotoma fuscipes, Neotoma lepida, Neotoma macrotis" ~ "Rodentia", # Neotoma - woodrat
+      
+    Including_domestic.Local_species %in% "Bos taurus, Bos indicus, Bos javanicus, Bos frontalis" ~ "Artiodactyla", # Bovine
+      
+    Including_domestic.Local_species %in% "Gallus gallus" ~ "Galliformes", #chicken
+      
+    Including_domestic.Local_species %in% "Urocyon cinereoargenteus, Urocyon littoralis" ~ "Carnivora", # grey fox
+      
+    Including_domestic.Local_species %in% "Glaucomys oregonensis, Glaucomys sabrinus, Callospermophilus lateralis" ~ "Rodentia", # flying squirrel/golden mantle ground squirrel --  CA ground squirrel based on blast
+      
+    Including_domestic.Local_species %in% "Microtus californicus, Microtus longicaudus, Microtus montanus, Microtus oregoni, Microtus townsendii" ~ "Rodentia", # vole
+    Including_domestic.Local_species %in% "Thomomys bottae" ~"Rodentia", # botta's pocket gopher
+    
+    Including_domestic.Local_species %in% "Lynx rufus, Puma concolor" ~ "Carnivora", # bobcat
+      
+    Including_domestic.Local_species %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Artiodactyla", # mule deer
+      
+    Including_domestic.Local_species %in% "Sus scrofa" ~ "Artiodactyla", #wild boar
+      
+    Including_domestic.Local_species %in% "Chloris sinica, Spinus pinus, Plectrophenax nivalis, Zonotrichia leucophrys, Zonotrichia atricapilla, Zonotrichia albicollis, Sturnella neglecta, Sturnella magna, Serinus canaria" ~ "Passeriformes", # white crowned sparrow
+      
+    Including_domestic.Local_species %in% "Peromyscus eremicus" ~ "Rodentia", # From Blast and species list
+      
+    Including_domestic.Local_species %in% "Zalophus californianus" ~ "Carnivora", # sea lion
+    
+    Including_domestic.Local_species %in% "Canis lupus" ~ "Carnivora", # coyote
+      
+    Including_domestic.Local_species %in% "Peromyscus crinitus, Peromyscus eremicus" ~ "Rodentia", # from blast and COPR species list. Western harvest mouse
+      
+    Including_domestic.Local_species %in% "Callipepla californica, Callipepla gambelii" ~ "Galliformes", # CA quail 
+      
+    Including_domestic.Local_species %in% "Alosa sapidissima, Dorosoma petenense" ~ "Clupeiformes", # American shad
+      
+    Including_domestic.Local_species %in% "Leuconotopicus albolarvatus, Jynx torquilla, Melanerpes lewis, Melanerpes erythrocephalus, Melanerpes formicivorus, Melanerpes uropygialis, Sphyrapicus thyroideus, Sphyrapicus varius, Sphyrapicus nuchalis, Sphyrapicus ruber, Picoides arcticus, Dryobates pubescens, Dryobates nuttallii, Dryobates scalaris, Picoides villosus, Colaptes auratus, Colaptes chrysoides, Dryocopus pileatus" ~ "Piciformes", # acorn woodpecker
+      
+    Including_domestic.Local_species %in% "Plestiodon gilberti" ~ "Squamata", # Skilton's skink
+      
+    Including_domestic.Local_species %in% "Taxidea taxus" ~ "Carnivora", # American badger
+      
+    Including_domestic.Local_species %in% "Microtus townsendii" ~ "Rodentia", # From species list. Microtus - townsend's vole
+      
+    Including_domestic.Local_species %in% "Neotoma macrotis" ~ "Rodentia", #  from species list. big eared woodrat
+    
+    Including_domestic.Local_species %in% "Aphelocoma insularis, Aphelocoma californica, Aphelocoma woodhouseii" ~ "Passeriformes", # CA scrub jay
+      
+    Including_domestic.Local_species %in% "Puma concolor" ~ "Carnivora", # puma
+      
+    Including_domestic.Local_species %in% "Meleagris gallopavo, Gallus gallus" ~ "Galliformes", # wild turkey
+      
+    Including_domestic.Local_species %in% "Mephitis mephitis" ~ "Carnivora", # striped skunk
+      
+    Including_domestic.Local_species %in% "Vulpes vulpes" ~ "Carnivora", # red fox
+      
+    Including_domestic.Local_species %in% "Chaetodipus californicus" ~ "Rodentia", # Blast to match species list
+      
+    Including_domestic.Local_species %in% "Mus musculus" ~ "Rodentia", # house mouse
+    
+    Including_domestic.Local_species %in% "Rattus rattus" ~ "Rodentia", # black rat
+      
+    Including_domestic.Local_species %in% "Peromyscus maniculatus, Peromyscus keeni" ~ "Rodentia", # deer mice
+      
+    Including_domestic.Local_species %in% "Sylvilagus floridanus, Sylvilagus nuttallii" ~ "Lagomorpha", # brush rabbit
+      
+    Including_domestic.Local_species %in% "Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii" ~ "Rodentia", # vole
+      
+    Including_domestic.Local_species %in% "Lemmiscus curtatus, Microtus canicaudus, Microtus pennsylvanicus, Microtus townsendii, Ondatra zibethicus, Onychomys leucogaster, Synaptomys borealis, Peromyscus maniculatus, Peromyscus keeni" ~ "Rodentia", # cricetidae - some kind of rodent -- (choosing microtus sp)
+   
+     Including_domestic.Local_species %in% "Neotoma lepida" ~ "Rodentia", # desert woodrat
+    
+     Including_domestic.Local_species %in% "Canis latrans, Canis lupus, Urocyon cinereoargenteus, Urocyon littoralis, Vulpes macrotis, Vulpes vulpes" ~ "Carnivora", # coyote
+    
+    Including_domestic.Local_species %in% "Turdus obscurus, Turdus migratorius" ~ "Passeriformes", #American robin
+    
+    Including_domestic.Local_species %in% "Spizella passerina, Passerella iliaca, Melospiza melodia" ~ "Passeriformes", #Song sparrow, could  be chipping or fox sparrow too though.
+    
+    Including_domestic.Local_species %in% "Ascaphus truei, Incilius alvarius, Anaxyrus boreas, Anaxyrus californicus, Anaxyrus canorus, Anaxyrus cognatus, Anaxyrus exsul, Anaxyrus microscaphus, Anaxyrus punctatus, Anaxyrus woodhousii, Pseudacris cadaverina, Pseudacris hypochondriaca, Pseudacris regilla, Pseudacris sierra, Scaphiopus couchii, Spea hammondii, Spea intermontana, Rana aurora, Lithobates berlandieri, Rana boylii, Rana cascadae, Lithobates catesbeianus, Rana draytonii, Rana luteiventris, Rana muscosa, Lithobates pipiens, Rana pretiosa, Rana sierrae, Lithobates sphenocephalus, Lithobates yavapaiensis, Xenopus laevis" ~ "Anura", #frog or toad
+    
+    Including_domestic.Local_species %in% "Phoca fasciata, Phoca vitulina" ~ "Carnivora", #harbor seal
+    
+    Including_domestic.Local_species %in% "Nucifraga columbiana, Corvus brachyrhynchos, Corvus corax" ~ "Passeriformes", # Common raven -- blast match
+    
+    Including_domestic.Local_species %in% "Pipilo maculatus" ~ "Passeriformes", #spotted towhee
+    
+    Including_domestic.Local_species %in% "Onychomys torridus" ~ "Rodentia", #southern grasshopper mouse BLAST match to peromyscus maniculatus
+    
+    Including_domestic.Local_species %in% "Arctocephalus townsendi" ~ "Carnivora", #guadelupe fur seal
+    
+    Including_domestic.Local_species %in% "Callospermophilus lateralis" ~ "Rodentia", #CA ground squirrel
+    
+    Including_domestic.Local_species %in% "Marmota flaviventris" ~ "Rodentia", #yellow-bellied marmot
+    
+    Including_domestic.Local_species %in% "Microtus montanus" ~ "Rodentia" #california vole
+  ))
+
+# for the 16s run
+gaviota <- gaviota %>%
+  mutate(order = case_when(
+      Barcode_region == "16" & Best_match_references %in% "Bos taurus" ~ "Artiodactyla", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lynx rufus" ~ "Carnivora", # 100
+    #Best_match_references %in% "Heliconoides inflatus" ~ "Heliconoides inflatus", # sea butterfly snail
+    #Best_match_references %in% "Odocoileus virginianus" ~ "white tailed deer", # 100
+    #Best_match_references %in% "Crotalus viridis" ~ "prairie rattlesnake", # 100
+    Barcode_region == "16" & Best_match_references %in% "Puma concolor" ~ "Carnivora", # puma
+    Barcode_region == "16" & Best_match_references %in% "Rattus rattus" ~ "Rodentia", # rat
+    #Best_match_references %in% "Gallus sonneratii" ~ "chicken", # 100
+    Barcode_region == "16" & Best_match_references %in% "Callipepla californica" ~ "Galliformes", # California quail
+    #Best_match_references %in% "Scomber japonicus" ~ "chub mackerel", # 100
+    Barcode_region == "16" & Best_match_references %in% "Lamna ditropis" ~ "Lamniformes", #salmon shark
+    Barcode_region == "16" & Best_match_references %in% "Magnisudis atlantica" ~ "Aulopiformes", # duckbill barracuda
+    Barcode_region == "16" & Best_match_references %in% "Ophiodon elongatus" ~ "Perciformes", # lingcod
+    Barcode_region == "16" & Best_match_references %in% "Thysanoessa inermis" ~ "Euphausiacea", # Krill
+    #Best_match_references %in% "Sebastes serranoides" ~ "Sebastes sp", # olive rockfish
+    Barcode_region == "16" & Best_match_references %in% "Clupea pallasii" ~ "Clupeiformes", # pacific herring
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa" ~ "Artiodactyla", #wild boar
+    #Best_match_references %in% "Canis rufus" ~ "canid", #
+    Barcode_region == "16" & Best_match_references %in% "Pilaira anomala" ~ "Mucorales", #mold
+    Barcode_region == "16" & Best_match_references %in% "Reithrodontomys megalotis" ~ "Rodentia", #western harvest mouse
+    Barcode_region == "16" & Best_match_references %in% "Microtus californicus" ~ "Rodentia", #California vole
+    Barcode_region == "16" & Best_match_references %in% "Chaetodipus californicus" ~ "Rodentia", #California pocket mouse
+    Barcode_region == "16" & Best_match_references %in% "Zalophus californianus" ~ "Carnivora", #California sea lion
+    Barcode_region == "16" & Best_match_references %in% "Canis latrans" ~ "Carnivora", #coyote
+    Barcode_region == "16" & Best_match_references %in% "Neotoma lepida" ~ "Rodentia", #desert woodrat
+    #Best_match_references %in% "Meleagris gallopavo" ~ "turkey", #
+    Barcode_region == "16" & Best_match_references %in% "Otospermophilus beecheyi" ~ "Rodentia", #California ground squirrel
+    Barcode_region == "16" & Best_match_references %in% "Taxidea taxus" ~ "Carnivora", #american badger
+    Barcode_region == "16" & Best_match_references %in% "Neotoma macrotis" ~ "Rodentia", #big-eared woodrat
+    #Best_match_references %in% "Ravinia vagabunda" ~ "flesh fly", #
+    Barcode_region == "16" & Best_match_references %in% "Canis lupus" ~ "Carnivora", # canid
+    Barcode_region == "16" & Best_match_references %in% "Forficula auricularia" ~ "Dermaptera", # earwig
+    Barcode_region == "16" & Best_match_references %in% "Mephitis mephitis" ~ "Carnivora", #striped skunk
+    #Best_match_references %in% "Paralucilia pseudolyrcea" ~ "blow fly", #
+    Barcode_region == "16" & Best_match_references %in% "Urocyon cinereoargenteus" ~ "Carnivora", #grey fox
+    Barcode_region == "16" & Best_match_references %in% "Pandalus jordani" ~ "Decapoda", #ocean pink shrimp
+    #Best_match_references %in% "Merluccius productus" ~ "north pacific hake", #
+    Barcode_region == "16" & Best_match_references %in% "Peromyscus maniculatus" ~ "Rodentia", #deer mouse
+    Barcode_region == "16" & Best_match_references %in% "Pituophis catenifer" ~ "Squamata", #gopher snake
+    Barcode_region == "16" & Best_match_references %in% "Sylvilagus bachmani" ~ "Lagomorpha", #brush rabbit
+    Barcode_region == "16" & Best_match_references %in% "Plestiodon skiltonianus" ~ "Squamata", #skilton's skink
+    Barcode_region == "16" & Best_match_references %in% "Anchoa ischana" ~ "Clupeiformes", #sharpnose anchovy
+    Barcode_region == "16" & Best_match_references %in% "Gonatopsis borealis" ~ "Oegopsida", #Boreopacific armhook squid
+    Barcode_region == "16" & Best_match_references %in% "Leucocarbo chalconotus" ~ "Suliformes", # pelagic cormorant species, checked with BLAST. 3rd result, 92.99%match
+    Barcode_region == "16" & Best_match_references %in% "Pseudopaludicola boliviana" ~ "Anura", # frog, Leptodactylidae family, found in regions in south america???
+    Barcode_region == "16" & Best_match_references %in% "Microtus chrotorrhinus" ~ "Rodentia", # rock vole, found in eastern US
+    Barcode_region == "16" & Best_match_references %in% "Picoides tridactylus" ~ "Piciformes", # eurasian three-toed woodpecker, not found in US --- changed to Dryobates pubescens, downy woodpecker
+    Barcode_region == "16" & Best_match_references %in% "Thomomys bottae" ~ "Rodentia", # Botta's pocket gopher
+    Barcode_region == "16" & Best_match_references %in% "Neodon bershulaensis" ~ "Rodentia", # Bershula mountain vole, found in China -- BLAST shows microtus species second match
+    #Best_match_references %in% "Chloropicon sieburthii" ~ "phytoplankton", # 90
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus" ~ "Coleoptera", # hairy rove beetle -- only shows up once
+    Barcode_region == "16" & Best_match_references %in% "Rhipicephalus sanguineus" ~ "Ixodida", # Brown dog tick
+    Barcode_region == "16" & Best_match_references %in% "Phakopsora meibomiae" ~ "Pucciniales", # fungi
+    Barcode_region == "16" & Best_match_references %in% "Tettigonia orientalis" ~ "Orthoptera", # bush cricket, but this species is found in Japan ---BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Isogenoides varians" ~ "Plecoptera", # stonefly
+    Barcode_region == "16" & Best_match_references %in% "Setvena wahkeena" ~ "Orthoptera", # stonefly (found in socal?) -- BLAST - cricket match
+    Barcode_region == "16" & Best_match_references %in% "Xiphidiopsis gurneyi" ~ "Orthoptera", #bush cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Abronia graminea" ~ "Squamata", # alligator lizard (found in socal?) -- BLAST - southern aligator lizard
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini" ~ "Orthoptera", # camel cricket (found in socal?) --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon laureae" ~ "Chloropicales", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae" ~ "Orthoptera", #Scarabaeidae (scarab) -- changed to species that came up with this species in results -- BLAST- cricket
+    Barcode_region == "16" & Best_match_references %in% "Stenopelmatus fuscus" ~ "Orthoptera", # jerusalem cricket
+    Barcode_region == "16" & Best_match_references %in% "Gymnaetoides acutilobatus" ~ "Orthoptera", # endemic to china??? cave cricket --- BLAST - cricket
+    Barcode_region == "16" & Best_match_references %in% "Microdipodops pallidus" ~ "Rodentia", # pale kangaroo mouse
+    Barcode_region == "16" & Best_match_references %in% "Onthophagus crinitus" ~ "Coleoptera", # dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Pheidole deima" ~ "Hymenoptera", # ant (found in socal?) --- BLAST - Veromessor andrei - harvestor ant
+    Barcode_region == "16" & Best_match_references %in% "Hazenia capsulata" ~ "Ulotrichales", # green algae
+    Barcode_region == "16" & Best_match_references %in% "Anadara broughtonii" ~ "Arcida", # Inflated ark clam
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea" ~ "Acytosteliales", # slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis" ~ "Chloropicales", # 70
+
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos javanicus, Bos indicus, Bos grunniens, Bos grunniens x Bos taurus" ~ "Artiodactyla",
+    Barcode_region == "16" & Best_match_references %in% "Bos taurus, Bos primigenius, Bos indicus" ~ "Artiodactyla", #cow
+    Barcode_region == "16" & Best_match_references %in% "Canis rufus, Canis lupus, Canis latrans" ~ "Carnivora", # coyote
+    Barcode_region == "16" & Best_match_references %in% "Cavenderia subdiscoidea, Cavenderia pseudoaureostipes" ~ "Acytosteliales", #slime mold
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Chloropicales", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Chloropicon sieburthii, Chloropicon roscoffensis, Chloropicon primus, Chloropicon laureae" ~ "Chloropicales", #green algae
+    Barcode_region == "16" & Best_match_references %in% "Creophilus maxillosus, Anthrenus scrophulariae" ~ "Coleoptera", # Common carpet beetle/Buffalo carpet beetle
+    Barcode_region == "16" & Best_match_references %in% "Crotalus viridis, Crotalus oreganus" ~ "Squamata", #western rattlesnake
+    Barcode_region == "16" & Best_match_references %in% "Gallus sonneratii, Gallus gallus" ~ "Galliformes", # wild turkey probably, or chicken
+    Barcode_region == "16" & Best_match_references %in% "Heliconoides inflatus, Cathaica polystigma, Nesiohelix moreletiana, Karaftohelix maackii, Atlanta turriculata, Aceria guerreronis, Hahnia ngai, Grylloprimevala jilina, Aconurella prolixa, Processina dashahensis, Tapinoma indicum, Homo sapiens" ~ "Pteropoda", # Heliconoides inflatus -- Sea butterfly (range is not Socal, but Mexico, and it's the closest species in the list) 
+    Barcode_region == "16" & Best_match_references %in% "Johnmannia powerae, Paratriodonta lentula" ~ "Orthoptera", #Scarabaeidae (scarab)
+    Barcode_region == "16" & Best_match_references %in% "Meleagris gallopavo, Labidesthes sicculus" ~ "Galliformes", #wild turkey
+    Barcode_region == "16" & Best_match_references %in% "Merluccius productus, Merluccius angustimanus" ~ "Gadiformes", #North Pacific Hake
+    Barcode_region == "16" & Best_match_references %in% "Odocoileus virginianus, Odocoileus hemionus" ~ "Artiodactyla", #mule deer
+    Barcode_region == "16" & Best_match_references %in% "Paralucilia pseudolyrcea, Paralucilia paraensis, Hemilucilia semidiaphana, Calliphora vomitoria, Calliphora vicina, Calliphora sinensis, Calliphora nigribarbis, Calliphora calliphoroides" ~ "Diptera", # fly
+    Barcode_region == "16" & Best_match_references %in% "Ravinia vagabunda, Ravinia stimulans, Ravinia derelicta" ~ "Diptera", #flesh fly
+    Barcode_region == "16" & Best_match_references %in% "Scomber japonicus, Scomber colias, Scomber australasicus"~ "Scombriformes", #pacific mackerel
+    Barcode_region == "16" & Best_match_references %in% "Sus scrofa, Thryonomys swinderianus" ~ "Artiodactyla", #wild pig
+    Barcode_region == "16" & Best_match_references %in% "Tachycines zorzini, Onthophagus obscurior" ~ "Coleoptera", #dung beetle
+    Barcode_region == "16" & Best_match_references %in% "Sebastes serranoides, Sebastes melanops, Sebastes flavidus" ~ "Perciformes",  #rockfish
+    Barcode_region == "16" & Best_match_references %in% "" ~ "no match",
+    TRUE ~ order
+    ))
+
+
+ 
+
+checkna <- gaviota[is.na(gaviota$order), ] 
+```
+
+
+
+# label predator
+```{r}
+gaviota$host = NA
+
+gaviota <- gaviota %>%
+  mutate(host = case_when(
+    common_name %in% c("Bobcat", "Coyote", "Wild boar", "Mule deer", "Puma") ~ common_name,
+    TRUE ~ "no"  # Assign "no" if not in the specified list
+  ))
+
+
+```
+
+```{r}
+ggplot(gaviota, aes(x = broadtax)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Histogram of Common Names", x = "Common Name", y = "Count") +
+  theme_minimal()
+```
+```{r}
+ggplot(gaviota, aes(x = host)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Histogram of Common Names", x = "Common Name", y = "Count") +
+  theme_minimal()
+```
+
+```{r}
+# add site names
+gaviota <- gaviota %>%
+  mutate(
+    site = case_when(
+      substr(Sample, 1, 1) == "D" ~ "Dangermond",
+      substr(Sample, 1, 1) == "C" ~ "Coal Oil Point",
+      substr(Sample, 1, 1) == "N" ~ "North Campus Open Space",
+      substr(Sample, 1, 1) == "H" ~ "Hollister",
+      TRUE ~ "Unknown Site"  # Default for unmatched cases
+    )
+  )
+
+dangermond_coyote_samples <- gaviota %>% 
+  filter(common_name == "Coyote", 
+         site == "Dangermond") 
+
+dangermond_coyote_list = list(dangermond_coyote_samples$Sample)
+
+dangermond_bobcat_samples <- gaviota %>% 
+  filter(common_name == "Bobcat", 
+         site == "Dangermond")
+
+dangermond_bobcat_list <- list(dangermond_bobcat_samples$Sample)
+
+dangermond_boar_samples <- gaviota %>% 
+  filter(common_name == "Wild boar", 
+         site == "Dangermond") 
+
+dangermond_boar_list <- list(dangermond_boar_samples$Sample)
+
+dangermond_deer_samples <- gaviota %>% 
+  filter(common_name == "Mule deer", 
+         site == "Dangermond")
+
+dangermond_deer_list <- list(dangermond_deer_samples$Sample)
+
+dangermond_puma_samples <- gaviota %>% 
+  filter(common_name == "Puma", 
+         site == "Dangermond")
+
+dangermond_puma_list <- list(dangermond_puma_samples$Sample)
+
+
+cop_coyote_samples <- gaviota %>% 
+  filter(common_name == "Coyote", 
+         site == "Coal Oil Point")
+
+cop_coyote_list = list(cop_coyote_samples$Sample)
+
+ncos_coyote_samples <- gaviota %>% 
+  filter(common_name == "Coyote", 
+         site == "North Campus Open Space")
+
+ncos_coyote_list = list(ncos_coyote_samples$Sample)
+
+hollister_coyote_samples <- gaviota %>% 
+  filter(common_name == "Coyote",
+         site == "Hollister")
+
+hollister_coyote_list = list(hollister_coyote_samples$Sample)
+
+hollister_boar_samples <- gaviota %>% 
+  filter(common_name == "Wild boar",
+         site == "Hollister")
+
+hollister_boar_list = list(hollister_boar_samples$Sample)
+
+
+```
+
+
+
+
+
+
+
+```{r}
+#Dangermond
+dangermond_coyote <- gaviota[gaviota$Sample %in% c("DEC1", "DEC3", "DEC4", "DEC5", "DEC6", "DEC7", "DEC8", "DEC10", "DEC11", "DEC12", "DEC13", "DAB1", "DABC2", "DABC3", "DABC4", "DABC5", "DABC6", "DABC7", "DABF1", "DAC1", "DAC2", "DAC3", "DAD1", "DADC2", "DADP1", "DAF1", "DAF2", "DAFB1", "DAP1", "DBC2", "DCC1", "DCC3", "DCC5", "DCC6", "DCC7", "DCC8", "DCF1", "DDB1", "DDB2", "DDB3", "DDC10", "DDC2", "DDC3", "DDC4", "DDC5", "DDC5", "DDC6", "DDC7", "DDC8", "DDC9", "DDC9", "DEB1", "DEB2", "DEB3", "DEF1", "DEP2", "DFB1", "DFB2", "DFB3", "DGB5", "DGB6", "DGC11", "DGC2", "DGC3", "DGC4", "DGC5", "DGC6", "DGC7", "DGF1", "DGP1", "DJB2", "DJC3", "DJC4", "DJC5", "DJC6", "DJC7", "DOC1", "DSB1", "DSC1", "DSC2", "DUC1", "DZB6", "DZC2", "DDB4", "DDC1", "DDC12", "DDC13", "DDC15", "DDK2", "DDP2", "DJC1", "DLB2", "DOC2"),]
+
+dangermond_bobcat <- gaviota[gaviota$Sample %in% c("DABB1", "DABB2", "DABB3", "DABB4", "DABC1", "DAFB2", "DFB4" , "DGB1", "DGB10", "DGB2", "DGB3" , "DGB4", "DGB7", "DGB8", "DGB9", "DGC1", "DGC10", "DGC12", "DJB1", "DJB3", "DJB4", "DOB1", "DQB1", "DSB2", "DUB1", "DWB1", "DWB1", "DWB2", "DWP1", "DZB1", "DZB2", "DZB3", "DZB4", "DZB5", "DZC1", "DZP1"),] 
+
+dangermond_boar <- gaviota[gaviota$Sample %in% c("DABH1", "DABH2", "DABH3", "DAFH1", "DAGH1", "DAHH1", "DAHH2", "DAHH2" , "DAHH3", "DAHH4", "DAHH5", "DAHH6", "DAHH7" , "DAIH1", "DAIH2", "DAIH3", "DAIH5", "DAIH6", "DAJH1", "DAJH2", "DAKH1", "DAKH2", "DAKH3", "DAKH4","DALH1", "DALH2", "DALH3", "DALH4", "DALH5", "DALH6", "DALH7", "DALH8", "DAMH1", "DAMH3", "DANH1", "DAOH1", "DAOH2", "DAQH1", "DAQH2", "DFK1", "DFU1", "DLU1", "DLU2", "DQC2", "DQU1", "DTU1", "DTU2", "DTU3", "DUKH1", "DUKH10", "DUKH11", "DUKH12", "DUKH13", "DUKH14", "DUKH2", "DUKH3", "DUKH4", "DUKH6", "DUKH7", "DUKH8", "DZB7", "DLU3"),] 
+
+
+dangermond_deer <- gaviota[gaviota$Sample %in% c("DJD1", "DJD2", "DLD1", "DLD2", "DLD3", "DLD4", "DZD1", "DZH1"),] 
+
+dangermond_puma <- gaviota[gaviota$Sample %in% c("DJC9"),]
+
+
+cop_coyote <- gaviota[gaviota$Sample %in% c("CABC1", "CAEC2", "CAEC3", "CBF1", "CHC1", "CHC2", "CIB1", "CIC1", "CKC1", "CKC2", "CKC3", "CKC4", "CKC5", "CMC1", "CMC2", "CNC1", "CSC1", "CYC1", "CYC2"),]
+
+
+ncos_coyote <- gaviota[gaviota$Sample %in% c("NAAC1", "NABC2", "NABC2", "NACC1", "NHC1", "NHC2", "NKC1", "NMC1", "NMC2", "NRC1", "NRC2", "NXC1", "NXC2", "NYC1", "NPB1"),]
+
+
+hollister_coyote <- gaviota[gaviota$Sample %in% c("HVC1"),] 
+
+hollister_boar <- gaviota[gaviota$Sample %in% c("HVH1", "HVH2"),]
+```
+
+plots
+```{r}
+# dangermond coyote
+dangermond_coyote_plot <- ggplot(dangermond_coyote, aes(x = common_name)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Dangermond Coyote Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# cop coyote
+cop_coyote_plot <- ggplot(cop_coyote, aes(x = common_name)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Coal Oil Point Coyote Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip()+
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# ncos coyote
+ncos_coyote_plot <- ggplot(ncos_coyote, aes(x = common_name)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "NCOS Coyote Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip()+
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# dangermond bobcat
+dangermond_bobcat_plot <- ggplot(dangermond_bobcat, aes(x = common_name)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Dangermond Bobcat Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# dangermond boar
+dangermond_boar_plot <- ggplot(dangermond_boar, aes(x = common_name)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Dangermond Wild Boar Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# dangermond deer
+dangermond_deer_plot <- ggplot(dangermond_deer, aes(x = common_name)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Dangermond Deer Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# dangermond puma
+dangermond_puma_plot <- ggplot(dangermond_puma, aes(x = common_name)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Dangermond Puma Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal()+
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# hollister coyote
+hollister_coyote_plot <- ggplot(hollister_coyote, aes(x = common_name)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Hollister Coyote Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal()+
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+#hollister boar
+hollister_boar_plot <- ggplot(hollister_boar, aes(x = common_name)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Hollister Wild Boar Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal()+
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+```
+
+plots
+```{r}
+dangermond_coyote_plot
+
+dangermond_bobcat_plot
+
+dangermond_boar_plot
+
+dangermond_deer_plot
+
+dangermond_puma_plot
+
+cop_coyote_plot
+
+ncos_coyote_plot
+
+hollister_coyote_plot
+
+hollister_boar_plot
+```
+
+
+broadtax plots
+```{r}
+# dangermond coyote
+dangermond_coyote_plot <- ggplot(dangermond_coyote, aes(x = broadtax)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Dangermond Coyote Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# cop coyote
+cop_coyote_plot <- ggplot(cop_coyote, aes(x = broadtax)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Coal Oil Point Coyote Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip()+
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# ncos coyote
+ncos_coyote_plot <- ggplot(ncos_coyote, aes(x = broadtax)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "NCOS Coyote Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip()+
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# dangermond bobcat
+dangermond_bobcat_plot <- ggplot(dangermond_bobcat, aes(x = broadtax)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Dangermond Bobcat Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# dangermond boar
+dangermond_boar_plot <- ggplot(dangermond_boar, aes(x = broadtax)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Dangermond Wild Boar Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# dangermond deer
+dangermond_deer_plot <- ggplot(dangermond_deer, aes(x = broadtax)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Dangermond Deer Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal() +
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# dangermond puma
+dangermond_puma_plot <- ggplot(dangermond_puma, aes(x = broadtax)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Dangermond Puma Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal()+
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+# hollister coyote
+hollister_coyote_plot <- ggplot(hollister_coyote, aes(x = broadtax)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Hollister Coyote Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal()+
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+
+#hollister boar
+hollister_boar_plot <- ggplot(hollister_boar, aes(x = broadtax)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Hollister Wild Boar Diet Items", x = "Common Name", y = "Count") +
+  theme_minimal()+
+  coord_flip() +
+  geom_text(stat='count', aes(label=..count..), hjust=-0.5)
+```
+
+plots
+```{r}
+dangermond_coyote_plot
+
+dangermond_bobcat_plot
+
+dangermond_boar_plot
+
+dangermond_deer_plot
+
+dangermond_puma_plot
+
+cop_coyote_plot
+
+ncos_coyote_plot
+
+hollister_coyote_plot
+
+hollister_boar_plot
+```
+
+
+
+```{r}
+unique(ncos_coyote$Sample)
+```
+
+
+make a column for what I thought the species was when I collected it.
+```{r}
+#put sample id's into gaviota
+scat_and_lab_ids <- read_csv(here("data", "IDs.scat.lab.correcteddateformat.csv"))
+
+colnames(gaviota)[1] ="LabID"
+
+gaviota <- gaviota %>% left_join(scat_and_lab_ids, by = 'LabID', relationship = 'many-to-many') 
+
+guessed_sp = NA
+
+gaviota <- gaviota |>
+  mutate(
+    sp = substr(ScatID, 12, 12),
+    guessed_sp = case_when(
+      sp == "B" ~ "bobcat",
+      sp == "C" ~ "coyote",
+      sp == "F" ~ "fox",
+      sp == "U" ~ "bear",
+      sp == "P" ~ "puma",
+      sp == "D" ~ "deer",
+      sp == "H" ~ "wild pig",
+      sp == "u" ~ "unknown",
+      TRUE ~ NA_character_
+    )
+  )
+```
+
+make gaviota a csv
+
+```{r}
+#write_csv(gaviota, "gaviota.csv")
+```
+
+
+
+DABC1 has both bobcat mule deer in it, but was guessed as coyote
+DAHH2 has 2 wild boar
+
+```{r}
+# Convert common_name to lowercase
+gaviota$common_name <- tolower(gaviota$common_name)
+gaviota$guessed_sp <- tolower(gaviota$guessed_sp)
+
+gaviota <- gaviota %>% 
+  mutate(target = case_when(common_name %in% c("coyote", "bobcat", "mule deer", "wild boar", "puma") ~ "target",
+        TRUE ~ "No"))
+
+target <- gaviota %>% 
+  filter(target == "target") %>% 
+  select(LabID, ScatID, curated_species, common_name, guessed_sp, target)
+
+match <- target %>% 
+  filter(common_name == guessed_sp)
+
+match_count <- sum(target$common_name == target$guessed_sp, na.rm = TRUE)
+mismatch_count <- sum(target$common_name != target$guessed_sp, na.rm = TRUE)
+
+# List differences
+differences <- gaviota[gaviota$common_name != gaviota$guessed_sp, c("common_name", "guessed_sp")]
+same <- gaviota[gaviota$common_name == gaviota$guessed_sp, c("common_name", "guessed_sp")]
+
+# Print results
+cat("Matches:", match_count, "\n")
+cat("Mismatches:", mismatch_count, "\n")
+print(differences)
+```
+
+
+
+make gaviota a csv
+
+```{r}
+write_csv(gaviota, "outputs/gaviota_taxonomy.csv")
+```
+
+
+

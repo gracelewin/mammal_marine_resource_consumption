@@ -1,0 +1,147 @@
+---
+title: "1_import_and_clean_GL_actual"
+format: html
+---
+
+
+This doc imports all the data and cleans it, to then be used in the Data_Viz_GL.Rmd. Before running this, make sure to run 2_curate_taxonomy_12s_GL.Rmd to get the updated gaviota_taxonomy.csv that is the metabarcoding results.
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(here)
+```
+
+Import field collection scat data
+
+```{r}
+field_scat_data_orig <- read_csv(here("data", "scat_data6.11.24.correcteddateformat.csv"))
+
+field_scat_data_clean <- field_scat_data_orig 
+
+# change lat and lon for 2 samples that had incorrect coordinates.
+
+# first sample: D.08.23.23.H1
+field_scat_data_clean[field_scat_data_clean$ScatID == "D.08.23.23.H1", "lat"] <- c(34.451412)
+field_scat_data_clean[field_scat_data_clean$ScatID == "D.08.23.23.H1", "lon"] <- c(-120.444762)
+
+# secoond sample: it's labeled D (dangermond) but should be C (coal oil point)
+ 
+
+```
+
+
+
+Import metabarcoding results
+
+```{r}
+#read in metabarcoding data, select only relevant columns (can select diff columns for diff analyses)
+gaviota <- read_csv(here("metabarcoding_scripts_GL", "outputs","gaviota_taxonomy.csv")) |> 
+  select(LabID, ScatID, curated_species, common_name, broadtax, broadtax1, genus, family, order, species, host, site, guessed_sp, target)
+```
+
+Add predator data to cormorant reads with no host
+- We can assume that these are coyote prey because of location and picture of scat
+
+```{r}
+# New row (as a data frame)
+dec2 <- data.frame(LabID = "DEC2", ScatID = "D.06.26.23.C2", curated_species = "Canis", common_name = "coyote", broadtax = "Coyote", broadtax1 = "Coyote", genus = "Canis", family = "Canidae", order = "Carnivora", species = "latrans", host = "Coyote", site = "Dangermond", guessed_sp = "coyote", target = "target")
+
+dcc2 <- data.frame(LabID = "DCC2", ScatID = "D.06.19.23.C2", curated_species = "Canis", common_name = "coyote", broadtax = "Coyote", broadtax1 = "Coyote", genus = "Canis", family = "Canidae", order = "Carnivora", species = "latrans", host = "Coyote", site = "Dangermond", guessed_sp = "coyote", target = "target")
+
+
+# Add new row using rbind()
+gaviota <- rbind(gaviota, dec2)
+gaviota <- rbind(gaviota, dcc2)
+```
+
+Take out NTCB sample ID -- This is not correct, and there is no predator for this ID
+```{r}
+gaviota <- gaviota |> 
+  filter(LabID != 'NTCB')
+```
+
+
+Take out sea butterfly snail and green algae
+```{r}
+gaviota <- gaviota |> 
+  filter(!common_name %in% c('sea butterfly snail', 'green algae'))
+```
+
+Take out mold and fungi
+```{r}
+gaviota <- gaviota |> 
+  filter(!common_name %in% c('mold', 'fungi', "slime mold"))
+```
+
+Take out fleshfly (the only diet item in puma) and fly
+```{r}
+gaviota <- gaviota |> 
+  filter(!common_name %in% c('flesh fly', 'fly'))
+```
+
+Take out brown dog tick in bobcat diet
+
+```{r}
+gaviota <- gaviota |> 
+  filter(!common_name == 'brown dog tick')
+```
+
+
+
+<!-- Change samples labeled host for wild boar to correct things. -->
+<!-- ```{r} -->
+
+<!-- ``` -->
+
+
+
+Import location data
+```{r}
+# read in the data file containing coordinates. This is the file from the field collection. From Survey123.
+coords <- field_scat_data_clean |> 
+  select(ScatID, lon, lat)
+
+# join datasets by ScatID
+gaviota <- left_join(gaviota, coords, by = "ScatID")
+
+#change D.06.16.23.C2 to C.06.16.23.C2 (labeled as Dangermond, should be COPR)
+gaviota <- gaviota |> 
+  mutate(ScatID = case_when(ScatID == "D.06.16.23.C2" ~ "C.06.16.23.C2",
+                            TRUE ~ ScatID)) |> 
+  mutate(site = case_when(ScatID == "C.06.16.23.C2" ~ "Coal Oil Point",
+                          TRUE ~ site))
+
+#write_csv(gaviota, file = "gaviota_with_coordinates.csv")
+```
+
+
+put in locations for Elizabeth's pig samples -- also put a label column to mark these as different method of collection.
+
+
+```{r}
+pig_coords <- read_csv(here("data", "LabID_and_pig_survey_ID_lat_lon.csv"))
+
+gaviota <- gaviota %>%
+  left_join(pig_coords %>% select(LabID, lat, lon), by = "LabID", suffix = c("", ".from_lab")) %>%
+  mutate(
+    lat = if_else(is.na(lat), lat.from_lab, lat),
+    lon = if_else(is.na(lon), lon.from_lab, lon)
+  ) %>%
+  select(-lat.from_lab, -lon.from_lab)
+
+#label EH if they are samples from Dangermond given to me by Elizabeth, GL if they are collected in the way in my protocol.
+gaviota <- gaviota |> 
+  mutate(SampleSet = 
+           case_when(LabID %in% pig_coords$LabID ~ "EH",
+                     TRUE ~ "GL"))
+
+```
+
+
+
+```{r}
+write_csv(gaviota, file = "outputs/gaviota_with_coordinates.csv")
+
+```
+

@@ -1,0 +1,605 @@
+ScatID,curated_species,common_name,order,family,genus,species,new_host,site,type
+D.06.26.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.C1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.26.23.C1,Anura,frog,Anura,NA,NA,NA,Coyote,Dangermond,host and prey
+D.06.26.23.C1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.26.23.C2,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.26.23.C2,Urile pelagicus,pelagic cormorant,Suliformes,Phalacrocoracidae,Urile,pelagicus,Coyote,Dangermond,host and prey
+D.06.26.23.C3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.C3,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.26.23.C3,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.26.23.C3,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Dangermond,host and prey
+D.06.26.23.C3,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.26.23.C4,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.C4,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.26.23.C5,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.C5,Turdus migratorius,american robin,Passeriformes,Turdidae,Turdus,migratorius,Coyote,Dangermond,host and prey
+D.06.26.23.C5,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.26.23.C6,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.C6,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.26.23.C6,Neotoma sp,woodrat,Rodentia,Cricetidae,Neotoma,NA,Coyote,Dangermond,host and prey
+D.06.26.23.C6,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.26.23.C6,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.26.23.C6,Urile pelagicus,pelagic cormorant,Suliformes,Phalacrocoracidae,Urile,pelagicus,Coyote,Dangermond,host and prey
+D.06.26.23.C7,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.C7,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Coyote,Dangermond,host and prey
+D.06.26.23.C7,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.26.23.C7,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.26.23.C7,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,Dangermond,host and prey
+D.06.26.23.C7,Zalophus californianus,california sea lion,Carnivora,Otariidae,Zalophus,californianus,Coyote,Dangermond,host and prey
+D.06.26.23.C7,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.26.23.C8,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.C8,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.26.23.C10,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.C10,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.26.23.C10,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Dangermond,host and prey
+D.06.26.23.C10,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.26.23.C10,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.26.23.C11,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.C11,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Dangermond,host and prey
+D.06.26.23.C11,Stenopelmatus sp,cricket,Orthoptera,Stenopelmatidae,Stenopelmatus,NA,Coyote,Dangermond,host and prey
+D.06.26.23.C11,Onthophagus sp,dung beetle,Coleoptera,Scarabaeidae,Onthophagus,NA,Coyote,Dangermond,host and prey
+D.06.26.23.C12,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.C12,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.26.23.C12,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,Dangermond,host and prey
+D.06.26.23.C13,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.C13,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.26.23.C13,Zalophus californianus,california sea lion,Carnivora,Otariidae,Zalophus,californianus,Coyote,Dangermond,host and prey
+D.06.26.23.C13,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+C.08.14.23.C1,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Coyote,Coal Oil Point,host and prey
+C.08.14.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.08.14.23.C1,Gallus gallus,chicken,Galliformes,Phasianidae,Gallus,gallus,Coyote,Coal Oil Point,host and prey
+C.08.19.23.C2,Spermophillus beecheyi,california ground squirrel,Rodentia,Sciuridae,Spermophillus,beecheyi,Coyote,Coal Oil Point,host and prey
+C.08.19.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.08.19.23.C2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Coal Oil Point,host and prey
+C.08.19.23.C3,Spermophillus beecheyi,california ground squirrel,Rodentia,Sciuridae,Spermophillus,beecheyi,Coyote,Coal Oil Point,host and prey
+C.08.19.23.C3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.08.19.23.C3,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Coal Oil Point,host and prey
+C.06.16.23.F1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.06.16.23.F1,Gallus gallus,chicken,Galliformes,Phasianidae,Gallus,gallus,Coyote,Coal Oil Point,host and prey
+C.06.16.23.F1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,Coal Oil Point,host and prey
+C.06.29.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.06.29.23.C1,Gallus gallus,chicken,Galliformes,Phasianidae,Gallus,gallus,Coyote,Coal Oil Point,host and prey
+C.06.29.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,only host ID
+C.07.06.23.B1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.07.06.23.B1,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Coal Oil Point,host and prey
+C.07.06.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,only host ID
+C.07.12.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C1,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C2,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C2,Corvus corax,common raven,Passeriformes,Corvidae,Corvus,corax,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C3,Melospiza melodia,song sparrow,Passeriformes,Passerellidae,Melospiza,melodia,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C3,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C3,Corvus corax,common raven,Passeriformes,Corvidae,Corvus,corax,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C4,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C4,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C5,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.07.12.23.C5,Meleagris gallopavo,wild turkey,Galliformes,Phasianidae,Meleagris,gallopavo,Coyote,Coal Oil Point,host and prey
+C.07.15.23.C1,Spermophillus beecheyi,california ground squirrel,Rodentia,Sciuridae,Spermophillus,beecheyi,Coyote,Coal Oil Point,host and prey
+C.07.15.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.07.15.23.C1,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Coal Oil Point,host and prey
+C.07.15.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.07.15.23.C2,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Coal Oil Point,host and prey
+C.07.17.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.07.17.23.C1,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Coyote,Coal Oil Point,host and prey
+C.07.24.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.07.24.23.C1,Spermophillus beecheyi,california ground squirrel,Rodentia,Sciuridae,Spermophillus,beecheyi,Coyote,Coal Oil Point,host and prey
+C.07.24.23.C1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Coal Oil Point,host and prey
+C.08.07.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.08.07.23.C1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Coal Oil Point,host and prey
+C.08.07.23.C2,Spermophillus beecheyi,california ground squirrel,Rodentia,Sciuridae,Spermophillus,beecheyi,Coyote,Coal Oil Point,host and prey
+C.08.07.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.08.07.23.C2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Coal Oil Point,host and prey
+C.08.07.23.C2,Plestiodon skiltonianus,skilton's skink,Squamata,Scincidae,Plestiodon,skiltonianus,Coyote,Coal Oil Point,host and prey
+D.06.14.23.B1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.14.23.B1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.14.23.B1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.08.14.23.B1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.08.14.23.B1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Bobcat,Dangermond,host and prey
+D.08.14.23.B1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Bobcat,Dangermond,host and prey
+D.08.14.23.B2,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.08.14.23.B2,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Bobcat,Dangermond,host and prey
+D.08.14.23.B2,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Bobcat,Dangermond,host and prey
+D.08.14.23.B3,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.08.14.23.B3,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Bobcat,Dangermond,only host ID
+D.08.14.23.B4,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.08.14.23.C1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.08.14.23.C1,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Bobcat,Dangermond,only host ID
+D.08.14.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.08.14.23.C2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.08.14.23.C2,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.08.14.23.C2,Urile pelagicus,pelagic cormorant,Suliformes,Phalacrocoracidae,Urile,pelagicus,Coyote,Dangermond,host and prey
+D.08.14.23.C3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.08.14.23.C3,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.08.14.23.C4,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.08.14.23.C4,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.08.14.23.C4,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.08.14.23.C4,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,Dangermond,host and prey
+D.08.14.23.C4,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.08.14.23.C5,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.08.14.23.C5,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.08.14.23.C6,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.08.14.23.C6,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.08.14.23.C7,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.08.14.23.C7,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.08.14.23.C7,Stenopelmatus sp,cricket,Orthoptera,Stenopelmatidae,Stenopelmatus,NA,Coyote,Dangermond,host and prey
+D.08.14.23.F1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.08.14.23.F1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.08.14.23.F1,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.08.14.23.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.08.14.23.H2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.08.14.23.H3,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.06.14.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.14.23.C1,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.14.23.C1,Zonotrichia leucophrys,white-crowned sparrow,Passeriformes,Passerellidae,Zonotrichia,leucophrys,Coyote,Dangermond,host and prey
+D.06.14.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.14.23.C2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.14.23.C2,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.14.23.C3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.14.23.C3,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.14.23.C3,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.14.23.C3,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.14.23.C3,Anura,frog,Anura,NA,NA,NA,Coyote,Dangermond,host and prey
+D.06.14.23.D1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.14.23.D1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.14.23.D1,Reithrodontomys megalotus,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotus,Coyote,Dangermond,host and prey
+D.06.14.23.D1,Zalophus californianus,california sea lion,Carnivora,Otariidae,Zalophus,californianus,Coyote,Dangermond,host and prey
+D.08.18.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.08.18.23.C2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.08.18.23.C2,Pipilo maculatus,spotted towhee,Passeriformes,Passerellidae,Pipilo,maculatus,Coyote,Dangermond,host and prey
+D.08.18.23.C2,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.08.18.23.P1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.08.18.23.P1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.14.23.F1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.14.23.F1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.14.23.F1,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.14.23.F2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.14.23.F2,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.14.23.F2,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.08.23.23.B1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.08.23.23.B1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.08.23.23.B1,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.08.23.23.B2,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.08.23.23.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.10.24.22.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.10.26.22.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.10.26.22.H2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.10.26.22.H3,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.10.26.22.H4,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.10.26.22.H5,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.10.26.22.H6,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.10.26.22.H7,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.11.30.22.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.11.30.22.H2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.11.30.22.H3,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.11.30.22.H3,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Wild boar,Dangermond,host and prey
+D.11.30.22.H4,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Wild boar,Dangermond,host and prey
+D.11.30.22.H4,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.11.30.22.H5,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.11.30.22.H6,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.10.25.22.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.10.25.22.H2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.13.22.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.13.22.H2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.13.23.H3,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.13.22.H4,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.09.09.22.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.09.09.22.H2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.09.09.22.H3,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.09.09.22.H4,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.09.09.22.H5,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,Dangermond,only host ID
+D.09.09.22.H5,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,only host ID
+D.09.09.22.H6,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.09.09.22.H7,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.09.09.22.H8,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.14.22.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.07.14.22.H1,Forficula sp,earwig,Dermaptera,Forficulidae,Forficula,NA,Wild boar,Dangermond,host and prey
+D.07.14.22.H3,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.10.22.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.07.10.22.H1,Forficula sp,earwig,Dermaptera,Forficulidae,Forficula,NA,Wild boar,Dangermond,host and prey
+D.04.13.22.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.04.13.22.H2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.06.14.23.P1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.14.23.P1,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.14.23.P1,Urile pelagicus,pelagic cormorant,Suliformes,Phalacrocoracidae,Urile,pelagicus,Coyote,Dangermond,host and prey
+D.06.14.23.P1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.04.14.22.H1,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,NA,NA,NA
+D.04.14.22.H2,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,NA,NA,NA
+D.03.15.22.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.03.15.22.H2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+C.06.16.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Coal Oil Point,host and prey
+C.06.16.23.C2,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Coyote,Coal Oil Point,host and prey
+D.06.19.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.19.23.C1,Stenopelmatus sp,cricket,Orthoptera,Stenopelmatidae,Stenopelmatus,NA,Coyote,Dangermond,host and prey
+D.06.19.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.19.23.C2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.19.23.C2,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.19.23.C2,Urile pelagicus,pelagic cormorant,Suliformes,Phalacrocoracidae,Urile,pelagicus,Coyote,Dangermond,host and prey
+D.06.19.23.C2,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.19.23.C3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.19.23.C3,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Dangermond,host and prey
+D.06.19.23.C5,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.19.23.C5,Zalophus californianus,california sea lion,Carnivora,Otariidae,Zalophus,californianus,Coyote,Dangermond,host and prey
+D.06.19.23.C6,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.19.23.C6,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.19.23.C6,Stenopelmatus sp,cricket,Orthoptera,Stenopelmatidae,Stenopelmatus,NA,Coyote,Dangermond,host and prey
+D.06.19.23.C7,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.19.23.C7,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Coyote,Dangermond,host and prey
+D.06.19.23.C7,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.19.23.C7,Dipodomys heermanni,heerman's kangaroo rat,Rodentia,Heteromyidae,Dipodomys,heermanni,Coyote,Dangermond,host and prey
+D.06.19.23.C7,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.19.23.C8,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.19.23.C8,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.19.23.C8,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.19.23.F1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.19.23.F1,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.19.23.F1,Neotoma sp,woodrat,Rodentia,Cricetidae,Neotoma,NA,Coyote,Dangermond,host and prey
+D.06.19.23.F1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.B1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.B1,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.25.23.B1,Urile pelagicus,pelagic cormorant,Suliformes,Phalacrocoracidae,Urile,pelagicus,Coyote,Dangermond,host and prey
+D.06.25.23.B2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.B2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.B2,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.25.23.B3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.B3,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.B3,Zalophus californianus,california sea lion,Carnivora,Otariidae,Zalophus,californianus,Coyote,Dangermond,host and prey
+D.06.25.23.B4,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.B4,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.C1,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Coyote,Dangermond,host and prey
+D.06.25.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.25.23.C1,Elgaria multicarinata,california alligator lizard,Squamata,Anguidae,Elgaria,multicarinata,Coyote,Dangermond,host and prey
+D.06.25.23.C10,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C10,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.25.23.C12,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C12,Zalophus californianus,california sea lion,Carnivora,Otariidae,Zalophus,californianus,Coyote,Dangermond,host and prey
+D.06.25.23.C12,Pituophis catenifer,gopher snake,Squamata,Colubridae,Pituophis,catenifer,Coyote,Dangermond,host and prey
+D.06.25.23.C13,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C13,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.C13,Elgaria multicarinata,california alligator lizard,Squamata,Anguidae,Elgaria,multicarinata,Coyote,Dangermond,host and prey
+D.06.25.23.C15,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C15,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.C15,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Dangermond,host and prey
+D.06.25.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.C2,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.25.23.C2,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.25.23.C2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,Dangermond,host and prey
+D.06.25.23.C2,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Coyote,Dangermond,host and prey
+D.06.25.23.C3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C3,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.25.23.C3,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.C3,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.25.23.C3,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.25.23.C4,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C4,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.25.23.C4,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.C4,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.25.23.C5,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C5,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.C5,Elgaria multicarinata,california alligator lizard,Squamata,Anguidae,Elgaria,multicarinata,Coyote,Dangermond,host and prey
+D.06.25.23.C6,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C6,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.25.23.C6,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.C6,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.25.23.C6,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.25.23.C7,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C7,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.25.23.C7,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.C7,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.25.23.C8,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.C8,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.25.23.C8,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.25.23.C9,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,only host ID
+D.06.25.23.unk2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.unk2,Zalophus californianus,california sea lion,Carnivora,Otariidae,Zalophus,californianus,Coyote,Dangermond,host and prey
+D.06.25.23.P2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.25.23.P2,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.25.23.P2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.25.23.P2,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.25.23.P2,Urile pelagicus,pelagic cormorant,Suliformes,Phalacrocoracidae,Urile,pelagicus,Coyote,Dangermond,host and prey
+D.06.25.23.P2,Anthrenus sp,carpet beetle,Coleoptera,Dermestidae,Anthrenus,NA,Coyote,Dangermond,host and prey
+D.06.25.23.P2,Creophilus sp,rove beetle,Coleoptera,Staphylinidae,Creophilus,NA,Coyote,Dangermond,host and prey
+D.06.26.23.B1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.B1,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.26.23.B2,Callipepla californica,california quail,Galliformes,Odontophoridae,Callipepla,californica,Coyote,Dangermond,host and prey
+D.06.26.23.B2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.B2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.26.23.B2,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Dangermond,host and prey
+D.06.26.23.B2,Callipepla californica,california quail,Galliformes,Odontophoridae,Callipepla,NA,Coyote,Dangermond,host and prey
+D.06.26.23.B2,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.26.23.B3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.B3,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.26.23.B3,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.26.23.B3,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.26.23.F1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.F1,Alosa sapidissima,american shad,Clupeiformes,Clupeidae,Alosa,sapidissima,Coyote,Dangermond,host and prey
+D.06.26.23.F1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.26.23.F1,Anchoa ischana,sharpnose anchovy,Clupeiformes,Engraulidae,Anchoa,ischana,Coyote,Dangermond,host and prey
+D.06.26.23.P2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.26.23.P2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.26.23.P2,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.27.23.B1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.27.23.B1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.27.23.B1,Melanerpes formicivorus,acorn woodpecker,Piciformes,Picidae,Melanerpes,formicivorus,Coyote,Dangermond,host and prey
+D.06.27.23.B1,Dryobates pubescens,downy woodpecker,Piciformes,Picidae,Dryobates,pubescens,Coyote,Dangermond,host and prey
+D.06.27.23.B2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.27.23.B2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.27.23.B2,Anadara sp,clam,Arcida,Arcidae,Anadara,NA,Coyote,Dangermond,host and prey
+D.06.27.23.B2,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Coyote,Dangermond,host and prey
+D.06.27.23.B3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.27.23.B3,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.27.23.B3,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.27.23.B3,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.27.23.B4,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.06.27.23.B4,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Bobcat,Dangermond,host and prey
+D.06.27.23.B4,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Bobcat,Dangermond,host and prey
+D.06.27.23.B4,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Bobcat,Dangermond,host and prey
+D.06.27.23.UNK1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.06.27.23.U1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.06.28.23.B1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.06.28.23.B1,Neotoma sp,woodrat,Rodentia,Cricetidae,Neotoma,NA,Bobcat,Dangermond,host and prey
+D.06.28.23.B10,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.06.28.23.B2,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.06.28.23.B3,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.06.28.23.B3,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Bobcat,Dangermond,host and prey
+D.06.28.23.B3,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Bobcat,Dangermond,host and prey
+D.06.28.23.B4,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.06.28.23.B4,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Bobcat,Dangermond,host and prey
+D.06.28.23.B5,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.28.23.B5,Mephitis mephitis,striped skunk,Carnivora,Mephitidae,Mephitis,mephitis,Coyote,Dangermond,host and prey
+D.06.28.23.B5,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.28.23.B5,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.28.23.B5,Pituophis catenifer,gopher snake,Squamata,Colubridae,Pituophis,catenifer,Coyote,Dangermond,host and prey
+D.06.28.23.B6,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.28.23.B6,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.28.23.B6,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.28.23.B7,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.06.28.23.B7,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Bobcat,Dangermond,host and prey
+D.06.28.23.B7,Dipodomys heermanni,heerman's kangaroo rat,Rodentia,Heteromyidae,Dipodomys,heermanni,Bobcat,Dangermond,host and prey
+D.06.28.23.B8,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.06.28.23.B8,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Bobcat,Dangermond,only host ID
+D.06.28.23.B9,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.06.28.23.C1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.06.28.23.C10,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.06.28.23.C10,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Bobcat,Dangermond,host and prey
+D.06.28.23.C11,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.28.23.C11,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.28.23.C12,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.06.28.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.28.23.C2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.28.23.C2,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,Dangermond,host and prey
+D.06.28.23.C2,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.28.23.C3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.28.23.C3,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.28.23.C3,Plestiodon skiltonianus,skilton's skink,Squamata,Scincidae,Plestiodon,skiltonianus,Coyote,Dangermond,host and prey
+D.06.28.23.C3,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.28.23.C3,Elgaria multicarinata,california alligator lizard,Squamata,Anguidae,Elgaria,multicarinata,Coyote,Dangermond,host and prey
+D.06.28.23.C3,Urile pelagicus,pelagic cormorant,Suliformes,Phalacrocoracidae,Urile,pelagicus,Coyote,Dangermond,host and prey
+D.06.28.23.C4,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.28.23.C4,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.06.28.23.C4,Meleagris gallopavo,wild turkey,Galliformes,Phasianidae,Meleagris,gallopavo,Coyote,Dangermond,host and prey
+D.06.28.23.C5,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.28.23.C5,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.28.23.C6,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.28.23.C6,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.28.23.C6,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.28.23.C6,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.28.23.C7,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Coyote,Dangermond,host and prey
+D.06.28.23.C7,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.28.23.C7,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Coyote,Dangermond,host and prey
+D.06.28.23.C7,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.28.23.C7,Stenopelmatus sp,cricket,Orthoptera,Stenopelmatidae,Stenopelmatus,NA,Coyote,Dangermond,host and prey
+D.06.28.23.C7,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.06.28.23.F1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.28.23.F1,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.06.28.23.F1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.06.28.23.F1,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.06.28.23.F1,Veromessor sp,harvestor ant,Hymenoptera,Formicidae,Veromessor,NA,Coyote,Dangermond,host and prey
+D.06.28.23.P1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.28.23.P1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.07.11.23.B1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.07.11.23.B1,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Bobcat,Dangermond,host and prey
+D.07.11.23.B1,Neotoma sp,woodrat,Rodentia,Cricetidae,Neotoma,NA,Bobcat,Dangermond,host and prey
+D.07.11.23.B1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Bobcat,Dangermond,host and prey
+D.07.11.23.B2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.11.23.B2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.07.11.23.B2,Dipodomys heermanni,heerman's kangaroo rat,Rodentia,Heteromyidae,Dipodomys,heermanni,Coyote,Dangermond,host and prey
+D.07.11.23.B2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,Dangermond,host and prey
+D.07.11.23.B2,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.07.11.23.B3,Aphelocoma californica,western scrub jay,Passeriformes,Corvidae,Aphelocoma,californica,Bobcat,Dangermond,host and prey
+D.07.11.23.B3,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.07.11.23.B3,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Bobcat,Dangermond,host and prey
+D.07.11.23.B3,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Bobcat,Dangermond,host and prey
+D.07.11.23.B3,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Bobcat,Dangermond,host and prey
+D.07.11.23.B3,Dipodomys heermanni,heerman's kangaroo rat,Rodentia,Heteromyidae,Dipodomys,heermanni,Bobcat,Dangermond,host and prey
+D.07.11.23.B4,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.07.11.23.B4,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Bobcat,Dangermond,host and prey
+D.07.11.23.B4,Dipodomys heermanni,heerman's kangaroo rat,Rodentia,Heteromyidae,Dipodomys,heermanni,Bobcat,Dangermond,host and prey
+D.07.11.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.11.23.C1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.07.11.23.C1,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Coyote,Dangermond,host and prey
+D.07.11.23.C1,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.07.11.23.C1,Meleagris gallopavo,wild turkey,Galliformes,Phasianidae,Meleagris,gallopavo,Coyote,Dangermond,host and prey
+D.07.11.23.C3,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.11.23.C3,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.07.11.23.C3,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.07.11.23.C3,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.07.11.23.C4,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.11.23.C4,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.07.11.23.C4,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.07.11.23.C5,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.11.23.C5,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.07.11.23.C5,Phoca vitulina,harbor seal,Carnivora,Otariidae,Phoca,vitulina,Coyote,Dangermond,host and prey
+D.07.11.23.C5,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.07.11.23.C6,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.11.23.C6,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.07.11.23.C6,Urile pelagicus,pelagic cormorant,Suliformes,Phalacrocoracidae,Urile,pelagicus,Coyote,Dangermond,host and prey
+D.07.11.23.C6,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.07.11.23.C7,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.11.23.C7,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.07.11.23.C7,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.07.11.23.C7,Dipodomys heermanni,heerman's kangaroo rat,Rodentia,Heteromyidae,Dipodomys,heermanni,Coyote,Dangermond,host and prey
+D.07.11.23.C9,Puma concolor,puma,Carnivora,Felidae,Puma,concolor,Puma,Dangermond,host and prey
+D.07.11.23.C9,Ravinia,ravinia,Diptera,Sarcophagidae,Ravinia,NA,Puma,Dangermond,host and prey
+D.07.11.23.D1,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Mule deer,Dangermond,only host ID
+D.07.11.23.D2,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Mule deer,Dangermond,only host ID
+D.07.13.23.B2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.13.23.B2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.07.13.23.B2,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.07.13.23.D1,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Mule deer,Dangermond,only host ID
+D.07.13.23.D2,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Mule deer,Dangermond,only host ID
+D.07.13.23.D3,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Mule deer,Dangermond,only host ID
+D.07.13.23.D4,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Mule deer,Dangermond,only host ID
+D.07.13.23.U1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.07.13.23.U1,Onthophagus sp,dung beetle,Coleoptera,Scarabaeidae,Onthophagus,NA,Wild boar,Dangermond,host and prey
+D.07.13.23.U2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.13.23.U3,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.18.23.B1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.18.23.B1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Coyote,Dangermond,host and prey
+D.07.18.23.B1,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,Dangermond,host and prey
+D.07.18.23.B1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.07.18.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.18.23.C1,Neotoma sp,woodrat,Rodentia,Cricetidae,Neotoma,NA,Coyote,Dangermond,host and prey
+D.07.18.23.C1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.07.18.23.C1,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.07.18.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.18.23.C2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.07.20.23.B1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.07.20.23.B1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Bobcat,Dangermond,host and prey
+D.07.20.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.20.23.C1,Reithrodontomys megalotis,western harvest mouse,Rodentia,Cricetidae,Reithrodontomys,megalotis,Coyote,Dangermond,host and prey
+D.07.20.23.C2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.20.23.U1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.24.23.B1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.24.23.B1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.07.24.23.B1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Coyote,Dangermond,host and prey
+D.07.24.23.B2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,only host ID
+D.07.24.23.B2,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Coyote,Dangermond,only host ID
+D.07.24.23.B2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,Dangermond,only host ID
+D.07.24.23.C1,Arctocephalus townsendi,guadelupe fur seal,Carnivora,Otariidae,Arctocephalus,townsendi,Coyote,Dangermond,host and prey
+D.07.24.23.C1,Spermophillus beecheyi,california ground squirrel,Rodentia,Sciuridae,Spermophillus,beecheyi,Coyote,Dangermond,host and prey
+D.07.24.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.24.23.C1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.07.24.23.C1,Vulpes vulpes,red fox,Carnivora,Canidae,Vulpes,vulpes,Coyote,Dangermond,host and prey
+D.07.24.23.C2,Spermophillus beecheyi,california ground squirrel,Rodentia,Sciuridae,Spermophillus,beecheyi,Coyote,Dangermond,host and prey
+D.07.24.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.24.23.C2,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,Dangermond,host and prey
+D.07.24.23.H1,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,NA,NA,NA
+D.07.26.23.U1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.26.23.U2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.07.26.23.U2,Meleagris gallopavo,wild turkey,Galliformes,Phasianidae,Meleagris,gallopavo,Wild boar,Dangermond,host and prey
+D.07.26.23.U3,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.07.31.23.B1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.07.31.23.B1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Bobcat,Dangermond,host and prey
+D.07.31.23.B1,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Bobcat,Dangermond,host and prey
+D.07.31.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.07.31.23.C1,Urile penicillatus,brandt's cormorant,Suliformes,Phalacrocoracidae,Urile,penicillatus,Coyote,Dangermond,host and prey
+D.07.31.23.C1,Urile pelagicus,pelagic cormorant,Suliformes,Phalacrocoracidae,Urile,pelagicus,Coyote,Dangermond,host and prey
+D.00.00.22.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.00.00.22.H1,Stenopelmatus sp,cricket,Orthoptera,Stenopelmatidae,Stenopelmatus,NA,Wild boar,Dangermond,host and prey
+D.00.00.22.H1,Isogenoides sp,stonefly,Plecoptera,Perlodidae,Isogenoides,NA,Wild boar,Dangermond,host and prey
+D.00.00.22.H10,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.00.00.22.H10,Stenopelmatus sp,cricket,Orthoptera,Stenopelmatidae,Stenopelmatus,NA,Wild boar,Dangermond,host and prey
+D.00.00.22.H10,Isogenoides sp,stonefly,Plecoptera,Perlodidae,Isogenoides,NA,Wild boar,Dangermond,host and prey
+D.00.00.22.H11,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.00.00.22.H11,Stenopelmatus sp,cricket,Orthoptera,Stenopelmatidae,Stenopelmatus,NA,Wild boar,Dangermond,host and prey
+D.00.00.22.H11,Isogenoides sp,stonefly,Plecoptera,Perlodidae,Isogenoides,NA,Wild boar,Dangermond,host and prey
+D.00.00.22.H12,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.00.00.22.H13,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.00.00.22.H14,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.00.00.22.H14,Stenopelmatus sp,cricket,Orthoptera,Stenopelmatidae,Stenopelmatus,NA,Wild boar,Dangermond,host and prey
+D.00.00.22.H14,Isogenoides sp,stonefly,Plecoptera,Perlodidae,Isogenoides,NA,Wild boar,Dangermond,host and prey
+D.00.00.22.H2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Bobcat,Dangermond,only host ID
+D.00.00.22.H2,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.00.00.22.H3,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.00.00.22.H4,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.00.00.22.H4,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Wild boar,Dangermond,host and prey
+D.00.00.22.H5,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,NA,NA,NA
+D.00.00.22.H6,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.00.00.22.H7,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,host and prey
+D.00.00.22.H7,Stenopelmatus sp,cricket,Orthoptera,Stenopelmatidae,Stenopelmatus,NA,Wild boar,Dangermond,host and prey
+D.00.00.22.H8,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.00.00.22.H9,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,NA,NA,NA
+D.08.04.23.B1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.08.04.23.B1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Bobcat,Dangermond,host and prey
+D.08.04.23.B2,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.08.04.23.B2,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Bobcat,Dangermond,host and prey
+D.08.04.23.B2,Neotoma sp,woodrat,Rodentia,Cricetidae,Neotoma,NA,Bobcat,Dangermond,host and prey
+D.08.04.23.B2,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Bobcat,Dangermond,host and prey
+D.08.04.23.P1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.08.04.23.P1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Bobcat,Dangermond,host and prey
+D.08.10.23.B1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.08.10.23.B1,Neotoma sp,woodrat,Rodentia,Cricetidae,Neotoma,NA,Bobcat,Dangermond,host and prey
+D.08.10.23.B1,Thomomys bottae,botta's pocket gopher,Rodentia,Geomyidae,Thomomys,bottae,Bobcat,Dangermond,host and prey
+D.08.10.23.B2,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+D.08.10.23.B3,Dipodomys heermanni,heerman's kangaroo rat,Rodentia,Heteromyidae,Dipodomys,heermanni,Bobcat,Dangermond,host and prey
+D.08.10.23.B3,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.08.10.23.B3,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Bobcat,Dangermond,host and prey
+D.08.10.23.B4,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.08.10.23.B4,Callipepla californica,california quail,Galliformes,Odontophoridae,Callipepla,californica,Bobcat,Dangermond,host and prey
+D.08.10.23.B4,Neotoma sp,woodrat,Rodentia,Cricetidae,Neotoma,NA,Bobcat,Dangermond,host and prey
+D.08.10.23.B4,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Bobcat,Dangermond,host and prey
+D.08.10.23.B5,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.08.10.23.B5,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Bobcat,Dangermond,host and prey
+D.08.10.23.B5,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Bobcat,Dangermond,host and prey
+D.08.10.23.B6,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,only host ID
+D.08.10.23.B7,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Dangermond,only host ID
+D.08.10.23.C1,Callipepla californica,california quail,Galliformes,Odontophoridae,Callipepla,californica,Bobcat,Dangermond,host and prey
+D.08.10.23.C1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,host and prey
+D.08.10.23.C1,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Bobcat,Dangermond,host and prey
+D.08.10.23.C1,Crotalus oreganus,western rattlesnake,Squamata,Viperidae,Crotalus,oreganus,Bobcat,Dangermond,host and prey
+D.08.10.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,only host ID
+D.08.10.23.D1,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Mule deer,Dangermond,only host ID
+D.08.10.23.H1,Odocoileus hemionus,mule deer,Artiodactyla,Cervidae,Odocoileus,hemionus,Mule deer,Dangermond,only host ID
+D.08.10.23.P1,Lynx rufus,bobcat,Carnivora,Felidae,Lynx,rufus,Bobcat,Dangermond,only host ID
+H.08.01.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Hollister,host and prey
+H.08.01.23.C1,Gallus gallus,chicken,Galliformes,Phasianidae,Gallus,gallus,Coyote,Hollister,host and prey
+H.08.01.23.H1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Hollister,only host ID
+H.08.01.23.H2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Wild boar,Hollister,only host ID
+N.08.12.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,only host ID
+N.08.14.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.08.14.23.C2,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Coyote,North Campus Open Space,host and prey
+N.08.14.23.C2,Gallus gallus,chicken,Galliformes,Phasianidae,Gallus,gallus,Coyote,North Campus Open Space,host and prey
+N.08.14.23.C2,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,North Campus Open Space,host and prey
+N.08.14.23.C2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,North Campus Open Space,host and prey
+N.08.17.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.08.17.23.C1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,North Campus Open Space,host and prey
+N.06.29.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.06.29.23.C1,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,North Campus Open Space,host and prey
+N.06.29.23.C1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,North Campus Open Space,host and prey
+N.06.29.23.C1,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,North Campus Open Space,host and prey
+N.06.29.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,only host ID
+N.07.12.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.07.12.23.C1,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,North Campus Open Space,host and prey
+N.07.15.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.07.15.23.C1,Meleagris gallopavo,wild turkey,Galliformes,Phasianidae,Meleagris,gallopavo,Coyote,North Campus Open Space,host and prey
+N.07.15.23.C1,Gallus gallus,chicken,Galliformes,Phasianidae,Gallus,gallus,Coyote,North Campus Open Space,host and prey
+N.07.15.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.07.15.23.C2,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,North Campus Open Space,host and prey
+N.07.15.23.C2,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,North Campus Open Space,host and prey
+N.07.19.23.B1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.07.19.23.B1,Spermophillus beecheyi,california ground squirrel,Rodentia,Sciuridae,Spermophillus,beecheyi,Coyote,North Campus Open Space,host and prey
+N.07.23.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.07.23.23.C1,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,North Campus Open Space,host and prey
+N.07.23.23.C1,Mus musculus,house mouse,Rodentia,Muridae,Mus,musculus,Coyote,North Campus Open Space,host and prey
+N.07.23.23.C1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,North Campus Open Space,host and prey
+N.07.23.23.C1,Rattus rattus,black rat,Rodentia,Muridae,Rattus,rattus,Coyote,North Campus Open Space,host and prey
+N.07.23.23.C1,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,North Campus Open Space,host and prey
+N.07.23.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.07.23.23.C2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,North Campus Open Space,host and prey
+N.07.23.23.C2,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,North Campus Open Space,host and prey
+N.08.05.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.08.05.23.C1,Peromyscus maniculatus,deer mouse,Rodentia,Cricetidae,Peromyscus,maniculatus,Coyote,North Campus Open Space,host and prey
+N.08.05.23.C2,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.08.05.23.C2,Bos taurus,domestic cattle,Artiodactyla,Bovidae,Bos,taurus,Coyote,North Campus Open Space,host and prey
+N.08.05.23.C2,Gallus gallus,chicken,Galliformes,Phasianidae,Gallus,gallus,Coyote,North Campus Open Space,host and prey
+N.08.05.23.C2,Sus scrofa,wild boar,Artiodactyla,Suidae,Sus,scrofa,Coyote,North Campus Open Space,host and prey
+N.08.07.23.C1,Canis latrans,coyote,Carnivora,Canidae,Canis,latrans,Coyote,North Campus Open Space,host and prey
+N.08.07.23.C1,Microtus californicus,california vole,Rodentia,Cricetidae,Microtus,californicus,Coyote,North Campus Open Space,host and prey
+N.08.07.23.C1,Sylvilagus bachmani,brush rabbit,Lagomorpha,Leporidae,Sylvilagus,bachmani,Coyote,North Campus Open Space,host and prey
+D.06.26.23.C2,Canis,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey
+D.06.19.23.C2,Canis,coyote,Carnivora,Canidae,Canis,latrans,Coyote,Dangermond,host and prey

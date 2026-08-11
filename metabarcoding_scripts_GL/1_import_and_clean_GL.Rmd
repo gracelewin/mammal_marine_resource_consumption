@@ -1,0 +1,107 @@
+---
+title: "1_import_and_clean"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-08-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+```
+
+
+import metabarcoding results
+```{r}
+# gaviota_12s <- read_csv(here("data", "metabarcoding_data", "Lewin_Gaviota_mammal_scat_data_Results_Dec2024_v2.csv")) |> 
+#   select(Sample, Barcode_region, Taxa, Percentage_filter, Best_match_references, Local_taxa, Local_species, Including_domestic.Local_taxa, Including_domestic.Local_species)
+# 
+# gaviota_12s_rerun <- read_csv(here("data", "metabarcoding_data", "UCSB_Rerun_Samples_12s_March2025.csv")) |> 
+#     select(Sample, Barcode_region, Taxa, Percentage_filter, Best_match_references, Local_taxa, Local_species, Including_domestic.Local_taxa, Including_domestic.Local_species)
+# 
+# gaviota_16s <- read_csv(here("data", "metabarcoding_data", "Lewin_Gaviota_mammal_scat_data_16s_Results_June2025.csv")) |> 
+#     select(Sample, Barcode_region, Taxa, Percentage_filter, Best_match_references, Local_taxa, Local_species, Including_domestic.Local_taxa, Including_domestic.Local_species)
+# 
+# #clean up 16s results -- take out "no significant similarity found"
+# wrong_project_codes <- c("F014A", "F020A", "F026A", "F035A", "F09A", "F113A")
+# 
+# gaviota_16s_clean <- gaviota_16s |> 
+#   filter(Best_match_references != "No significant similarity found") |> 
+#   mutate(Taxa = case_when(Barcode_region == "16" ~ "Invertebrate")) |> 
+#   filter(!Sample %in% wrong_project_codes)
+
+
+#USING UPDATED RESULTS WITH ALL INCLUDED (12s and 16s) - From Jenn 6/25/25
+gaviota_all_raw <- read_csv(here("data", "metabarcoding_data", "Lewin_Gaviota_mammal_scat_data_16s_12s_Results_ALL_seqdata.csv")) |> 
+  filter(Best_match_references != "No significant similarity found") |> 
+  rename(Sample = Nextseq538) |> 
+  rename(Barcode_region = Coyote) |> 
+  mutate(Taxa = case_when(Barcode_region == "16" ~ "Invertebrates",
+                          TRUE ~ Taxa))
+
+
+```
+
+
+combine two datasets with bind_rows() (dplyr)
+```{r}
+#gaviota_combined_raw <- bind_rows(gaviota_12s, gaviota_12s_rerun, gaviota_16s_clean)
+```
+
+clean up
+```{r}
+# change any labeled DWB1A or DWB1B to DWB1. Don't know why these were labeled different by OSU lab during re-run.
+gaviota_all <- gaviota_all_raw |> 
+  mutate(Sample = case_when(
+  Sample == "DWB1A" ~ "DWB1",
+  Sample == "DWB1B" ~ "DWB1",
+  TRUE ~ Sample
+))
+
+# gaviota_combined <- gaviota_combined_raw |> 
+#   mutate(Sample = case_when(
+#   Sample == "DWB1A" ~ "DWB1",
+#   Sample == "DWB1B" ~ "DWB1",
+#   TRUE ~ Sample
+# ))
+
+# there were 2 bags labeled NABC2. OSU labeled them NABC2a and NABC2b. I'm taking out NABC2b because there's no way of knowing if they were the same sample. Picked NABC2a to keep. My guess is that they were just the same sample that got re-sampled twice by accident, but we don't know for sure.
+
+#rename NABC2a to NABC2
+gaviota_all <- gaviota_all |> 
+  mutate(Sample = case_when(
+  Sample == "NABC2a" ~ "NABC2",
+  TRUE ~ Sample
+))
+
+# gaviota_combined <- gaviota_combined |> 
+#   mutate(Sample = case_when(
+#   Sample == "NABC2a" ~ "NABC2",
+#   TRUE ~ Sample
+# ))
+
+#take out NABC2b
+gaviota_all <- gaviota_all |> 
+  filter(Sample != "NABC2b")
+
+# gaviota_combined <- gaviota_combined |> 
+#   filter(Sample != "NABC2b")
+
+
+```
+
+
+
+
+
+
+export as csv gaviota_metabarcoding_results.csv
+
+```{r}
+write_csv(gaviota_all, "outputs/gaviota_metabarcoding_results.csv")
+
+#write_csv(gaviota_combined, "gaviota_metabarcoding_results.csv")
+```
+
