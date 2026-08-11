@@ -12,7 +12,7 @@ library(RColorBrewer)
 gaviota_pres_abs <- read_csv(here("metabarcoding_scripts_GL", "outputs", "gaviota_pres_abs_common_name.csv"))
 
 # used for Q4
-gav_coords <- read_csv(here("metabarcoding_scripts_GL", "gaviota_with_coordinates.csv")) |> 
+gav_coords <- read_csv(here("metabarcoding_scripts_GL", "outputs", "gaviota_with_coordinates.csv")) |> 
   rename(sample_id = ScatID)
 
 
@@ -61,7 +61,7 @@ marine_species <- make_clean_names(c("brandt's cormorant", "pelagic cormorant", 
 # Create new column 'marine' = 1 if ANY marine species present, else 0
 # 
 
-gaviota_pres_abs_host <- read_csv(here("data", "gaviota_pres_abs_host.csv"))
+gaviota_pres_abs_host <- read_csv(here("metabarcoding_scripts_GL","outputs", "gaviota_pres_abs_host.csv"))
 
 
 
@@ -482,7 +482,7 @@ compare_host_diets_asterix <- function(diet_wide, marine_species) {
     hosts_with_marine = hosts_with_marine
   ))
   
-  ggsave(plot = euler_plot, filename = "figs/euler_saved.png", dpi = 1200, units = "in", width = 5, height = 5)
+  ggsave(plot = euler_plot, filename = here("figs", "euler_saved.png"), dpi = 1200, units = "in", width = 5, height = 5)
   
 }
 
@@ -892,8 +892,8 @@ prey_gt <- prey_full %>%
   )
 
 # === Save table for publication ===
-gtsave(prey_gt, "figs/gaviota_prey_table_clean.png", vwidth = 1200, vheight = 900)
-gtsave(prey_gt, "figs/gaviota_prey_table_clean.pdf")
+gtsave(prey_gt, filename = here("figs", "gaviota_prey_table_clean.png"), vwidth = 1200, vheight = 900)
+gtsave(prey_gt, filename = here("figs", "gaviota_prey_table_clean.pdf"))
 
 # View table
 prey_gt
@@ -909,7 +909,7 @@ prey_gt
 
 
 
-gav_raw <- read_csv(here("data", "grouped_prey_sites_host.csv"))
+gav_raw <- read_csv(here("metabarcoding_scripts_GL","outputs", "grouped_prey_sites_host.csv"))
 
 gav_host_site <- gav_raw |> 
   select(-marine_present, -terrestrial_present, -diet_category) |> 
@@ -1079,9 +1079,9 @@ prey_gt_site <- prey_full_site %>%
 prey_gt_site
 
 # === Save table for publication ===
-gtsave(prey_gt_site, "figs/gaviota_prey_table_sites.png", vwidth = 1200, vheight = 900)
-gtsave(prey_gt_site, "figs/gaviota_prey_table_sites.pdf")
-gtsave(prey_gt_site, "figs/gaviota_prey_table_sites.docx")
+gtsave(prey_gt_site, filename = here("figs", "gaviota_prey_table_sites.png"), vwidth = 1200, vheight = 900)
+gtsave(prey_gt_site, filename = here("figs", "gaviota_prey_table_sites.pdf"))
+gtsave(prey_gt_site, filename = here("figs", "gaviota_prey_table_sites.docx"))
 
 
 

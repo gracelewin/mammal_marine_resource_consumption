@@ -22,7 +22,7 @@ library(patchwork)
 
 Import data
 ```{r}
-gaviota_pres_abs <- read_csv(here("data", "gaviota_pres_abs_host.csv"))
+gaviota_pres_abs <- read_csv(here("metabarcoding_scripts_GL", "outputs", "gaviota_pres_abs_host.csv"))
 ```
 
 split up by host
