@@ -141,7 +141,7 @@ gaviota <- gaviota |>
 
 
 ```{r}
-write_csv(gaviota, file = "outputs/gaviota_with_coordinates.csv")
+write_csv(gaviota, file = here("metabarcoding_scripts_GL","outputs", "gaviota_with_coordinates.csv"))
 
 ```
 

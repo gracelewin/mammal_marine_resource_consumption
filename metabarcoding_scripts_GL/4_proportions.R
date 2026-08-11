@@ -10,7 +10,7 @@ library(RColorBrewer)
 
 #added 6/5/2026##
 ## count species, genus, family, orders ##
-taxonomy_counts <- read_csv(here("data", "metabarcoding_data", "prey-taxonomy-counts.csv"))
+taxonomy_counts <- read_csv(here("data", "prey-taxonomy-counts.csv"))
 
 length(unique(taxonomy_counts$species))
 
@@ -66,7 +66,7 @@ boar_diet_summary
 # read in data file
 #gaviota_pres_abs <- read_csv(here("metabarcoding_scripts_GL", "gaviota_pres_abs_broadtax.csv"))
 
-gaviota_pres_abs <- read_csv(here("metabarcoding_scripts_GL", "gaviota_pres_abs_common_name.csv")) |> 
+gaviota_pres_abs <- read_csv(here("metabarcoding_scripts_GL", "outputs", "gaviota_pres_abs_common_name.csv")) |> 
   #rename(clam = 'inflated ark clam') |> 
   filter(!SampleID %in% c('H.08.01.23.C1', 'H.08.01.23.H1')) |> 
   select(-ravinia) |>
@@ -104,7 +104,7 @@ gaviota_pres_abs <- read_csv(here("metabarcoding_scripts_GL", "gaviota_pres_abs_
 
 
 # used for Q4
-gav_coords <- read_csv(here("metabarcoding_scripts_GL", "gaviota_with_coordinates.csv"))
+gav_coords <- read_csv(here("metabarcoding_scripts_GL", "outputs", "gaviota_with_coordinates.csv"))
 
 
 # Define marine species to group
@@ -212,7 +212,7 @@ gaviota_pres_abs_host <- gaviota_pres_abs |>
                      TRUE ~ bobcat))
 
 
-write_csv(gaviota_pres_abs_host, file = "data/gaviota_pres_abs_host.csv")
+write_csv(gaviota_pres_abs_host, file = here('metabarcoding_scripts_GL', "outputs", "gaviota_pres_abs_host.csv"))
 
 
 
@@ -610,7 +610,7 @@ all_prey_plot <- ggplot(
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 
-all_prey_plot
+#all_prey_plot
 
 #ggsave(plot = all_prey_plot, filename = here("figs", "all_prey_plot_hashes.png"), dpi = 600, units = "in", height = 5, width = 10)
 
@@ -874,7 +874,7 @@ ggplot(summary_prey_prop_marine_mixed_terr, aes(x = host, y = prop, fill = diet_
   theme_minimal() +
   scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
   coord_flip()  # flip for easier reading (optional)
-ggsave(filename = "figs/fig1.png", dpi = 600, width = 8.5, height = 5, units = "in")
+ggsave(filename = here("figs", "fig1.png"), dpi = 600, width = 8.5, height = 5, units = "in")
 
 
 ##### to add numbers of host to plot
@@ -1589,9 +1589,9 @@ marine_prey_plot_stacked <- ggplot(q3_prey_props, aes(x = host, y = prop, fill =
 
 marine_prey_plot_stacked
 
-ggsave(plot = marine_prey_plot, filename = "figs/fig2.png", dpi = 600, width = 8, height = 6, units = "in")
+ggsave(plot = marine_prey_plot, filename = here("figs", "fig2.png"), dpi = 600, width = 8, height = 6, units = "in")
 
-ggsave(plot = marine_prey_plot_stacked, filename = "figs/fig2_stacked.png", dpi = 600, width = 8, height = 6, units = "in")
+ggsave(plot = marine_prey_plot_stacked, filename = here("figs", "fig2_stacked.png"), dpi = 600, width = 8, height = 6, units = "in")
 
 #make a pie chart out of the marine prey plot
 #Add labels and filter for visibility
@@ -1629,7 +1629,7 @@ marine_prey_pie_faceted <- ggplot(q3_prey_props_labeled,
 
 marine_prey_pie_faceted
 
-ggsave(plot = marine_prey_pie_faceted, filename = "figs/marine_pie.png", dpi = 600, width = 5.5, height = 5.5, units = "in")
+ggsave(plot = marine_prey_pie_faceted, filename = here("figs", "marine_pie.png"), dpi = 600, width = 5.5, height = 5.5, units = "in")
 
 
 
@@ -1755,9 +1755,9 @@ both_plots_stacked <- all_prey_plot_stacked + marine_prey_plot_stacked +
 
 both_plots_stacked
 
-ggsave(plot = both_plots, filename = "figs/fig2.png", dpi = 600, width = 6, height = 6, units = "in")
+ggsave(plot = both_plots, filename = here("figs", "fig2.png"), dpi = 600, width = 6, height = 6, units = "in")
 
-ggsave(plot = both_plots_stacked, filename = "figs/both_stacked.png", dpi = 600, width = 6, height = 5, units = "in")
+ggsave(plot = both_plots_stacked, filename = here("figs", "both_stacked.png"), dpi = 600, width = 6, height = 5, units = "in")
 
 
 
@@ -1896,7 +1896,7 @@ facet_plot <- ggplot(summary_coyote_boar_grouped_prey_marine_mixed_terr_sites,
 
 facet_plot
 
-ggsave(plot = facet_plot, filename = "figs/sites.png", dpi = 600, width = 22, height = 10)
+ggsave(plot = facet_plot, filename = here("figs", "sites.png"), dpi = 600, width = 22, height = 10)
 
 
 ###
@@ -2219,7 +2219,7 @@ marine_prey_site_plot
 
 # ---- 4) Save high-quality figure ----
 ggsave(
-  filename = "figs/marine_prey_site_plot.png",
+  filename = here("figs", "marine_prey_site_plot.png"),
   plot = marine_prey_site_plot,
   width = 9,
   height = 6,
@@ -2374,16 +2374,16 @@ stacked_and_pie <- all_prey_plot_stacked + marine_prey_pie_faceted +
 stacked_and_pie
 
 #save plots
-ggsave(both_plots_stacked, file = "figs/both_plots_stacked.png", units = "in", width = 7, height = 6, dpi = 600)
+ggsave(both_plots_stacked, file = here("figs", "both_plots_stacked.png"), units = "in", width = 7, height = 6, dpi = 600)
 
-ggsave(stacked_and_pie, file = "figs/stacked_and_pie.png", units = "in", width = 6, height = 6, dpi = 600)
+ggsave(stacked_and_pie, file = here("figs", "stacked_and_pie.png"), units = "in", width = 6, height = 6, dpi = 600)
 
 
 
 
 # write grouped_prey_marine_mixed_terr_sites a csv.
 
-write_csv(grouped_prey_marine_mixed_terr_sites, file = "data/grouped_prey_sites_host.csv")
+write_csv(grouped_prey_marine_mixed_terr_sites, file = here("metabarcoding_scripts_GL", "outputs", "grouped_prey_sites_host.csv"))
 
 
 

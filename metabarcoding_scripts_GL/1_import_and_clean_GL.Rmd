@@ -100,7 +100,7 @@ gaviota_all <- gaviota_all |>
 export as csv gaviota_metabarcoding_results.csv
 
 ```{r}
-write_csv(gaviota_all, "outputs/gaviota_metabarcoding_results.csv")
+write_csv(gaviota_all, file = here("metabarcoding_scripts_GL", "outputs", "gaviota_metabarcoding_results.csv"))
 
 #write_csv(gaviota_combined, "gaviota_metabarcoding_results.csv")
 ```

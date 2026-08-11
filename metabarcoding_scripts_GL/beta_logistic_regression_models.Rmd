@@ -29,10 +29,10 @@ Import data
 
 ```{r, results = 'hide', message = F}
 # dangermond samples
-gav_dangermond_prop <- read_csv(here("data", "gav_dangermond_dist_marine_prop.csv"))
+gav_dangermond_prop <- read_csv(here("metabarcoding_scripts_GL","outputs", "gav_dangermond_dist_marine_prop.csv"))
 
 # Coal Oil Point and NCOS samples
-gav_cop_ncos_prop <- read_csv(here("data", "gav_cop_ncos_dist_marine_prop.csv"))
+gav_cop_ncos_prop <- read_csv(here("metabarcoding_scripts_GL","outputs", "gav_cop_ncos_dist_marine_prop.csv"))
 ```
 
 # Beta Regression Dangermond

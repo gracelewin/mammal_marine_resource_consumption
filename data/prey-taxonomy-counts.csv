@@ -1,0 +1,66 @@
+﻿count,total,prop,Label,common name,species,Genus,Family,order
+10,48,0.208333333,Bobcat Wild,bottas pocket gopher,bottae,Thomomys,Geomyidae,Rodentia
+5,48,0.104166667,Bobcat Wild,brush rabbit,bachmani,Sylvilagus,Leporidae,lagomorpha
+2,48,0.041666667,Bobcat Wild,california quail,californica,Callipepla,Odontophoridae,Galliformes
+8,48,0.166666667,Bobcat Wild,california vole,californicus,Microtus,Cricetidae,Rodentia
+6,48,0.125,Bobcat Wild,deer mouse,maniculatus,Peromyscus,Cricetidae,Rodentia
+4,48,0.083333333,Bobcat Wild,heermans kangaroo rat,heermanni,Dipodomys,Heteromyidae,Rodentia
+5,48,0.104166667,Bobcat Wild,mule deer,hemionus,Odocoileus,Cervidae,Artiodactyla
+1,48,0.020833333,Bobcat Wild,western rattlesnake,oreganus,Crotalus,Viperidae,Squamata
+1,48,0.020833333,Bobcat Wild,western scrub jay,californica,Aphelocoma,Corvidae,Passeriformes
+1,48,0.020833333,Bobcat Wild,wild boar,scrofa,Sus,Suidae,Artiodactyla
+5,48,0.104166667,Bobcat Wild,woodrat,NA,Neotoma,Cricetidae,Rodentia
+1,55,0.018181818,Coyote Urban,black rat,rattus,Rattus,Muridae,Rodentia
+11,55,0.2,Coyote Urban,brush rabbit,bachmani,Sylvilagus,Leporidae,lagomorpha
+6,55,0.109090909,Coyote Urban,california ground squirrel,beecheyi,Spermophillus,Sciuridae,Rodentia
+7,55,0.127272727,Coyote Urban,california vole,californicus,Microtus,Cricetidae,Rodentia
+6,55,0.109090909,Coyote Urban,chicken,gallus,Gallus,Phasianidae,Galliformes
+2,55,0.036363636,Coyote Urban,crow,brachyrhynchos,Corvus,Corvidae,Passeriformes
+8,55,0.145454545,Coyote Urban,deer mouse,maniculatus,Peromyscus,Cricetidae,Rodentia
+5,55,0.090909091,Coyote Urban,cattle,taurus,Bos,Bovidae,Artiodactyla
+1,55,0.018181818,Coyote Urban,house mouse,musculus,Mus,Muridae,Rodentia
+1,55,0.018181818,Coyote Urban,skiltons skink,skiltonianus,Plestiodon,Scincidae,Squamata
+1,55,0.018181818,Coyote Urban,song sparrow,melodia,Melospiza,PasserellidaePasseriformes,
+4,55,0.072727273,Coyote Urban,wild boar,scrofa,Sus,Suidae,Artiodactyla
+2,55,0.036363636,Coyote Urban,wild turkey,gallopavo,Meleagris,Phasianidae,Galliformes
+1,226,0.004424779,Coyote Wild,acorn woodpecker,formicivorus,Melanerpes,Picidae,Piciformes
+1,226,0.004424779,Coyote Wild,american robin,migratorius,Turdus,Turdidae,Passeriformes
+1,226,0.004424779,Coyote Wild,american shad,sapidissima,Alosa,Clupeidae,Clupeiformes
+37,226,0.163716814,Coyote Wild,bottas pocket gopher,bottae,Thomomys,Geomyidae,rodentia
+20,226,0.088495575,Coyote Wild,brandts cormorant,bottae,Urile,Phalacrocoracidae,Suliformes
+7,226,0.030973451,Coyote Wild,brush rabbit,bachmani,Sylvilagus,Leporidae,Lagomorpha
+4,226,0.017699115,Coyote Wild,california alligator lizard,multicarinata,Elgaria,Anguidae,Squamata
+2,226,0.008849558,Coyote Wild,california ground squirrel,beecheyi,Spermophillus,Sciuridae,Rodentia
+1,226,0.004424779,Coyote Wild,california quail,californica,Callipepla,Odontophoridae,Galliformes
+7,226,0.030973451,Coyote Wild,california sea lion,californianus,Zalophus,Otariidae,Carnivora
+20,226,0.088495575,Coyote Wild,california vole,californicus,Microtus,Cricetidae,Rodentia
+1,226,0.004424779,Coyote Wild,carpet beetle,NA,californicus,Dermestidae,Coleoptera
+1,226,0.004424779,Coyote Wild,clam,NA,Anadara,Arcidae,Arcida
+5,226,0.022123894,Coyote Wild,jerusalem cricket,NA,Stenopelmatus,Stenopelmatidae,Orthoptera
+60,226,0.265486726,Coyote Wild,deer mouse,maniculatus,Peromyscus,Cricetidae,Rodentia
+4,226,0.017699115,Coyote Wild,cattle,taurus,Bos,Bovidae,Artiodactyla
+1,226,0.004424779,Coyote Wild,downy woodpecker,taurus,Dryobates,Picidae,Piciformes
+1,226,0.004424779,Coyote Wild,dung beetle,NA,Onthophagus,Scarabaeidae,Coleoptera
+2,226,0.008849558,Coyote Wild,frog,NA,NA,NA,Anura
+2,226,0.008849558,Coyote Wild,gopher snake,catenifer,Pituophis,Colubridae,Squamata
+1,226,0.004424779,Coyote Wild,harbor seal,vitulina,Phoca,Phocidae,Carnivora
+1,226,0.004424779,Coyote Wild,harvester ant,NA,Veromessor,Formicidae,Hymenoptera
+3,226,0.013274336,Coyote Wild,heermans kangaroo rat,heermanni,Dipodomys,Heteromyidae,Rodentia
+1,226,0.004424779,Coyote Wild,mule deer,hemionus,Odocoileus,Cervidae,Artiodactyla
+10,226,0.044247788,Coyote Wild,pelagic cormorant,pelagicus,Urile,Phalacrocoracidae,Suliformes
+1,226,0.004424779,Coyote Wild,rove beetle,NA,Creophilus,Staphylinidae,Coleoptera
+1,226,0.004424779,Coyote Wild,sharpnose anchovy,ischana,Anchoa,Engraulidae,Clupeiformes
+1,226,0.004424779,Coyote Wild,skiltons skink,skiltonianus,Plestiodon,Scincidae,Squamata
+1,226,0.004424779,Coyote Wild,spotted towhee,maculatus,Pipilo,Passerellidae,Passeriformes
+1,226,0.004424779,Coyote Wild,striped skunk,mephitis,Mephitis,Mephitidae,Carnivora
+20,226,0.088495575,Coyote Wild,western harvest mouse,megalotis,Reithrodontomys,Cricetidae,Rodentia
+1,226,0.004424779,Coyote Wild,white crowned sparrow,leucophrys,Zonotrichia,Passerellidae,Passeriformes
+1,226,0.004424779,Coyote Wild,wild boar,scrofa,Sus,Suidae,Artiodactyla
+2,226,0.008849558,Coyote Wild,wild turkey,gallopavo,Meleagris,Phasianidae,Galliformes
+3,226,0.013274336,Coyote Wild,woodrat,NA,Neotoma,Cricetidae,Rodentia
+5,16,0.3125,Wild Boar Wild,jerusalem cricket,NA,Stenopelmatus,Stenopelmatidae,Orthoptera
+3,16,0.1875,Wild Boar Wild,cattle,taurus,Bos,Bovidae,Artiodactyla
+1,16,0.0625,Wild Boar Wild,dung beetle,NA,Onthophagus,Scarabaeidae,Coleoptera
+2,16,0.125,Wild Boar Wild,earwig,NA,Forficula,Forficulidae,Dermaptera
+4,16,0.25,Wild Boar Wild,stonefly,NA,Isogenoides,Perlodidae,Plecoptera
+1,16,0.0625,Wild Boar Wild,wild turkey,gallopavo,Meleagris,Phasianidae,Galliformes

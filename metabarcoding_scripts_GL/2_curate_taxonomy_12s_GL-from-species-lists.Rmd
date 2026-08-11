@@ -2259,7 +2259,7 @@ print(differences)
 make gaviota a csv
 
 ```{r}
-write_csv(gaviota, "outputs/gaviota_taxonomy.csv")
+write_csv(gaviota, file = here("metabarcoding_scripts_GL", "outputs","gaviota_taxonomy.csv"))
 ```
 
 
