@@ -1,7 +1,7 @@
 # Find the distance from a sampling location to the 
 # California coastline, find proportion of marine prey of each sample, and beta regression of distance to coast and host.
 # 20 Aug 2025
-# G Lewin
+# 
 ############################################
 
 library(sf)

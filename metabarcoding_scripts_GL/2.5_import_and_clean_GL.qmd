@@ -4,7 +4,7 @@ format: html
 ---
 
 
-This doc imports all the data and cleans it, to then be used in the Data_Viz_GL.Rmd. Before running this, make sure to run 2_curate_taxonomy_12s_GL.Rmd to get the updated gaviota_taxonomy.csv that is the metabarcoding results.
+This doc imports all the data and cleans it, to then be used in the Data_Viz.Rmd. Before running this, make sure to run 2_curate_taxonomy_12s_GL.Rmd to get the updated gaviota_taxonomy.csv that is the metabarcoding results.
 
 ```{r}
 library(tidyverse)

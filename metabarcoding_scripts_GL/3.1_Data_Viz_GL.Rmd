@@ -1,6 +1,6 @@
 ---
 title: "Visualizations"
-author: "Grace Lewin"
+author: 
 date: "2025-04-23"
 output: html_document
 ---

@@ -1,5 +1,5 @@
 ---
-title: "2_curate_taxonomy - Grace Lewin"
+title: "2_curate_taxonomy
 output: html_document
 date: "2023-08-09"
 ---
