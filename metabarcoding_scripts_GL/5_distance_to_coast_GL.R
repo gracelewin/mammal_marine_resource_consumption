@@ -46,7 +46,7 @@ distance_meters <- min(st_length(nearest_coast_point))
 # try to adapt for each sample point at Dangermond -- This is my attempt, but using min(st_length) at the end only returns one value... because it's getting the minimum of the whole column. So I checked what chatGPT had to offer.
 
 # read in data
-gav_raw <- read_csv(here("data", "grouped_prey_sites_host.csv"))
+gav_raw <- read_csv(here("metabarcoding_scripts_GL", "outputs", "grouped_prey_sites_host.csv"))
 
 gav_dangermond <- gav_raw |> 
   filter(site == "Dangermond") |> 

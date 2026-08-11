@@ -9,7 +9,7 @@ library(eulerr)
 library(RColorBrewer)
 
 
-gaviota_pres_abs <- read_csv(here("metabarcoding_scripts_GL", "gaviota_pres_abs_common_name.csv"))
+gaviota_pres_abs <- read_csv(here("metabarcoding_scripts_GL", "outputs", "gaviota_pres_abs_common_name.csv"))
 
 # used for Q4
 gav_coords <- read_csv(here("metabarcoding_scripts_GL", "gaviota_with_coordinates.csv")) |> 
